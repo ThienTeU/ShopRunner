@@ -62,18 +62,18 @@
                             SẢN PHẨM LIÊN QUAN
                         </h2>
                         <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
-                            <a href="ProductDetailServlet?product_id=${rp.product_id}">
+                            <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
                                 <div class="item">
                                     <img alt="${rp.product_name}" height="200"
                                          src="${rp.thumbnail}"
                                          width="200" />
                                     <div class="price">
                                         <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <span class="productPrice">${rp.product_id == pp.product_id ? pp.price : ""}</span>
+                                            <span style="color: #101010; font-family: Inter, sans-serif; font-size: 17px" class="productPrice">${rp.product_id == pp.product_id ? pp.price : ""}</span>
                                         </c:forEach>
                                     </div>
-                                    <div class="name">
-                                        ${rp.product_name}
+                                    <div class="name" >
+                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rp.product_name}</span>
                                     </div>
                                     <div class="category">
                                         <c:forEach items="${listCategory}" var="c">
@@ -99,11 +99,11 @@
                                          width="200" />
                                     <div class="price" >
                                         <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <span class="productPrice">${rv.product_id == pp.product_id ? pp.price : ""}</span>
+                                            <span style="color: #101010; font-family: Inter, sans-serif; font-size: 17px" class="productPrice">${rv.product_id == pp.product_id ? pp.price : ""}</span>
                                         </c:forEach>
                                     </div>
                                     <div class="name">
-                                        ${rv.product_name}
+                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rv.product_name}</span>
                                     </div>
                                     <div class="category">
                                         <c:forEach items="${listCategory}" var="c">
@@ -127,11 +127,11 @@
                                          width="200" />
                                     <div class="price" >
                                         <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <span class="productPrice">${mv.product_id == pp.product_id ? pp.price : ""}</span>
+                                            <span style="color: #101010; font-family: Inter, sans-serif; font-size: 17px" class="productPrice">${mv.product_id == pp.product_id ? pp.price : ""}</span>
                                         </c:forEach>
                                     </div>
                                     <div class="name">
-                                        ${mv.product_name}
+                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${mv.product_name}</span>
                                     </div>
                                     <div class="category">
                                         <c:forEach items="${listCategory}" var="c">
@@ -181,7 +181,7 @@
                     <c:forEach items="${requestScope.listProductPrice}" var="pp">
                         <c:forEach items="${listColor}" var="c">
                             <c:if test="${pp.color_id == c.color_id}">
-                                <a style="background-color: none" href="ProductDetailServlet?product_id=${requestScope.product.product_id}&color_id=${c.color_id}">
+                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${requestScope.product.product_id}&color_id=${c.color_id}">
                                     <button style="background-color: ${c.color}; border-radius: 50px; width: 40px; margin-top: 10px"></button>
                                 </a>
                             </c:if>
