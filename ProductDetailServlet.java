@@ -106,7 +106,7 @@ public class ProductDetailServlet extends HttpServlet {
             request.setAttribute("selectedPrice", selectedPrice);
             request.setAttribute("selectedProductPriceId", productPriceId);
 
-            request.getRequestDispatcher("./ProductDetail/ProductDetailJSP.jsp").forward(request, response);
+            request.getRequestDispatcher("ProductDetailJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(ProductDetailServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

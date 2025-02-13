@@ -92,7 +92,7 @@ public class AddToCartServlet extends HttpServlet {
             session.setAttribute("cart", cartItems);
 
             // Chuyển hướng về trang giỏ hàng
-            response.sendRedirect("./CartDetail/CartDetailJSP.jsp");
+            response.sendRedirect(" CartDetailServlet");
 
         } catch (NumberFormatException e) {
             response.sendRedirect("error.jsp"); // Xử lý lỗi nếu tham số không phải số
