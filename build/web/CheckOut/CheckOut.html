@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <title>Checkout</title>
+    <link rel="stylesheet" href="CheckOutStyle.css">
+</head>
+<body class="bg-light text-dark">
+    <div class="container custom-container">
+        <div class="text-center mb-4">
+            <h1 class="h4 font-weight-bold">CHECKOUT</h1>
+            <p class="text-muted">(1 item) 1,070,000.00₫</p>
+        </div>
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Contact Section -->
+                <div class="mb-4">
+                    <h2 class="section-title">CONTACT</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="contactEmail">Email *</label>
+                        <div class="input-group">
+                            <input class="form-control" id="contactEmail" type="email" value="duonghieu294@gmail.com"/>
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="fas fa-check text-success"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Address Section -->
+                <div class="mb-4">
+                    <h2 class="section-title">ADDRESS</h2>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="firstName">First Name *</label>
+                            <input class="form-control" id="firstName" placeholder="Enter First and Middle name" type="text"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="lastName">Last Name *</label>
+                            <input class="form-control" id="lastName" type="text"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="streetAddress">Street Number/Street Name *</label>
+                        <input class="form-control" id="streetAddress" placeholder="Example: 33 Le Duan street,..." type="text"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="buildingName">Building name/ floor etc</label>
+                        <input class="form-control" id="buildingName" placeholder="Example: Deutsches Haus, Block X1 - XYZ Apartment,..." type="text"/>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="provinceSelect">Province</label>
+                            <select class="form-control" id="provinceSelect">
+                                <option>Select Province</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="districtSelect">District</label>
+                            <select class="form-control" id="districtSelect">
+                                <option>Select District</option>
+                                <option>Select here</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="wardInput">Ward</label>
+                            <input class="form-control" id="wardInput" type="text"/>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country: Vietnam</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">Phone number *</label>
+                        <input class="form-control" id="phoneNumber" placeholder="Example: 0912345678" type="text"/>
+                    </div>
+                    <div class="form-group form-check">
+                        <input class="form-check-input" id="billingSame" type="checkbox"/>
+                        <label class="form-check-label" for="billingSame">My billing / tax invoice and delivery information are the same.</label>
+                    </div>                   
+                    <div class="form-group form-check">
+                        <input class="form-check-input" id="ageConfirmation" type="checkbox"/>
+                        <label class="form-check-label" for="ageConfirmation">Yes, I am over 16 years old *</label>
+                    </div>
+                    <div class="form-group form-check">
+                        <input class="form-check-input" id="privacyConsent" type="checkbox"/>
+                        <label class="form-check-label" for="privacyConsent">I hereby consent to the transfer, sharing, use, collection and disclosure of my personal data to third parties as set out in the <a class="privacy-link" href="#">adidas Privacy Policy</a>. *</label>
+                    </div>
+                    <div class="form-group form-check">
+                        <input class="form-check-input" id="termsConditions" type="checkbox"/>
+                        <label class="form-check-label" for="termsConditions">I have read, understood and accepted the <a class="privacy-link" href="#">Privacy Notice</a> and <a class="privacy-link" href="#">Terms and Conditions</a>. *</label>
+                    </div>
+                    <button class="btn btn-dark mt-3">NEXT <i class="fas fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <h2 class="section-title">YOUR CART</h2>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>1 item</span>
+                    <span>1,000,000₫</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Delivery</span>
+                    <span>70,000₫</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 total-price">
+                    <span>Total</span>
+                    <span>1,070,000₫</span>
+                </div>
+                <p class="text-muted small mb-4">[Inclusive of tax 79,259₫]</p>
+                <a class="privacy-link mb-4 d-block" href="#">USE A PROMO CODE</a>
+                <hr>
+                <div class="d-flex mb-4">
+                    <img alt="Deportivo III Turf Boots" class="cart-item-image" src="https://placehold.co/100x100"/>
+                    <div class="ml-3">
+                        <p class="font-weight-bold">Deportivo III Turf Boots</p>
+                        <p>1,000,000₫</p>
+                        <p class="small text-muted">Size: 7 UK / Quantity: 1</p>
+                        <p class="small text-muted">Colour: Core Black / Grey Three / Core Black</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

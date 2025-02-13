@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+}
+.productPrice{
+    font-size: 17px;
+}
+.alert-light {
+    font-size: 14px;
+    background-color: #fffbe6;
+    border-left: 5px solid #ffc107;
+}
+
+/* Card sản phẩm */
+.card {
+    border: none;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+}
+
+
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Nút xóa */
+.text-danger {
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.text-danger:hover {
+    color: #dc3545;
+    text-decoration: underline;
+}
+
+/* Dropdown số lượng */
+.form-select {
+    width: 60px;
+    text-align: center;
+}
+
+/* Tổng đơn hàng */
+.order-summary {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary h5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.order-summary p {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.order-summary hr {
+    border-top: 1px solid #ddd;
+}
+
+.order-summary .fw-bold {
+    font-size: 16px;
+}
+
+.btn-dark {
+    background-color: #000;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.btn-dark:hover {
+    background-color: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .col-md-8, .col-md-4 {
+        width: 100%;
+    }
+
+    .order-summary {
+        margin-top: 20px;
+    }
+}

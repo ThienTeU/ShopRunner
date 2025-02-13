@@ -1,0 +1,117 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package Model;
+
+/**
+ *
+ * @author admin
+ */
+public class Product {
+
+    private int product_id;
+    private int category_id;
+    private String product_name;
+    private String description;
+    private int discount;
+    private boolean status;
+    private String thumbnail;
+    private String created_at;
+
+    public Product() {
+    }
+
+    public Product(int product_id, int category_id, String product_name, String description, int discount, boolean status, String thumbnail, String created_at) {
+        this.product_id = product_id;
+        this.category_id = category_id;
+        this.product_name = product_name;
+        this.description = description;
+        this.discount = discount;
+        this.status = status;
+        this.thumbnail = thumbnail;
+        this.created_at = created_at;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public int getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
+    }
+
+    public int getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(int category_id) {
+        this.category_id = category_id;
+    }
+
+    public String getProduct_name() {
+        return product_name;
+    }
+
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Product{");
+        sb.append("product_id=").append(product_id);
+        sb.append(", category_id=").append(category_id);
+        sb.append(", product_name=").append(product_name);
+        sb.append(", description=").append(description);
+        sb.append(", discount=").append(discount);
+        sb.append(", status=").append(status);
+        sb.append(", thumbnail=").append(thumbnail);
+        sb.append(", created_at=").append(created_at);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    
+}
