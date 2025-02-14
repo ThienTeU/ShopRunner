@@ -1,8 +1,11 @@
+package Controller;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+
+
 
 import DAO.PostCategoryDAO;
 import DAO.PostListDAO;
@@ -19,9 +22,9 @@ import java.util.ArrayList;
 
 /**
  *
- * @author 1234
+ * @author Acer
  */
-
+@WebServlet(name="PostListController", urlPatterns={"/PostListController"})
 public class PostListController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
