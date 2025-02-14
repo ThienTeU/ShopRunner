@@ -32,7 +32,7 @@
             <div class="col-md-8">
                 <c:choose>
                     <c:when test="${empty sessionScope.cart}">
-                        <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống.</div>
+                        <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a></div>
                     </c:when>
                     <c:otherwise>
                         <h2 class="fw-bold">GIỎ HÀNG CỦA BẠN</h2>
@@ -40,8 +40,8 @@
                         <p class="text-muted">Các mặt hàng trong giỏ hàng của bạn không được bảo lưu — hãy kiểm tra ngay để đặt hàng.</p>
 
                         <div class="alert alert-light border">
-                            To ensure parcels can be delivered before Tet Holiday, please place your order before 20/01 for delivery
-                            address within HCMC and before 17/01 for other provinces/cities. <a class="fw-bold" href="#">SHOP NOW</a>
+                            Để đảm bảo các bưu phẩm có thể được giao trước Tết Nguyên Đán, vui lòng đặt hàng trước ngày 20/01 cho địa 
+                            chỉ trong TP.HCM và trước ngày 17/01 cho các tỉnh/thành phố khác. <a class="fw-bold" href="productlist">MUA NGAY</a>
                         </div>
 
                         <div class="row">
@@ -49,17 +49,22 @@
                                 <div class="col-md-8 mb-3" style="width: 100%">
                                     <div class="card p-3 position-relative">
                                         <!-- Nút X để xóa -->
-                                        <a href="removefromcart?item=${item}" class="position-absolute top-0 end-0 m-2 text-danger fs-4">
+                                        <a href="RemoveFromCartServlet?product_id=${item.product.product_id}&productprice_id=${item.productPrice.productPrice_id}&productquantity_id=${item.productQuantity.productQuantity_id}"
+                                           class="position-absolute top-0 end-0 m-2 text-danger fs-4">
                                             <i class="fas fa-times"></i>
                                         </a>
 
                                         <div class="row g-3 align-items-center">
                                             <div class="col-md-3">
-                                                <img src="Image2/productID_${item.product.product_id}/colorID_${item.productPrice.color_id}/image_1.avif" 
-                                                     class="img-fluid rounded" alt="">
+                                                <a style="text-decoration: none; color: black" href="ProductDetailServlet?product_id=${item.product.product_id}&color_id=${item.productPrice.color_id}">
+                                                    <img src="Image2/productID_${item.product.product_id}/colorID_${item.productPrice.color_id}/image_1.avif" 
+                                                         class="img-fluid rounded" alt="">
+                                                </a>
                                             </div>
                                             <div class="col-md-6">
-                                                <h6 class="fw-bold">${item.product.product_name}</h6>
+                                                <a style="text-decoration: none; color: black" href="ProductDetailServlet?product_id=${item.product.product_id}&color_id=${item.productPrice.color_id}">
+                                                    <h6 class="fw-bold">${item.product.product_name}</h6>
+                                                </a>
                                                 <p class="text-muted">
                                                     <c:forEach items="${listColor}" var="c">
                                                         <c:if test="${item.productPrice.color_id == c.color_id}">
@@ -104,16 +109,18 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <p>Giao hàng</p>
-                        <span class="productPrice">70000</span>
+                        <span id="ship" class="productPrice">${sessionScope.cart.size() == 0 ? "0" : "70000"}</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between fw-bold">
                         <p>Tổng</p>
-                        <span class="productPrice">${total + 70000}</span>
+                        <span class="productPrice">${sessionScope.cart.size() == 0 ? "0" : total + 70000}</span>
                     </div>
-                    <p class="text-muted">(Đã bao gồm thuế <span class="productPrice">79259</span>)</p>
+                    <c:if test="${sessionScope.cart.size() != 0}">
+                        <p class="text-muted">(Đã bao gồm thuế <span class="productPrice">79259</span>)</p>
+                    </c:if>
                     <a href="#" class="text-primary">SỬ DỤNG MÃ KHUYẾN MÃI</a>
-                    <a class="btn btn-dark w-100 mt-3" href="../CheckOut/CheckOut.html">THANH TOÁN</a>
+                    <a class="btn btn-dark w-100 mt-3" href="CheckOutServlet" id="checkout-button">THANH TOÁN</a>
                 </div>
             </div>
         </div>
@@ -121,6 +128,42 @@
 </html>
 
 <script>
+    // Hàm kiểm tra số lượng sản phẩm trong giỏ hàng
+    function checkCartItems() {
+        // Lấy số lượng sản phẩm trong giỏ hàng
+        var cartSize = ${sessionScope.cart.size()};  // Hoặc thay thế bằng cách lấy giá trị từ một phần tử DOM
+
+        // Lấy nút thanh toán
+        var checkoutButton = document.getElementById("checkout-button");
+
+        // Kiểm tra số lượng sản phẩm
+        if (cartSize === 0) {
+            // Nếu giỏ hàng trống, vô hiệu hóa nút thanh toán
+            checkoutButton.disabled = true;
+            checkoutButton.style.opacity = 0.5; // Thêm hiệu ứng mờ cho nút
+            checkoutButton.style.cursor = "not-allowed"; // Thay đổi con trỏ chuột
+
+            // Ngăn chặn hành động nhấn nút (nếu nút vẫn có thể nhấn được)
+            checkoutButton.addEventListener("click", function (event) {
+                event.preventDefault();  // Ngừng hành động mặc định (chuyển hướng)
+            });
+        } else {
+            // Nếu có sản phẩm trong giỏ, kích hoạt nút thanh toán
+            checkoutButton.disabled = false;
+            checkoutButton.style.opacity = 1; // Khôi phục độ sáng cho nút
+            checkoutButton.style.cursor = "pointer"; // Thay đổi con trỏ chuột về bình thường
+
+            // Đảm bảo sự kiện click sẽ không bị chặn nếu giỏ hàng có sản phẩm
+            checkoutButton.removeEventListener("click", function (event) {
+                event.preventDefault(); // Hủy bỏ sự kiện chặn click cũ
+            });
+        }
+    }
+
+// Gọi hàm khi trang được tải hoặc khi giỏ hàng thay đổi
+    window.onload = checkCartItems;
+
+
     $(document).ready(function () {
         $(".selectWithScroll").select2({
             dropdownAutoWidth: true,

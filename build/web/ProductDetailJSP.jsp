@@ -154,10 +154,10 @@
                         <c:if test="${category.category_id == product.category_id}">
                             <c:forEach items="${listCategory}" var="cate">
                                 <c:if test="${category.parent_id==cate.category_id}">
-                                    <a style="text-decoration: none; color: black" href="ListProductSameCategory?category_id=${cate.category_id}">${cate.name}</a> -
+                                    <a href="productcategory?categoryId=${cate.category_id}" style="text-decoration: none; color: black" >${cate.name}</a> -
                                 </c:if>
                             </c:forEach>
-                            <a style="text-decoration: none; color: black" href="ListProductSameCategory?category_id=${category.category_id}">${category.name}</a>                           
+                            <a  href="productcategory?categoryId=${category.category_id}" style="text-decoration: none; color: black">${category.name}</a>                           
                         </c:if>
                     </c:forEach>
                 </div>

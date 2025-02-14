@@ -99,31 +99,31 @@
         }
         %>
 
-        
-        
+
+
         <div class="container">
             <c:forEach var="product" items="${products}">
                 <a href="ProductDetailServlet?product_id=${product.productId}">
                     <div class="product">
-                    <a href="ProductDetailServlet?product_id=${product.productId}">
-                        <img src="${product.thumbnail}" alt="${product.productName}">
-                    </a>
-                    <div class="product-name">${product.productName}</div>
-                    <div class="product-prices">
-                        <strong>Prices:</strong>
-                        <c:forEach var="price" items="${product.sortedPrices}" varStatus="status">
-                            ${price.price}đ
-                            <c:if test="${not status.last}"> - </c:if>
-                        </c:forEach>
+                        <a href="ProductDetailServlet?product_id=${product.productId}">
+                            <img src="${product.thumbnail}" alt="${product.productName}">
+                        </a>
+                        <div class="product-name">${product.productName}</div>
+                        <div class="product-prices">
+                            <strong>Prices:</strong>
+                            <c:forEach var="price" items="${product.sortedPrices}" varStatus="status">
+                                <span class="productPrice">${price.price}</span>
+                                <c:if test="${not status.last}"> - </c:if>
+                            </c:forEach>
+                        </div>
+                        <div class="product-colors">
+                            <strong>Colors:</strong>
+                            <c:forEach var="color" items="${product.colors}">
+                                <div class="color-box ${color.colorName}"></div>
+                            </c:forEach>
+                        </div>
+                        <div class="product-rating">★ ${product.rating}</div>
                     </div>
-                    <div class="product-colors">
-                        <strong>Colors:</strong>
-                        <c:forEach var="color" items="${product.colors}">
-                            <div class="color-box ${color.colorName}"></div>
-                        </c:forEach>
-                    </div>
-                    <div class="product-rating">★ ${product.rating}</div>
-                </div>
                 </a>
             </c:forEach>
         </div>
@@ -149,6 +149,16 @@
 
 
         </div>
-
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let priceElements = document.querySelectorAll(".productPrice");
+                priceElements.forEach(function (element) {
+                    let price = parseFloat(element.textContent);
+                    if (!isNaN(price)) {
+                        element.textContent = price.toLocaleString("vi-VN") + "₫";
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

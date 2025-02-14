@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import DAL.ProductDAO;
@@ -26,12 +22,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(name = "CartDetailServlet", urlPatterns = {"/CartDetailServlet"})
-public class CartDetailServlet extends HttpServlet {
+/**
+ *
+ * @author admin
+ */
+@WebServlet(name="CheckOutServlet", urlPatterns={"/CheckOutServlet"})
+public class CheckOutServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         try {
             HttpSession session = request.getSession();
             List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
@@ -45,7 +45,7 @@ public class CartDetailServlet extends HttpServlet {
             List<Color> listColor = productDAO.getAllColors();
             
             double total = 0;
-            for (CartItem item : cartItems) {               
+            for (CartItem item : cartItems) {
                     Product product = productDAO.getProductById(item.getProduct_id());
                     ProductPrice productPrice = productDAO.getProductPriceById(item.getProductprice_id());
                     ProductQuantity productQuantity = productDAO.getProductQuantityById(item.getProductquantity_id());
@@ -59,24 +59,17 @@ public class CartDetailServlet extends HttpServlet {
             request.setAttribute("listSize", listSize);
             request.setAttribute("cartItemsDTO", cartItemsDTO);
             
-            request.getRequestDispatcher("CartDetailJSP.jsp").forward(request, response);
+            request.getRequestDispatcher("CheckOutJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(CartDetailServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CheckOutServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }
+    } 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
+    throws ServletException, IOException {
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
