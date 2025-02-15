@@ -1,5 +1,5 @@
 
-import Controller.ProductDetailServlet;
+import NgocHieu.ProductDetailServlet;
 import DAL.ProductDAO;
 import Model.Category;
 import Model.Color;

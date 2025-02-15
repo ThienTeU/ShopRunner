@@ -37,6 +37,19 @@ public class ProductDAO extends DBContext {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
+    public int getProductCountByCategory(int categoryId) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM Product WHERE category_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        }
+        return 0; // Trả về 0 nếu không có sản phẩm nào
+    }
+
     public List<Product> getMostViewItems() throws SQLException {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, "
