@@ -18,8 +18,8 @@
         <link rel="stylesheet" href="CheckOutStyle.css">
     </head>
     <body class="bg-light text-dark">
-        <c:if test="${sessionScope.cart.size() == 0 }">
-            <c:redirect url="CartDetailServlet"></c:redirect>
+        <c:if test="${sessionScope.cart.size() == 0 || sessionScope.cart == null }">
+            <c:redirect url="${sessionScope.contextPath}/CartDetailServlet"></c:redirect>
         </c:if>
         <div class="container custom-container">
             <div class="text-center mb-4">

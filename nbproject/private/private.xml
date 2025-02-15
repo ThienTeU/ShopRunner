@@ -3,10 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/admin/ShopRunner/web/ProductDetail/ProductDetail.css</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/ProductDetailJSP.jsp</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetailJSP.jsp</file>
             <file>file:/C:/Users/admin/ShopRunner/src/java/DAL/ProductDAO.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/Controller/ProductDetailServlet.java</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/AddProductQuantityJSP.jsp</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/CheckOut/LocationInfo.js</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetail.css</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CartDetailJSP.jsp</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CheckOutJSP.jsp</file>
         </group>
     </open-files>
 </project-private>
