@@ -47,48 +47,48 @@
                         <h2 class="section-title">ĐỊA CHỈ</h2>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label class="form-label" for="firstName">Họ</label>
-                                <input class="form-control" id="firstName" placeholder="" type="text"/>
+                                <label class="form-label" for="fullName">Họ Và Tên</label>
+                                <input name="fullName" class="form-control" id="fullName" placeholder="" type="text"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <label class="form-label" for="lastName">Tên</label>
-                                <input class="form-control" id="lastName" type="text"/>
+                                <label class="form-label" for="phoneNumber">Số Điện Thoại</label>
+                                <input class="form-control" id="phoneNumber" placeholder="" type="text"/>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="streetAddress">Số Đường/Tên Đường *</label>
-                            <input class="form-control" id="streetAddress" placeholder="" type="text"/>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="buildingName">Tên Tòa Nhà/Số Nhà</label>
-                            <input class="form-control" id="buildingName" placeholder="" type="text"/>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label class="form-label" for="provinceSelect">Tỉnh</label>
-                                <select class="form-control" id="provinceSelect">
+                                <label class="form-label" for="city">Tỉnh</label>
+                                <select name="city" class="form-control" id="city">
                                     <option>Chọn Tỉnh</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-6">
-                                <label class="form-label" for="districtSelect">District</label>
-                                <select class="form-control" id="districtSelect">
+                                <label class="form-label" for="district">District</label>
+                                <select name="district" class="form-control" id="district">
                                     <option>Chọn Huyện/Quận</option>
-                                    <option>Select here</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label class="form-label" for="wardInput">Xã/Phường</label>
-                                <input class="form-control" id="wardInput" type="text"/>
+                                <label class="form-label" for="ward">Xã/Phường</label>
+                                <select name="ward" class="form-control" id="ward">
+                                    <option>Chọn Xã/Phường</option>
+                                </select>
                             </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="streetAddress">Số Đường/Tên Đường *</label>
+                                <input class="form-control" id="streetAddress" placeholder="" type="text"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label class="form-label" for="note">Ghi chú</label>
+                                <input type="text" name="note" placeholder="" class="form-control">
+                            </div>
+                        </div>
 
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="phoneNumber">Số Điện Thoại</label>
-                            <input class="form-control" id="phoneNumber" placeholder="" type="text"/>
-                        </div>
+
                         <div class="form-group form-check">
                             <input class="form-check-input" id="billingSame" type="checkbox"/>
                             <label class="form-check-label" for="billingSame">Thông tin hóa đơn / thuế và thông tin giao hàng của tôi là giống nhau.</label>
@@ -176,5 +176,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="NgocHieu/apiprovince.js"></script>
+
 </body>
 </html>

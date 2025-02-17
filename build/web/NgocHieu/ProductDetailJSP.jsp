@@ -16,6 +16,8 @@
         </title>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
         <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet" />
         <link rel="stylesheet" href="NgocHieu/ProductDetail.css">
@@ -66,6 +68,11 @@
                         <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
                             <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
                                 <div class="item">
+                                    <c:if test="${rp.isWithin10Days(rp.created_at)}">
+                                        <div class="type">
+                                            <span class="content">SẢN PHẨM MỚI</span>
+                                        </div>
+                                    </c:if>
                                     <img alt="${rp.product_name}" height="200"
                                          src="${rp.thumbnail}"
                                          width="200" />
@@ -96,6 +103,11 @@
                         <c:forEach items="${listRecentlyView}" var="rv" begin="0" end="3">
                             <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rv.product_id}">
                                 <div class="item">
+                                    <c:if test="${rv.isWithin10Days(rv.created_at)}">
+                                        <div class="type">
+                                            <span class="content">SẢN PHẨM MỚI</span>
+                                        </div>
+                                    </c:if>
                                     <img alt="${rv.product_name}" height="200"
                                          src="${rv.thumbnail}"
                                          width="200" />
@@ -123,7 +135,13 @@
                         </h2>
                         <c:forEach items="${listMostView}" var="mv" begin="0" end="3">
                             <a style="text-decoration: none" href="ProductDetailServlet?product_id=${mv.product_id}">
-                                <div class="item">
+                                <div style="position: relative" class="item">
+                                    <c:if test="${mv.isWithin10Days(mv.created_at)}">
+                                        <div class="type">
+                                            <span class="content">SẢN PHẨM MỚI</span>
+                                        </div>
+                                        <i style="color: black; position: absolute;right: 0" class="fa-regular fa-eye"></i>
+                                    </c:if>
                                     <img alt="${mv.product_name}" height="200"
                                          src="${mv.thumbnail}"
                                          width="200" />
@@ -150,7 +168,7 @@
 
             <div class="col-md-4" style="position: fixed; right: 0;">
                 <c:if test="${checkNew}">
-                    <div class="type">
+                    <div class="main-type">
                         <span class="content">SẢN PHẨM MỚI</span>
                     </div>
                 </c:if>

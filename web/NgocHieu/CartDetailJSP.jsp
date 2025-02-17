@@ -28,13 +28,14 @@
     </head>
 
     <body>
-        <div class="row">
-            <div class="col-md-8">
-                <c:choose>
-                    <c:when test="${empty sessionScope.cart}">
-                        <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a></div>
-                    </c:when>
-                    <c:otherwise>
+        <c:choose>
+            <c:when test="${empty sessionScope.cart}">
+                <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a></div>
+            </c:when>
+            <c:otherwise>
+                <div class="row">
+                    <div class="col-md-8">
+
                         <h2 class="fw-bold">GIỎ HÀNG CỦA BẠN</h2>
                         <p>TỔNG CỘNG (${sessionScope.cart.size()} các sản phẩm) <span class="fw-bold"><span class="productPrice">${total}</span></span></p>
                         <p class="text-muted">Các mặt hàng trong giỏ hàng của bạn không được bảo lưu — hãy kiểm tra ngay để đặt hàng.</p>
@@ -96,75 +97,40 @@
                             </c:forEach>
                         </div>
 
-                    </c:otherwise>
-                </c:choose>
-            </div>
 
-            <div class="col-md-4" style="position: fixed; right: 0;">
-                <div class="order-summary p-3 border rounded">
-                    <h5>TÓM TẮT ĐƠN HÀNG</h5>
-                    <div class="d-flex justify-content-between">
-                        <p>${sessionScope.cart.size()} các sản phẩm</p>
-                        <span class="productPrice">${total}</span>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <p>Giao hàng</p>
-                        <span id="ship" class="productPrice">${sessionScope.cart.size() == 0 ? "0" : "70000"}</span>
+
+                    <div class="col-md-4" style="position: fixed; right: 0;">
+                        <div class="order-summary p-3 border rounded">
+                            <h5>TÓM TẮT ĐƠN HÀNG</h5>
+                            <div class="d-flex justify-content-between">
+                                <p>${sessionScope.cart.size()} các sản phẩm</p>
+                                <span class="productPrice">${total}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <p>Giao hàng</p>
+                                <span id="ship" class="productPrice">${sessionScope.cart.size() == 0 ? "0" : "70000"}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <p>Tổng</p>
+                                <span class="productPrice">${sessionScope.cart.size() == 0 ? "0" : total + 70000}</span>
+                            </div>
+                            <c:if test="${sessionScope.cart.size() != 0}">
+                                <p class="text-muted">(Đã bao gồm thuế <span class="productPrice">79259</span>)</p>
+                            </c:if>
+                            <a href="#" class="text-primary">SỬ DỤNG MÃ KHUYẾN MÃI</a>
+                            <a class="btn btn-dark w-100 mt-3" href="CheckOutServlet" id="checkout-button">THANH TOÁN</a>
+                        </div>
                     </div>
-                    <hr>
-                    <div class="d-flex justify-content-between fw-bold">
-                        <p>Tổng</p>
-                        <span class="productPrice">${sessionScope.cart.size() == 0 ? "0" : total + 70000}</span>
-                    </div>
-                    <c:if test="${sessionScope.cart.size() != 0}">
-                        <p class="text-muted">(Đã bao gồm thuế <span class="productPrice">79259</span>)</p>
-                    </c:if>
-                    <a href="#" class="text-primary">SỬ DỤNG MÃ KHUYẾN MÃI</a>
-                    <a class="btn btn-dark w-100 mt-3" href="CheckOutServlet" id="checkout-button">THANH TOÁN</a>
                 </div>
-            </div>
-        </div>
+            </c:otherwise>
+        </c:choose>
     </body>
 </html>
 
 <script>
-    // Hàm kiểm tra số lượng sản phẩm trong giỏ hàng
-    function checkCartItems() {
-        // Lấy số lượng sản phẩm trong giỏ hàng
-        var cartSize = ${sessionScope.cart.size()};  // Hoặc thay thế bằng cách lấy giá trị từ một phần tử DOM
-
-        // Lấy nút thanh toán
-        var checkoutButton = document.getElementById("checkout-button");
-
-        // Kiểm tra số lượng sản phẩm
-        if (cartSize === 0) {
-            // Nếu giỏ hàng trống, vô hiệu hóa nút thanh toán
-            checkoutButton.disabled = true;
-            checkoutButton.style.opacity = 0.5; // Thêm hiệu ứng mờ cho nút
-            checkoutButton.style.cursor = "not-allowed"; // Thay đổi con trỏ chuột
-
-            // Ngăn chặn hành động nhấn nút (nếu nút vẫn có thể nhấn được)
-            checkoutButton.addEventListener("click", function (event) {
-                event.preventDefault();  // Ngừng hành động mặc định (chuyển hướng)
-            });
-        } else {
-            // Nếu có sản phẩm trong giỏ, kích hoạt nút thanh toán
-            checkoutButton.disabled = false;
-            checkoutButton.style.opacity = 1; // Khôi phục độ sáng cho nút
-            checkoutButton.style.cursor = "pointer"; // Thay đổi con trỏ chuột về bình thường
-
-            // Đảm bảo sự kiện click sẽ không bị chặn nếu giỏ hàng có sản phẩm
-            checkoutButton.removeEventListener("click", function (event) {
-                event.preventDefault(); // Hủy bỏ sự kiện chặn click cũ
-            });
-        }
-    }
-
-// Gọi hàm khi trang được tải hoặc khi giỏ hàng thay đổi
-    window.onload = checkCartItems;
-
-
-    $(document).ready(function () {
+   $(document).ready(function () {
         $(".selectWithScroll").select2({
             dropdownAutoWidth: true,
             width: '50px'

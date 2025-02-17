@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>web/ProductList/productlist.jsp</url>
+            <bookmark id="1">
+                <name/>
+                <line>107</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/admin/ShopRunner/web/ProductList/list.css</file>
             <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetailJSP.jsp</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/CheckOutServlet.java</file>
             <file>file:/C:/Users/admin/ShopRunner/src/java/DAL/ProductDAO.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/AddToCartServlet.java</file>
             <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/ProductDetailServlet.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/AddProductQuantityJSP.jsp</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/Test.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/CheckOut/LocationInfo.js</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/CartDetailServlet.java</file>
+            <file>file:/C:/Users/admin/ShopRunner/src/java/Model/ProductTuan.java</file>
+            <file>file:/C:/Users/admin/ShopRunner/src/java/DAL/ProductDAOTuan.java</file>
+            <file>file:/C:/Users/admin/ShopRunner/src/java/DAL/InsertProductDAO.java</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/ProductList/productlist.jsp</file>
             <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetail.css</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CartDetailJSP.jsp</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CheckOutJSP.jsp</file>
+            <file>file:/C:/Users/admin/ShopRunner/src/java/Controller/ProductList.java</file>
         </group>
     </open-files>
 </project-private>

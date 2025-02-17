@@ -4,6 +4,8 @@
  */
 package Model;
 
+import java.text.SimpleDateFormat;
+
 /**
  *
  * @author admin
@@ -20,6 +22,31 @@ public class Product {
     private String created_at;
 
     public Product() {
+    }
+
+    public boolean isWithin10Days(String inputTime) {
+        try {
+            // Định dạng thời gian đầu vào
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            // Chuyển chuỗi đầu vào thành đối tượng Date
+            java.util.Date inputDate = sdf.parse(inputTime);
+
+            // Lấy thời gian hiện tại
+            java.util.Date currentDate = new java.util.Date();
+
+            // Tính toán sự khác biệt giữa thời gian hiện tại và thời gian đầu vào (tính bằng mili giây)
+            long diffInMillies = currentDate.getTime() - inputDate.getTime();
+
+            // Tính toán sự khác biệt trong ngày (1 ngày = 24 * 60 * 60 * 1000 mili giây)
+            long diffInDays = diffInMillies / (24 * 60 * 60 * 1000);
+
+            // Kiểm tra nếu sự khác biệt ít hơn 10 ngày
+            return diffInDays < 10;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Nếu có lỗi trong quá trình phân tích chuỗi thời gian, trả về false
+        }
     }
 
     public Product(int product_id, int category_id, String product_name, String description, int discount, boolean status, String thumbnail, String created_at) {
@@ -113,5 +140,4 @@ public class Product {
         return sb.toString();
     }
 
-    
 }
