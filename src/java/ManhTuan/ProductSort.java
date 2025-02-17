@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Controller;
+package ManhTuan;
 
+import DAL.ProductDAOTuan;
+import Model.CategoryTuan;
+import Model.ProductTuan;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,42 +14,51 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import Model.*;
 import java.util.List;
-import DAL.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
 
 /**
  *
  * @author tuan
  */
-@WebServlet(name = "ProductList", urlPatterns = {"/productlist"})
-public class ProductList extends HttpServlet {
+@WebServlet(name = "ProductSort", urlPatterns = {"/productsort"})
+public class ProductSort extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String date = request.getParameter("date");
+        String rate = request.getParameter("rate");
+        String price = request.getParameter("price");
         ProductDAOTuan dao = new ProductDAOTuan();
-        int count = dao.getTotalProducts();
-        int size = 9;
+        List<ProductTuan> product = dao.sortProducts(date, rate, price);
+        int count = 0;
         int end = 0;
+        int size = 9;
+        for (ProductTuan p : product) {
+            count++;
+        }
         if (count % size == 0) {
-            end = count / size;
+            end = (count / size);
         } else {
             end = (count / size) + 1;
         }
         int index = 1;
-        if(request.getParameter("index")!=null && !request.getParameter("index").isEmpty()){
-             index = Integer.parseInt(request.getParameter("index"));
+        String indexParam = request.getParameter("index");
+        if (indexParam != null && indexParam.matches("\\d+")) { // Kiểm tra chỉ chứa số
+            index = Integer.parseInt(indexParam);
+        } else {
+            index = 1; // Mặc định trang đầu tiên
         }
-        List<ProductTuan> products = dao.getAllProductsByPages(index, size);
+
+        List<ProductTuan> products = dao.getAllProductsByPages(index, size, date, rate, price);
         List<CategoryTuan> categories = dao.getCategoryTree();
         
         request.setAttribute("categories", categories);
+        request.setAttribute("date", date);
+        request.setAttribute("rate", rate);
+        request.setAttribute("price", price);
         request.setAttribute("end", end);
-        request.setAttribute("products", products);
-        request.getRequestDispatcher("/ProductList/productlist.jsp").forward(request, response);
+        request.setAttribute("products", product);
+        request.getRequestDispatcher("/ManhTuan/productlist.jsp").forward(request, response);
     }
 
     @Override
@@ -54,7 +66,6 @@ public class ProductList extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -67,11 +78,4 @@ public class ProductList extends HttpServlet {
         return "Short description";
     }
 
-    public static void main(String[] args) {
-        ProductDAOTuan dao = new ProductDAOTuan();
-        List<ProductTuan> products = dao.getAllProductsByPages(1, 9);
-        for (ProductTuan p : products) {
-            System.out.println(p);
-        }
-    }
 }

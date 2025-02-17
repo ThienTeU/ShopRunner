@@ -12,6 +12,7 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/C:/Users/admin/ShopRunner/web/ProductList/list.css</file>
             <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetailJSP.jsp</file>
             <file>file:/C:/Users/admin/ShopRunner/src/java/DAL/ProductDAO.java</file>
@@ -22,6 +23,9 @@
             <file>file:/C:/Users/admin/ShopRunner/web/ProductList/productlist.jsp</file>
             <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetail.css</file>
             <file>file:/C:/Users/admin/ShopRunner/src/java/Controller/ProductList.java</file>
+=======
+            <file>file:/D:/swp/git/ShopRunner/src/java/ManhTuan/ProductList.java</file>
+>>>>>>> 2e3c86bbd9935e46d0dca20920494ae3d3c8c77f
         </group>
     </open-files>
 </project-private>
