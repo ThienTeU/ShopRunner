@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import Model.*;
 import java.util.List;
 import DAL.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -52,6 +54,7 @@ public class ProductList extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
+    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

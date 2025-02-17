@@ -420,7 +420,7 @@ public class ProductDAOTuan extends DBContext {
                 rs.getInt("discount"),
                 rs.getInt("status"),
                 rs.getString("thumbnail"),
-                rs.getTimestamp("created_at"),
+                rs.getString("created_at"),
                 rs.getDouble("rating"),
                 new ArrayList<>(), // Danh sách màu sắc sẽ được set sau
                 new ArrayList<>() // Danh sách giá sẽ được set sau

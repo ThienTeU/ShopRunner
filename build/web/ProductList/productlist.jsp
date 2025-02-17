@@ -103,8 +103,13 @@
 
         <div class="container">
             <c:forEach var="product" items="${products}">
-                <a href="ProductDetailServlet?product_id=${product.productId}">
+                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${product.productId}">
                     <div class="product">
+                        <c:if test="${product.isWithin10Days(product.created_at)}">
+                            <div class="type">
+                                <span class="content">SẢN PHẨM MỚI</span>
+                            </div>
+                        </c:if>
                         <a href="ProductDetailServlet?product_id=${product.productId}">
                             <img src="${product.thumbnail}" alt="${product.productName}">
                         </a>

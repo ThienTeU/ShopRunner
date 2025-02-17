@@ -12,6 +12,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     flex-wrap: wrap;
     justify-content: space-between;
 }
+.type{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    background-color: #e1e3f5;
+    color: #101010;
+    justify-content: center;
+    padding: 2px 8px;
+    font-size: 16px;
+    width: fit-content;
+}
+.type .content{
+    font-weight: 700;
+}
+
 .product {
     width: 30%;
     box-sizing: border-box;

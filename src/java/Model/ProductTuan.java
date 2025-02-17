@@ -2,6 +2,7 @@ package Model;
 
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,12 +23,36 @@ public class ProductTuan {
     private int discount;
     private int status;
     private String thumbnail;
-    private Timestamp created_at;
+    private String created_at;
     private double rating;
     private List<ColorTuan> colors;
     private List<ProductPriceTuan> prices;
 
     public ProductTuan() {
+    }
+    public boolean isWithin10Days(String inputTime) {
+        try {
+            // Định dạng thời gian đầu vào
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            // Chuyển chuỗi đầu vào thành đối tượng Date
+            java.util.Date inputDate = sdf.parse(inputTime);
+
+            // Lấy thời gian hiện tại
+            java.util.Date currentDate = new java.util.Date();
+
+            // Tính toán sự khác biệt giữa thời gian hiện tại và thời gian đầu vào (tính bằng mili giây)
+            long diffInMillies = currentDate.getTime() - inputDate.getTime();
+
+            // Tính toán sự khác biệt trong ngày (1 ngày = 24 * 60 * 60 * 1000 mili giây)
+            long diffInDays = diffInMillies / (24 * 60 * 60 * 1000);
+
+            // Kiểm tra nếu sự khác biệt ít hơn 10 ngày
+            return diffInDays < 10;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Nếu có lỗi trong quá trình phân tích chuỗi thời gian, trả về false
+        }
     }
 
     public double getRating() {
@@ -38,7 +63,7 @@ public class ProductTuan {
         this.rating = rating;
     }
 
-    public ProductTuan(int productId, int categoryId, String productName, String description, int discount, int status, String thumbnail, Timestamp created_at, double rating, List<ColorTuan> colors, List<ProductPriceTuan> prices) {
+    public ProductTuan(int productId, int categoryId, String productName, String description, int discount, int status, String thumbnail, String created_at, double rating, List<ColorTuan> colors, List<ProductPriceTuan> prices) {
         this.productId = productId;
         this.categoryId = categoryId;
         this.productName = productName;
@@ -109,11 +134,11 @@ public class ProductTuan {
         this.thumbnail = thumbnail;
     }
 
-    public Timestamp getCreated_at() {
+    public String getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(Timestamp created_at) {
+    public void setCreated_at(String created_at) {
         this.created_at = created_at;
     }
 
