@@ -11,6 +11,14 @@ public class ProductView {
         this.product_id = product_id;
     }
 
+    public ProductView(int view_id, int product_id, int view, String viewed_at) {
+        this.view_id = view_id;
+        this.product_id = product_id;
+        this.view = view;
+        this.viewed_at = viewed_at;
+    }
+    
+
     public int getView() {
         return view;
     }

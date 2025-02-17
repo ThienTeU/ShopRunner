@@ -30,13 +30,36 @@ public class ProductDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         ProductDAO dao = new ProductDAO();
-        ProductQuantity pp = dao.getProductQuantityById(10);
-        System.out.println(pp.toString());
+        List<ProductView> list = dao.getAllProductView();
+        for(ProductView p : list){
+            System.out.println(p.getProduct_id());
+        }
     }
 
     PreparedStatement ps = null;
     ResultSet rs = null;
+    public List<ProductView> getAllProductView() {
+        List<ProductView> productViews = new ArrayList<>();
+        String sql = "SELECT * FROM ProductView";
 
+        try (
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int viewId = rs.getInt("view_id");
+                int productId = rs.getInt("product_id");
+                int view = rs.getInt("view");
+                String viewedAt = rs.getString("viewed_at");
+
+                productViews.add(new ProductView(viewId, productId, view, viewedAt));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productViews;
+    }
+    
     public int getProductCountByCategory(int categoryId) throws SQLException {
         String sql = "SELECT COUNT(*) AS total FROM Product WHERE category_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

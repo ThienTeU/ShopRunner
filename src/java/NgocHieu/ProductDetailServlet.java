@@ -7,6 +7,7 @@ import Model.Product;
 import Model.ProductImage;
 import Model.ProductPrice;
 import Model.ProductQuantity;
+import Model.ProductView;
 import Model.Size;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -60,7 +61,7 @@ public class ProductDetailServlet extends HttpServlet {
             List<Category> listCategory = productDao.getAllCategories();
             Product product = productDao.getProductById(product_id);
             List<ProductPrice> listProductPrice = productDao.getProductPricesByProductId(product_id);
-
+            List<ProductView> listProductView = productDao.getAllProductView();
             //Danh sách most view item
             List<Product> listMostView = productDao.getMostViewItems();
             //Danh sách related product
@@ -95,6 +96,7 @@ public class ProductDetailServlet extends HttpServlet {
             String contextPath = request.getContextPath();
             // Gửi dữ liệu sang JSP
             request.getSession().setAttribute("contextPath", contextPath);
+            request.setAttribute("listProductView", listProductView);
             request.setAttribute("checkNew", isWithin10Days(product.getCreated_at()));
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listProductPrice", listProductPrice);

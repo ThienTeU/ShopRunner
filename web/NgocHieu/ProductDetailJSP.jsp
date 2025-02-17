@@ -78,7 +78,17 @@
                                          width="200" />
                                     <div class="price">
                                         <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <span style="color: #101010; font-family: Inter, sans-serif; font-size: 17px" class="productPrice">${rp.product_id == pp.product_id ? pp.price : ""}</span>
+                                            <c:if test="${rp.product_id == pp.product_id}">
+                                                <c:choose>
+                                                    <c:when test="${rp.discount != 0}">
+                                                        <span class="productPrice original-price">${pp.price}</span>
+                                                        <span class="productPrice discounted-price">${pp.price * (100 - rp.discount) / 100}</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="productPrice">${pp.price}</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
                                         </c:forEach>
                                     </div>
                                     <div class="name" >
@@ -113,7 +123,17 @@
                                          width="200" />
                                     <div class="price" >
                                         <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <span style="color: #101010; font-family: Inter, sans-serif; font-size: 17px" class="productPrice">${rv.product_id == pp.product_id ? pp.price : ""}</span>
+                                            <c:if test="${rv.product_id == pp.product_id}">
+                                                <c:choose>
+                                                    <c:when test="${rv.discount != 0}">
+                                                        <span class="productPrice original-price">${pp.price}</span>
+                                                        <span class="productPrice discounted-price">${pp.price * (100 - rv.discount) / 100}</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="productPrice">${pp.price}</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
                                         </c:forEach>
                                     </div>
                                     <div class="name">
@@ -140,14 +160,41 @@
                                         <div class="type">
                                             <span class="content">SẢN PHẨM MỚI</span>
                                         </div>
-                                        <i style="color: black; position: absolute;right: 0" class="fa-regular fa-eye"></i>
+                                        <div style="color: black; position: absolute;right: 0; font-size: 13px; margin: 0 5px 0 0; font-weight: 600" class="view">
+                                            <i  class="fa-regular fa-eye"></i>
+                                            <c:forEach items="${listProductView}" var="pv">
+                                                <c:if test="${pv.product_id == mv.product_id}">
+                                                    <span>${pv.view}</span>
+                                                </c:if>
+                                            </c:forEach>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="${!mv.isWithin10Days(mv.created_at)}">
+                                        <div style="color: black; position: absolute;right: 0; font-size: 13px; margin: 0 5px 0 0; font-weight: 600" class="view">
+                                            <i  class="fa-regular fa-eye"></i>
+                                            <c:forEach items="${listProductView}" var="pv">
+                                                <c:if test="${pv.product_id == mv.product_id}">
+                                                    <span>${pv.view}</span>
+                                                </c:if>
+                                            </c:forEach>
+                                        </div>
                                     </c:if>
                                     <img alt="${mv.product_name}" height="200"
                                          src="${mv.thumbnail}"
                                          width="200" />
                                     <div class="price" >
                                         <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <span style="color: #101010; font-family: Inter, sans-serif; font-size: 17px" class="productPrice">${mv.product_id == pp.product_id ? pp.price : ""}</span>
+                                            <c:if test="${mv.product_id == pp.product_id}">
+                                                <c:choose>
+                                                    <c:when test="${mv.discount != 0}">
+                                                        <span class="productPrice original-price">${pp.price}</span>
+                                                        <span class="productPrice discounted-price">${pp.price * (100 - mv.discount) / 100}</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="productPrice">${pp.price}</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
                                         </c:forEach>
                                     </div>
                                     <div class="name">
