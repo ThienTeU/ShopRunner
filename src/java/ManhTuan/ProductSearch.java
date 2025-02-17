@@ -2,7 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Controller;
+
+package ManhTuan;
 
 import DAL.ProductDAOTuan;
 import Model.CategoryTuan;
@@ -15,61 +16,55 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author tuan
  */
-@WebServlet(name = "ProductSort", urlPatterns = {"/productsort"})
-public class ProductSort extends HttpServlet {
-
+@WebServlet(name="ProductSearch", urlPatterns={"/productsearch"})
+public class ProductSearch extends HttpServlet {
+   
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String date = request.getParameter("date");
-        String rate = request.getParameter("rate");
-        String price = request.getParameter("price");
+    throws ServletException, IOException {
         ProductDAOTuan dao = new ProductDAOTuan();
-        List<ProductTuan> product = dao.sortProducts(date, rate, price);
+        String key = request.getParameter("key");
+        List<ProductTuan> products = dao.getAllProductsByKey(key);
         int count = 0;
-        int end = 0;
-        int size = 9;
-        for (ProductTuan p : product) {
+        for(ProductTuan p :products){
             count++;
         }
+        int size = 9;
+        int end = 0;
         if (count % size == 0) {
-            end = (count / size);
+            end = count / size;
         } else {
             end = (count / size) + 1;
         }
         int index = 1;
-        String indexParam = request.getParameter("index");
-        if (indexParam != null && indexParam.matches("\\d+")) { // Kiểm tra chỉ chứa số
-            index = Integer.parseInt(indexParam);
-        } else {
-            index = 1; // Mặc định trang đầu tiên
+        if(request.getParameter("index")!=null && !request.getParameter("index").isEmpty()){
+             index = Integer.parseInt(request.getParameter("index"));
         }
-
-        List<ProductTuan> products = dao.getAllProductsByPages(index, size, date, rate, price);
+        List<ProductTuan> productPage = dao.getAllProductsByPages(index, size, key);
         List<CategoryTuan> categories = dao.getCategoryTree();
         
         request.setAttribute("categories", categories);
-        request.setAttribute("date", date);
-        request.setAttribute("rate", rate);
-        request.setAttribute("price", price);
+        request.setAttribute("key", key);
         request.setAttribute("end", end);
-        request.setAttribute("products", product);
-        request.getRequestDispatcher("/ProductList/productlist.jsp").forward(request, response);
-    }
+        request.setAttribute("products", productPage);
+        request.getRequestDispatcher("/ManhTuan/productlist.jsp").forward(request, response);
+        }
+     
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
+    throws ServletException, IOException {
+         processRequest(request, response);
+    } 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         processRequest(request, response);
     }
 

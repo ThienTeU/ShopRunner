@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package Controller;
+package ManhTuan;
 
 import DAL.ProductDAOTuan;
 import Model.CategoryTuan;
@@ -29,7 +29,7 @@ public class ProductCategory extends HttpServlet {
         
         request.setAttribute("categories", categories);
         request.setAttribute("products", products);
-        request.getRequestDispatcher("/ProductList/productlist.jsp").forward(request, response);
+        request.getRequestDispatcher("/ManhTuan/productlist.jsp").forward(request, response);
     } 
 
     @Override
