@@ -30,7 +30,6 @@
     }
 %>
 
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -38,7 +37,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Product List</title>
         <link rel="stylesheet" href="ManhTuan/list.css"/>
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".category-link").forEach(link => {
@@ -55,12 +54,70 @@
         </script>
     </head>
     <body>
-        <form action="productsearch" method="get">
-            <input type="text" name="key" placeholder="Nhập từ khóa...">
-            <button type="submit">Tìm kiếm</button>
-        </form>
+        
+        <div class="product-category">                    
+                <a href="homepage" style="text-decoration: none; color: black">Trang chủ</a> - 
+                <a href="productlist" style="text-decoration: none; color: black">Danh sách sản phẩm</a>  
+            <c:forEach items="${listCategory}" var="category">
+                <c:if test="${category.categoryId == id}">
+                     - 
+                    <c:forEach items="${listCategory}" var="cate">
+                        <c:if test="${category.parentId == cate.categoryId}">
+                            <a href="productcategory?categoryId=${cate.categoryId}" style="text-decoration: none; color: black">${cate.name}</a> -
+                        </c:if>
+                    </c:forEach>
+                    <a href="productcategory?categoryId=${category.categoryId}" style="text-decoration: none; color: black">${category.name}</a>                           
+                </c:if>
+            </c:forEach>
+        </div>
+        <hr>
+        
+        <div class="slider-container">
+            <h2>Chọn khoảng giá</h2>
+            <form action="productfilter" method="get">
+                <div id="slider"></div>
+                <div class="price-values">
+                    <span id="minPriceValue">${param.minPrice != null ? param.minPrice : "1000000"} đ</span>
+                    <span id="maxPriceValue">${param.maxPrice != null ? param.maxPrice : "10000000"} đ</span>
+                </div>
+                <input type="hidden" name="minPrice" id="minPrice">
+                <input type="hidden" name="maxPrice" id="maxPrice">
+                <button type="submit">Lọc</button>
+            </form>
+        </div>
 
-        <form action="productsort" method="get" id="sortForm">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+        <script>
+            const slider = document.getElementById('slider');
+            noUiSlider.create(slider, {
+                start: [${param.minPrice != null ? param.minPrice : 1000000}, ${param.maxPrice != null ? param.maxPrice : 10000000}],
+                connect: true,
+                range: {
+                    'min': 0,
+                    'max': 20000000
+                },
+                step: 100000,
+                format: {
+                    to: value => Math.round(value).toLocaleString('vi-VN'),
+                    from: value => Number(value.replace(/\./g, ''))
+                }
+            });
+
+            slider.noUiSlider.on('update', (values, handle) => {
+                const minPriceValue = document.getElementById('minPriceValue');
+                const maxPriceValue = document.getElementById('maxPriceValue');
+                const minPrice = document.getElementById('minPrice');
+                const maxPrice = document.getElementById('maxPrice');
+
+                minPriceValue.innerText = values[0] + " đ";
+                maxPriceValue.innerText = values[1] + " đ";
+                minPrice.value = slider.noUiSlider.get()[0].replace(/\./g, '');
+                maxPrice.value = slider.noUiSlider.get()[1].replace(/\./g, '');
+            });
+        </script>
+        
+        <form action="ProductListTest" method="get" id="filterForm">
+            <input type="text" value="${key}" name="key" placeholder="Nhập từ khóa...">
             <label>Theo ngày:</label>
             <select id="date" name="date" onchange="submitForm()">
                 <option value="default">Mặc định</option>
@@ -81,15 +138,8 @@
                     <option value="high" <c:if test="${param.price == 'high'}">selected</c:if>>Từ cao đến thấp</option>
                 <option value="low" <c:if test="${param.price == 'low'}">selected</c:if>>Từ thấp đến cao</option>
                 </select>
+                <button type="submit">Tìm kiếm</button>
             </form>
-
-            <script>
-                function submitForm() {
-                    document.getElementById("sortForm").submit();
-                }
-            </script>
-
-            <h1>Danh mục sản phẩm</h1>
         <%
         List<CategoryTuan> categories = (List<CategoryTuan>) request.getAttribute("categories");
         if (categories != null) {
@@ -99,11 +149,9 @@
         }
         %>
 
-
-
         <div class="container">
             <c:forEach var="product" items="${products}">
-                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${product.productId}">
+                <a href="ProductDetailServlet?product_id=${product.productId}">
                     <div class="product">
                         <c:if test="${product.isWithin10Days(product.created_at)}">
                             <div class="type">
@@ -117,7 +165,7 @@
                         <div class="product-prices">
                             <strong>Prices:</strong>
                             <c:forEach var="price" items="${product.sortedPrices}" varStatus="status">
-                                <span class="productPrice">${price.price}</span>
+                                ${price.price}đ
                                 <c:if test="${not status.last}"> - </c:if>
                             </c:forEach>
                         </div>
@@ -133,37 +181,19 @@
             </c:forEach>
         </div>
 
+        <p>${end}</p>
         <div class="pagination">
             <c:forEach begin="1" end="${end}" var="i">
                 <c:choose>
-                    <c:when test="${not empty key}">
-                        <a href="productsearch?index=${i}&key=${key}">${i}</a>
-                    </c:when>
-                    <c:when test="${not empty date or not empty rate or not empty price}">
-                        <a href="productsort?index=${i}
-                           <c:if test='${not empty date}'>&date=${date}</c:if>
-                           <c:if test='${not empty rate}'>&rate=${rate}</c:if>
-                           <c:if test='${not empty price}'>&price=${price}</c:if>">${i}</a>
+                    <c:when test="${not empty date or not empty rate or not empty price or not empty key}">
+                        <a href="ProductListTest?index=${i}&key=${key}&date=${date}&rate=${rate}&price=${price}">${i}</a>
                     </c:when>
                     <c:otherwise>
                         <a href="productlist?index=${i}">${i}</a>
                     </c:otherwise>
                 </c:choose>
             </c:forEach>
-
-
-
         </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let priceElements = document.querySelectorAll(".productPrice");
-                priceElements.forEach(function (element) {
-                    let price = parseFloat(element.textContent);
-                    if (!isNaN(price)) {
-                        element.textContent = price.toLocaleString("vi-VN") + "₫";
-                    }
-                });
-            });
-        </script>
+
     </body>
 </html>

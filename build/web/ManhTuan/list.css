@@ -127,3 +127,29 @@ li {
 li > .sub-category {
     padding-left: 20px;
 }
+
+.slider-container {
+    width: 200px;
+    margin: 20px auto;
+    text-align: center;
+}
+#slider {
+    width: 300px !important; /* Điều chỉnh độ dài */
+    margin: 20px 0;
+    height: 8px; /* Chiều cao của thanh */
+}
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+.price-values span {
+    font-size: 18px;
+    font-weight: bold;
+}
+.noUi-handle {
+    width: 5px; /* Kích thước tay kéo */
+    height: 5px;
+    top: -4px; /* Canh giữa theo chiều dọc */
+    border-radius: 50%;
+}

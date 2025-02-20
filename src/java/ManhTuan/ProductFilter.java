@@ -25,9 +25,15 @@ public class ProductFilter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         ProductDAOTuan dao = new ProductDAOTuan();
-        
-        
-        
+        String minPrice = request.getParameter("minPrice");
+        String maxPrice = request.getParameter("maxPrice");
+        if (minPrice != null && maxPrice != null && !minPrice.isEmpty() && !maxPrice.isEmpty()) {
+            int min = Integer.parseInt(minPrice);
+            int max = Integer.parseInt(maxPrice);
+            List<ProductTuan> products = dao.getProductsByPriceRange(min, max);
+            request.setAttribute("products", products);
+            request.getRequestDispatcher("/ManhTuan/productlist.jsp").forward(request, response);
+        }
     } 
 
     @Override
@@ -46,4 +52,12 @@ public class ProductFilter extends HttpServlet {
         return "Short description";
     }
 
+    public static void main(String[] args) {
+        ProductDAOTuan dao = new ProductDAOTuan();
+        List<ProductTuan> products = dao.getProductsByPriceRange(10000, 1000000);
+        for(ProductTuan p : products){
+            System.out.println(p);
+        }
+    }
+    
 }
