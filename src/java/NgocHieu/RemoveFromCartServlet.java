@@ -1,20 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package NgocHieu;
 
 import Model.CartItem;
 import java.io.IOException;
-import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -40,25 +38,43 @@ public class RemoveFromCartServlet extends HttpServlet {
             int productPriceId = Integer.parseInt(productprice_id);
             int productQuantityId = Integer.parseInt(productquantity_id);
 
-            List<CartItem> cartItems = (List<CartItem>) request.getSession().getAttribute("cart");
-            if (cartItems != null) {
-                // Sử dụng Iterator để tránh lỗi ConcurrentModificationException
-                Iterator<CartItem> iterator = cartItems.iterator();
-                while (iterator.hasNext()) {
-                    CartItem item = iterator.next();
-                    if (item.getProduct_id() == productId
-                            && item.getProductprice_id() == productPriceId
-                            && item.getProductquantity_id() == productQuantityId) {
-                        iterator.remove(); // Xóa phần tử an toàn
-                        break;
+            // them du lieu cho cart tu cookie
+            Cookie[] cookies = request.getCookies();
+            List<CartItem> cartItems = new ArrayList<>();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().startsWith("cartItem_")) {
+                        String[] itemData = URLDecoder.decode(cookie.getValue(), "UTF-8").split(",");
+                        CartItem cartItem = new CartItem();
+                        cartItem.setProduct_id(Integer.parseInt(itemData[0]));
+                        cartItem.setProductprice_id(Integer.parseInt(itemData[1]));
+                        cartItem.setProductquantity_id(Integer.parseInt(itemData[2]));
+                        cartItem.setQuantity(Integer.parseInt(itemData[3]));
+                        cartItems.add(cartItem);
                     }
                 }
-                request.getSession().setAttribute("cart", cartItems);
+            }
+
+            // dung iterator tranh loi 
+            Iterator<CartItem> iterator = cartItems.iterator();
+            while (iterator.hasNext()) {
+                CartItem item = iterator.next();
+                if (item.getProduct_id() == productId
+                        && item.getProductprice_id() == productPriceId
+                        && item.getProductquantity_id() == productQuantityId) {
+                    iterator.remove();
+                    // xoa cookie co ten tuong ung bang cach set value ve rong
+                    String cookieName = "cartItem_" + item.getProduct_id() + "_" + item.getProductprice_id() + "_" + item.getProductquantity_id();
+                    Cookie cookie = new Cookie(cookieName, "");
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                    break;
+                }
             }
 
             response.sendRedirect("CartDetailServlet");
         } catch (NumberFormatException e) {
-            response.sendRedirect("error.jsp"); // Chuyển hướng khi lỗi chuyển đổi số
+            response.sendRedirect("error.jsp"); // Redirect when number format error
         }
     }
 

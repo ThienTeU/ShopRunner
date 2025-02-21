@@ -5,6 +5,12 @@
 package DAL;
 
 import Model.ProductPrice;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -77,11 +83,28 @@ public class InsertProductDAO extends DBContext {
                     if (generatedKeys.next()) {
                         productImage_id = generatedKeys.getInt(1);
                         System.out.println("✅ Thêm hình ảnh sản phẩm thành công với productImage_id = " + productImage_id);
+                        saveProductImageQueryToFile(product_id, image_url, color_id);  // Ghi câu lệnh vào file
                     }
                 }
             } else {
                 System.out.println("⚠️ Lỗi thêm hình ảnh sản phẩm.");
             }
+        }
+    }
+
+    private void saveProductImageQueryToFile(int product_id, String image_url, int color_id) {
+        String query = String.format(
+                "INSERT INTO dbo.ProductImage (product_id, image_url, color_id) VALUES (%d, N'%s', %d);",
+                product_id, image_url.replace("'", "''"), color_id
+        );
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
+            writer.write(query + "\n");
+            writer.flush();
+            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
+        } catch (IOException e) {
+            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 
@@ -101,6 +124,7 @@ public class InsertProductDAO extends DBContext {
                     if (generatedKeys.next()) {
                         productQuantity_id = generatedKeys.getInt(1);
                         System.out.println("✅ Thêm số lượng sản phẩm thành công với productQuantity_id = " + productQuantity_id);
+                        saveProductQuantityQueryToFile(productPrice_id, size_id, quantity);  // Ghi câu lệnh vào file
                     }
                 }
             } else {
@@ -109,6 +133,22 @@ public class InsertProductDAO extends DBContext {
         }
 
         return productQuantity_id;
+    }
+
+    private void saveProductQuantityQueryToFile(int productPrice_id, int size_id, int quantity) {
+        String query = String.format(
+                "INSERT INTO dbo.ProductQuantity (productPrice_id, size_id, quantity) VALUES (%d, %d, %d);",
+                productPrice_id, size_id, quantity
+        );
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
+            writer.write(query + "\n");
+            writer.flush();
+            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
+        } catch (IOException e) {
+            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
     }
 
     public int addProductPrice(int product_id, int color_id, int price) throws SQLException {
@@ -127,6 +167,7 @@ public class InsertProductDAO extends DBContext {
                     if (generatedKeys.next()) {
                         productPrice_id = generatedKeys.getInt(1);
                         System.out.println("✅ Thêm giá sản phẩm thành công với productPrice_id = " + productPrice_id);
+                        saveProductPriceQueryToFile(product_id, color_id, price);  // Ghi câu lệnh vào file
                     }
                 }
             } else {
@@ -135,6 +176,22 @@ public class InsertProductDAO extends DBContext {
         }
 
         return productPrice_id;
+    }
+
+    private void saveProductPriceQueryToFile(int product_id, int color_id, int price) {
+        String query = String.format(
+                "INSERT INTO dbo.ProductPrice (product_id, color_id, price) VALUES (%d, %d, %d);",
+                product_id, color_id, price
+        );
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
+            writer.write(query + "\n");
+            writer.flush();
+            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
+        } catch (IOException e) {
+            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
     }
 
     public int addProduct(int category_id, String product_name, String description, int discount, int status, String thumbnail) throws SQLException {
@@ -156,6 +213,7 @@ public class InsertProductDAO extends DBContext {
                     if (generatedKeys.next()) {
                         product_id = generatedKeys.getInt(1);
                         System.out.println("✅ Thêm sản phẩm thành công với product_id = " + product_id);
+                        saveProductQueryToFile(category_id, product_name, description, discount, status, thumbnail);
                     }
                 }
             } else {
@@ -165,4 +223,21 @@ public class InsertProductDAO extends DBContext {
 
         return product_id;
     }
+
+    private void saveProductQueryToFile(int category_id, String product_name, String description, int discount, int status, String thumbnail) {
+        String query = String.format(
+                "INSERT INTO dbo.Product (category_id, product_name, description, discount, status, thumbnail, created_at) VALUES (%d, N'%s', N'%s', %d, %d, '%s', DEFAULT);",
+                category_id, product_name.replace("'", "''"), description.replace("'", "''"), discount, status, thumbnail.replace("'", "''")
+        );
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
+            writer.write(query + "\n");
+            writer.flush();
+            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
+        } catch (IOException e) {
+            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
+    }
+
 }

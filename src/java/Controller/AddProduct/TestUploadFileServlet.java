@@ -54,7 +54,7 @@ public class TestUploadFileServlet extends HttpServlet {
         }
 
         // Đường dẫn lưu file
-        String uploadPath = "C:\\Users\\admin\\OneDrive\\Documents\\NetBeansProjects\\RunnerShop\\web\\Image2\\productID_"
+        String uploadPath = "C:\\Users\\admin\\ShopRunner\\web\\Image2\\productID_"
                 + +productId + "\\colorID_" + pp.getColor_id();
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
@@ -100,7 +100,7 @@ public class TestUploadFileServlet extends HttpServlet {
         }
 
         request.setAttribute("notiAdd", "Add thanh cong r may th ngu");
-        request.getRequestDispatcher("UploadImgSuccessJSP.jsp").forward(request, response);
+        request.getRequestDispatcher("NgocHieu/UploadImgSuccessJSP.jsp").forward(request, response);
     }
 
 // Lấy tên file từ Part

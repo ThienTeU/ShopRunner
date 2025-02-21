@@ -30,7 +30,7 @@ public class AddProductPriceServlet extends HttpServlet {
             ProductDAO dao = new ProductDAO();
             List<Color> listColor = dao.getAllColors();
             request.setAttribute("listColor", listColor);
-            request.getRequestDispatcher("AddProductPriceJSP.jsp").forward(request, response);
+            request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductPriceServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -51,7 +51,7 @@ public class AddProductPriceServlet extends HttpServlet {
             
             request.setAttribute("listSize", listSize);
             request.setAttribute("productprice_id", productprice_id);
-            request.getRequestDispatcher("AddProductQuantityJSP.jsp").forward(request, response);
+            request.getRequestDispatcher("NgocHieu/AddProductQuantityJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductPriceServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

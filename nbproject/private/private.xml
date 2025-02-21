@@ -12,13 +12,13 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CheckOutJSP.jsp</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/Model/Product.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetail.css</file>
+            <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/CheckOutServlet.java</file>
             <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/ProductDetailServlet.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/DAL/ProductDAO.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/src/java/Model/ProductView.java</file>
-            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/ProductDetailJSP.jsp</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CartDetail.css</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CheckOutStyle.css</file>
+            <file>file:/C:/Users/admin/ShopRunner/src/java/NgocHieu/CartDetailServlet.java</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CheckOutJSP.jsp</file>
+            <file>file:/C:/Users/admin/ShopRunner/web/NgocHieu/CartDetailJSP.jsp</file>
         </group>
     </open-files>
 </project-private>

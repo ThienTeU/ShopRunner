@@ -9,6 +9,7 @@ import Model.ProductPrice;
 import Model.ProductQuantity;
 import Model.ProductView;
 import Model.Size;
+import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -34,6 +35,8 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            User user = new User(1,1,"duonghieu294@gmail.com","hieuhieu","0397761602","Phuc Tho, Nghi Loc, Nghe An",true);
+            request.getSession().setAttribute("user", user);
             // Lấy product_id và color_id từ request (nếu có)
             int product_id = Integer.parseInt(request.getParameter("product_id"));
             String colorIdParam = request.getParameter("color_id");

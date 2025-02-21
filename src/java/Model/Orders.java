@@ -10,7 +10,7 @@ package Model;
  */
 public class Orders {
     private int order_id;
-    private int user_id;
+    private String email;
     private String order_date;
     private int total_price;
     private String status;
@@ -20,9 +20,9 @@ public class Orders {
     public Orders() {
     }
 
-    public Orders(int order_id, int user_id, String order_date, int total_price, String status, int voucher_id, String shipping_address) {
+    public Orders(String email, int user_id, String order_date, int total_price, String status, int voucher_id, String shipping_address) {
         this.order_id = order_id;
-        this.user_id = user_id;
+        this.email = email;
         this.order_date = order_date;
         this.total_price = total_price;
         this.status = status;
@@ -38,12 +38,12 @@ public class Orders {
         this.order_id = order_id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUser_id(String email) {
+        this.email = email;
     }
 
     public String getOrder_date() {
@@ -91,7 +91,7 @@ public class Orders {
         StringBuilder sb = new StringBuilder();
         sb.append("Orders{");
         sb.append("order_id=").append(order_id);
-        sb.append(", user_id=").append(user_id);
+        sb.append(", email=").append(email);
         sb.append(", order_date=").append(order_date);
         sb.append(", total_price=").append(total_price);
         sb.append(", status=").append(status);
