@@ -59,30 +59,48 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 .White {
     background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Black {
     background-color: black;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
-.Blue {
+.BLue {
     background-color: blue;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Green {
     background-color: green;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Red {
     background-color: red;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Purple {
     background-color: purple;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Yellow {
     background-color: yellow;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Gray {
     background-color: gray;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Pink {
     background-color: pink;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.Blush {
+    background-color: #de5d83;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.Orange{
+    background-color: orange;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .category-tree {
     list-style-type: none;
@@ -126,4 +144,30 @@ li {
 
 li > .sub-category {
     padding-left: 20px;
+}
+
+.slider-container {
+    width: 200px;
+    margin: 20px auto;
+    text-align: center;
+}
+#slider {
+    width: 300px !important; /* Điều chỉnh độ dài */
+    margin: 20px 0;
+    height: 8px; /* Chiều cao của thanh */
+}
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+.price-values span {
+    font-size: 18px;
+    font-weight: bold;
+}
+.noUi-handle {
+    width: 5px; /* Kích thước tay kéo */
+    height: 5px;
+    top: -4px; /* Canh giữa theo chiều dọc */
+    border-radius: 50%;
 }
