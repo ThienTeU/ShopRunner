@@ -14,8 +14,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <title>Checkout</title>
-        <link rel="stylesheet" href="CheckOutStyle.css">
+        <link rel="stylesheet" href="NgocHieu/CheckOutStyle.css">
     </head>
     <body class="bg-light text-dark">
         <c:if test="${sessionScope.cart.size() == 0 || sessionScope.cart == null }">
@@ -23,112 +24,165 @@
         </c:if>
         <div class="container custom-container">
             <div class="text-center mb-4">
-                <h1 class="h4 font-weight-bold">THANH TOÁN</h1>
+                <Strong class="h2 font-weight-bold">THANH TOÁN</Strong>
                 <p class="text-muted"><a style="color: #6C757D; text-decoration: none" href="CartDetailServlet">(${sessionScope.cart.size()} các sản phẩm)</a> <span class="productPrice">${total}</span> </p>
             </div>
             <div class="row">
                 <!-- Left Column -->
                 <div class="col-lg-8">
                     <!-- Contact Section -->
-                    <div class="mb-4">
-                        <h2 class="section-title">LIÊN HỆ</h2>
-                        <div class="form-group">
-                            <label class="form-label" for="contactEmail">Email *</label>
-                            <div class="input-group">
-                                <input class="form-control" id="contactEmail" type="email" value="duonghieu294@gmail.com"/>
-                                <div class="input-group-append">
-                                    <span class="input-group-text"><i class="fas fa-check text-success"></i></span>
+                    <form action="CheckOutServlet" method="POST">
+                        <div class="mb-4">
+                            <strong class="h4 section-title">LIÊN HỆ</strong>
+                            <div class="form-group">
+                                <label class="form-label" for="contactEmail">Email<span style="color: red">*</span></label>
+                                <div class="input-group" style="align-items: center">
+                                    <input name="email" style="position: relative" class="form-control" id="contactEmail" placeholder="Nhập email" type="email" value="" required/>
+                                    <i id="emailValid" style="position: absolute; right: 10px; display: none" class="fas fa-check text-success"></i>
+                                </div>
+                                <span id="invalidEmail" style="color: red; font-size: 15px;display: none; margin-top: 5px" >Địa chỉ email không hợp lệ. Vui lòng nhập một địa chỉ email hợp lệ.</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Address Section -->
+                        <div class="mb-4">
+                            <h2 class="h4 section-title">ĐỊA CHỈ</h2>
+                            <div class="form-row">
+                                <div style="align-items: center" class="form-group col-md-6">
+                                    <label class="form-label" for="fullName">Họ Và Tên<span style="color: red">*</span></label>
+                                    <div class="input-group" style="align-items: center">
+                                        <input name="name" style="position: relative" class="form-control" placeholder="Nhập họ và tên" id="fullName" type="text" value="" required/>
+                                        <i id="nameValid" style="position: absolute; right: 10px; display: none" class="fas fa-check text-success"></i>
+                                    </div>
+                                    <span id="invalidName" style="color: red; font-size: 15px;display: none; margin-top: 5px" >Họ và tên chỉ được chứa chữ cái và dấu tiếng Việt.</span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="phoneNumber">Số Điện Thoại<span style="color: red">*</span></label>
+                                    <div class="input-group" style="align-items: center">
+                                        <input name="phone" style="position: relative" class="form-control" placeholder="Nhập số điện thoại" id="phoneNumber" type="text" value="" required/>
+                                        <i id="phoneValid" style="position: absolute; right: 10px; display: none" class="fas fa-check text-success"></i>
+                                    </div>
+                                    <span id="invalidPhone" style="color: red; font-size: 15px;display: none; margin-top: 5px" >Số điện thoại bắt đầu bằng 03-09 và có 10 số</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="city">Tỉnh<span style="color: red">*</span></label>
+                                    <select name="city" class="form-control" id="city" required>
+                                        <option>Chọn Tỉnh</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="district">Huyện/Quận<span style="color: red">*</span></label>
+                                    <select name="district" class="form-control" id="district" required>
+                                        <option>Chọn Huyện/Quận</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="ward">Xã/Phường<span style="color: red">*</span></label>
+                                    <select name="ward" class="form-control" id="ward" required>
+                                        <option>Chọn Xã/Phường</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="streetAddress">Số Đường/Tên Đường<span style="color: red">*</span></label>
+                                    <input name="street" class="form-control" id="streetAddress" placeholder="Nhập số đường/tên đường" 
+                                           type="text" required/>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label class="form-label" for="note">Ghi chú</label>
+                                    <input type="text" name="note" placeholder="" class="form-control">
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Address Section -->
-                    <div class="mb-4">
-                        <h2 class="section-title">ĐỊA CHỈ</h2>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="fullName">Họ Và Tên</label>
-                                <input name="fullName" class="form-control" id="fullName" placeholder="" type="text"/>
+                        <hr><!-- comment -->
+                        <div class="mb-4">
+                            <strong class="h4 section-title">TÙY CHỌN GIAO HÀNG</strong>
+                            <div class="shipMethod">
+                                <span>Pay Online for Faster Delivery & Faster Return/Refund</span>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="phoneNumber">Số Điện Thoại</label>
-                                <input class="form-control" id="phoneNumber" placeholder="" type="text"/>
+                            <div class="shipOption">
+                                <span id="shippingFee2">Đang tính...</span>
+                                <p>GHTK - Standard</p>
+                                <p>08:00 - 20:00</p>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="city">Tỉnh</label>
-                                <select name="city" class="form-control" id="city">
-                                    <option>Chọn Tỉnh</option>
-                                </select>
+                        <hr><!-- comment -->
+                        <div class="mb-4">
+                            <strong class="h4 section-title">PHƯƠNG THỨC THANH TOÁN</strong>
+                            <div class="paymentMethod">
+                                <div id="cod" class="method" onclick="selectPaymentMethod('cod')">
+                                    Thanh Toán Khi Nhận Hàng
+                                </div>
+                                <div id="vnpay" class="method" onclick="selectPaymentMethod('vnpay')">
+                                    VN Pay
+                                </div>
+                                <!-- lay gia tri ship method tu js -->
+                                <input type="hidden" id="paymentMethod" name="paymentMethod" value="">
                             </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="district">District</label>
-                                <select name="district" class="form-control" id="district">
-                                    <option>Chọn Huyện/Quận</option>
-                                </select>
+                            <div class="form-group form-check">
+                                <input class="form-check-input" id="billingSame" type="checkbox" required/>
+                                <label class="form-check-label" for="billingSame">Thông tin hóa đơn / thuế và thông tin giao hàng của tôi là giống nhau.</label>
+                            </div>                   
+                            <div class="form-group form-check">
+                                <input class="form-check-input" id="ageConfirmation" type="checkbox" required/>
+                                <label class="form-check-label" for="ageConfirmation">Vâng, tôi trên 16 tuổi.</label>
+                            </div>
+                            <div class="form-group form-check">
+                                <input class="form-check-input" id="privacyConsent" type="checkbox" required/>
+                                <label class="form-check-label" for="privacyConsent">Tôi xin đồng ý cho việc chuyển nhượng, chia sẻ, sử dụng, thu thập và tiết lộ dữ liệu cá nhân của tôi cho các bên thứ ba như được nêu trong <a class="privacy-link" href="#">Chính sách Bảo mật của RGS</a>.</label>
+                            </div>
+                            <div class="form-group form-check">
+                                <input class="form-check-input" id="termsConditions" type="checkbox" required/>
+                                <label class="form-check-label" for="termsConditions">Tôi đã đọc, hiểu và chấp nhận <a class="privacy-link" href="#">Thông báo Bảo mật</a> và <a class="privacy-link" href="#">Điều khoản và Điều kiện</a>.</label>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col text-left">
+                                    <a href="CartDetailServlet" class="btn border border-dark bg-light text-dark"><i class="fas fa-arrow-left ml-2"></i> CHI TIẾT GIỎ HÀNG</a>
+                                </div>
+                                <div class="col text-right">
+                                    <button id="paymentButton" class="btn btn-dark" disabled>TIẾP TỤC <i class="fas fa-arrow-right ml-2"></i></button>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="ward">Xã/Phường</label>
-                                <select name="ward" class="form-control" id="ward">
-                                    <option>Chọn Xã/Phường</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="streetAddress">Số Đường/Tên Đường *</label>
-                                <input class="form-control" id="streetAddress" placeholder="" type="text"/>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <label class="form-label" for="note">Ghi chú</label>
-                                <input type="text" name="note" placeholder="" class="form-control">
-                            </div>
-                        </div>
-
-
-                        <div class="form-group form-check">
-                            <input class="form-check-input" id="billingSame" type="checkbox"/>
-                            <label class="form-check-label" for="billingSame">Thông tin hóa đơn / thuế và thông tin giao hàng của tôi là giống nhau.</label>
-                        </div>                   
-                        <div class="form-group form-check">
-                            <input class="form-check-input" id="ageConfirmation" type="checkbox"/>
-                            <label class="form-check-label" for="ageConfirmation">Vâng, tôi trên 16 tuổi.</label>
-                        </div>
-                        <div class="form-group form-check">
-                            <input class="form-check-input" id="privacyConsent" type="checkbox"/>
-                            <label class="form-check-label" for="privacyConsent">Tôi xin đồng ý cho việc chuyển nhượng, chia sẻ, sử dụng, thu thập và tiết lộ dữ liệu cá nhân của tôi cho các bên thứ ba như được nêu trong <a class="privacy-link" href="#">Chính sách Bảo mật của RGS</a>.</label>
-                        </div>
-                        <div class="form-group form-check">
-                            <input class="form-check-input" id="termsConditions" type="checkbox"/>
-                            <label class="form-check-label" for="termsConditions">Tôi đã đọc, hiểu và chấp nhận <a class="privacy-link" href="#">Thông báo Bảo mật</a> và <a class="privacy-link" href="#">Điều khoản và Điều kiện</a>.</label>
-                        </div>
-                        <button class="btn btn-dark mt-3">TIẾP TỤC <i class="fas fa-arrow-right ml-2"></i></button>
-                    </div>
+                        <input type="hidden" name="total" id="total" value="${total}">
+                        <input type="hidden" id="shippingFee1" name="shippingFee1" value="">
+                        <input type="hidden" id="totalPrice1" name="totalPrice1" value="">
+                    </form>
                 </div>
                 <!-- Right Column -->
+
                 <div class="col-lg-4">
-                    <h2 class="section-title">GIỎ HÀNG CỦA BẠN</h2>
+                    <h2 class="h4 section-title">GIỎ HÀNG CỦA BẠN</h2>
                     <div class="d-flex justify-content-between mb-2">
                         <span>${sessionScope.cart.size()} các sản phẩm</span>
                         <span class="productPrice">${total}</span>
+
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Delivery</span>
-                        <span>70,000₫</span>
+                        <span>Giao hàng</span>
+                        <span id="shippingFee" class="shippingFee">Đang tính...</span>
+
                     </div>
                     <div class="d-flex justify-content-between mb-2 total-price">
-                        <span style="font-weight: 700">Total</span>
-                        <span style="font-weight: 700" class="productPrice">${total + 70000}</span>
+                        <span style="font-weight: 700">Tổng</span>
+                        <span style="font-weight: 700" id="totalPrice" class="totalPrice">Đang tính...</span>
+
                     </div>
+
                     <p class="text-muted small mb-4">[Bao gồm thuế 79,259₫]</p>
-                    <a class="privacy-link mb-4 d-block" href="#">Sử dụng mã giảm giá</a>
+                    <div style="color: black; text-decoration: underline !important; cursor: pointer" onclick="showVoucher()">
+                        Sử dụng mã giảm giá
+                        <div id="voucherInput" style="margin-top: 10px; display: none"><input class="form-control" type="text" name="voucher"></div>
+                    </div>
                     <hr>
                     <c:forEach items="${cartItemsDTO}" var="item">
-                        <div class="d-flex mb-4">
-                            <a style="text-decoration: none; color: black" href="ProductDetailServlet?product_id=${item.product.product_id}&color_id=${item.productPrice.color_id}">
+                        <div class="item-container d-flex mb-4">
+                            <a style="text-decoration: none; color: black; transform: scale(1.01)" href="ProductDetailServlet?product_id=${item.product.product_id}&color_id=${item.productPrice.color_id}">
                                 <img alt="${item.product.product_name}" class="cart-item-image" 
                                      src="Image2/productID_${item.product.product_id}/colorID_${item.productPrice.color_id}/image_1.avif"
                                      style="width: 110px;height: 110px;object-fit: cover"/>
@@ -152,7 +206,10 @@
                                 Màu sắc: 
                                 <c:forEach items="${listColor}" var="c">
                                     <c:if test="${item.productPrice.color_id == c.color_id}">
-                                        <span style="vertical-align: middle;width: 13px;height: 13px;border-radius: 50px; display: inline-block !important;background-color: ${c.color};"></span>
+                                        <span style="vertical-align: middle;width: 13px;height: 13px;border-radius: 50px;
+                                              display: inline-block !important;background-color: ${c.color};
+                                              box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);">
+                                        </span>
                                     </c:if>
                                 </c:forEach>
                             </p>
@@ -163,6 +220,130 @@
         </div>
     </div>
     <script>
+        function showVoucher() {
+            var voucher = document.getElementById("voucherInput");
+            voucher.style.display = "flex";
+        }
+        function selectPaymentMethod(method) {
+            document.getElementById("paymentMethod").value = method;
+
+            document.querySelectorAll('.method').forEach(function (element) {
+                element.style.backgroundColor = ""; // Reset background color
+            });
+            if (method === 'cod') {
+                document.getElementById('cod').style.backgroundColor = '#e0e0e0'; // Highlight COD
+            } else if (method === 'vnpay') {
+                document.getElementById('vnpay').style.backgroundColor = '#e0e0e0'; // Highlight VN Pay
+            }
+            togglePayButton();
+        }
+        function togglePayButton() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const payButton = document.getElementById('paymentButton');
+
+            // Nếu đã chọn phương thức thanh toán, bật nút thanh toán, ngược lại thì vô hiệu hóa
+            if (paymentMethod) {
+                payButton.disabled = false;
+            } else {
+                payButton.disabled = true;
+            }
+        }
+    </script>
+    <script>
+        //api lay tinh thanh pho
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateShippingFee() {
+                let city = document.getElementById("city").value;
+                let district = document.getElementById("district").value;
+                let ward = document.getElementById("ward").value;
+                let total = document.getElementById("total").value;
+
+                if (city !== "Chọn Tỉnh" && district !== "Chọn Huyện/Quận" && ward !== "Chọn Xã/Phường") {
+                    $.ajax({
+                        url: "GetShippingFeeServlet",
+                        type: "GET",
+                        data: {city: city, district: district, ward: ward, total: total},
+                        success: function (response) {
+                            let shippingFee = response.shippingFee;
+                            document.getElementById("shippingFee").innerText = shippingFee.toLocaleString("vi-VN") + "₫";
+                            let totalPrice = parseFloat(total) + shippingFee;
+                            console.log(shippingFee);
+                            document.getElementById("shippingFee2").innerText = shippingFee.toLocaleString("vi-VN") + "₫";
+                            document.getElementById("shippingFee1").value = shippingFee;
+                            document.getElementById("totalPrice").innerText = totalPrice.toLocaleString("vi-VN") + "₫";
+                            document.getElementById("totalPrice1").value = totalPrice;
+                        },
+                        error: function () {
+                            document.getElementById("shippingFee").innerText = "Không thể tính phí";
+                        }
+                    });
+                }
+            }
+
+            document.getElementById("city").addEventListener("change", updateShippingFee);
+            document.getElementById("district").addEventListener("change", updateShippingFee);
+            document.getElementById("ward").addEventListener("change", updateShippingFee);
+        });
+    </script>
+
+    <script>
+        //js validate input
+        document.addEventListener("DOMContentLoaded", function () {
+            let contactEmail = document.getElementById("contactEmail");
+            let emailValid = document.getElementById("emailValid");
+            let invalidEmail = document.getElementById("invalidEmail");
+            contactEmail.addEventListener("input", function () {
+                let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (regex.test(this.value.trim())) {
+                    contactEmail.style.borderColor = "green";
+                    emailValid.style.display = "flex";
+                    invalidEmail.style.display = "none";
+                } else {
+                    this.style.borderColor = "red";
+                    invalidEmail.style.display = "flex";
+                    emailValid.style.display = "none";
+                }
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            let fullNameInput = document.getElementById("fullName");
+            let nameValid = document.getElementById("nameValid");
+            let invalidName = document.getElementById("invalidName");
+            fullNameInput.addEventListener("input", function () {
+                let regex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
+                if (regex.test(this.value.trim())) {
+                    this.style.borderColor = "green";
+                    nameValid.style.display = "flex";
+                    invalidName.style.display = "none";
+                } else {
+                    nameValid.style.display = "none";
+                    this.style.borderColor = "red";
+                    invalidName.style.display = "flex";
+                }
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            let phoneInput = document.getElementById("phoneNumber");
+            let phoneValid = document.getElementById("phoneValid");
+            let invalidPhone = document.getElementById("invalidPhone");
+            phoneInput.addEventListener("input", function () {
+                let regex = /^(0[3-9])([0-9]{8})$/;
+                ;
+                if (regex.test(this.value.trim())) {
+                    this.style.borderColor = "green";
+                    phoneValid.style.display = "flex";
+                    invalidPhone.style.display = "none";
+                } else {
+                    this.style.borderColor = "red";
+                    phoneValid.style.display = "none";
+                    invalidPhone.style.display = "flex";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        //js format gia tien
         document.addEventListener("DOMContentLoaded", function () {
             let priceElements = document.querySelectorAll(".productPrice");
             priceElements.forEach(function (element) {

@@ -13,6 +13,7 @@ public class CartItem {
     private int productprice_id;
     private int productquantity_id;
     private int quantity;
+    private int order;
     public CartItem() {
     }
 
@@ -22,6 +23,15 @@ public class CartItem {
         this.productquantity_id = productquantity_id;
         this.quantity = quantity;
     }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
 
     public int getProduct_id() {
         return product_id;

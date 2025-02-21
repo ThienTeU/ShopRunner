@@ -20,6 +20,8 @@ public class OrderDAO extends DBContext {
 
     PreparedStatement ps = null;
     ResultSet rs = null;
+    
+    
 
     public List<Orders> getAllOrders() throws SQLException {
         List<Orders> list = new ArrayList<>();
@@ -28,7 +30,7 @@ public class OrderDAO extends DBContext {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Orders order = new Orders(
-                        rs.getInt("order_id"),
+                        rs.getString("email"),
                         rs.getInt("user_id"),
                         rs.getString("order_date"),
                         rs.getInt("total_price"),
@@ -56,7 +58,7 @@ public class OrderDAO extends DBContext {
                         rs.getInt("ProductPrice_id"),
                         rs.getInt("size_id"),
                         rs.getInt("quantity"),
-                        rs.getInt("price")
+                        rs.getInt("unit_price")
                 );
                 list.add(orderDetail);
             }

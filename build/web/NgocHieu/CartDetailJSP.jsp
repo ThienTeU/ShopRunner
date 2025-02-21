@@ -24,18 +24,17 @@
         <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-        <link rel="stylesheet" href="./CartDetail/CartDetail.css">
+        <link rel="stylesheet" href="NgocHieu/CartDetail.css">
     </head>
 
     <body>
         <c:choose>
-            <c:when test="${empty sessionScope.cart}">
+            <c:when test="${empty cartItemsDTO}">
                 <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a></div>
             </c:when>
             <c:otherwise>
-                <div class="row">
+                <div class="row mx-4 mt-4">
                     <div class="col-md-8">
-
                         <h2 class="fw-bold">GIỎ HÀNG CỦA BẠN</h2>
                         <p>TỔNG CỘNG (${sessionScope.cart.size()} các sản phẩm) <span class="fw-bold"><span class="productPrice">${total}</span></span></p>
                         <p class="text-muted">Các mặt hàng trong giỏ hàng của bạn không được bảo lưu — hãy kiểm tra ngay để đặt hàng.</p>
@@ -69,7 +68,10 @@
                                                 <p class="text-muted">
                                                     <c:forEach items="${listColor}" var="c">
                                                         <c:if test="${item.productPrice.color_id == c.color_id}">
-                                                            <span style="vertical-align: middle;width: 20px;height: 20px;border-radius: 50px; display: inline-block !important;background-color: ${c.color};"></span>
+                                                            <span style="vertical-align: middle;width: 20px;height: 20px;border-radius: 50px;
+                                                                  display: inline-block !important;background-color: ${c.color};
+                                                                  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);">
+                                                            </span>
                                                         </c:if>
 
                                                     </c:forEach>
@@ -108,7 +110,7 @@
                                 <span class="productPrice">${total}</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <p>Giao hàng</p>
+                                <p>Phí Giao Hàng Dự Tính</p>
                                 <span id="ship" class="productPrice">${sessionScope.cart.size() == 0 ? "0" : "70000"}</span>
                             </div>
                             <hr>
@@ -121,6 +123,8 @@
                             </c:if>
                             <a href="#" class="text-primary">SỬ DỤNG MÃ KHUYẾN MÃI</a>
                             <a class="btn btn-dark w-100 mt-3" href="CheckOutServlet" id="checkout-button">THANH TOÁN</a>
+                            <a class="btn bg-light border-dark w-100 mt-3 text-dark" href="productlist" id="checkout-button">TIẾP TỤC MUA SẮM</a>
+
                         </div>
                     </div>
                 </div>
@@ -130,7 +134,7 @@
 </html>
 
 <script>
-   $(document).ready(function () {
+    $(document).ready(function () {
         $(".selectWithScroll").select2({
             dropdownAutoWidth: true,
             width: '50px'

@@ -40,7 +40,7 @@ public class AddProductServlet extends HttpServlet {
 
             request.setAttribute("listCategory", listCategory);
 
-            request.getRequestDispatcher("AddProductJSP.jsp").forward(request, response);
+            request.getRequestDispatcher("NgocHieu/AddProductJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -64,11 +64,11 @@ public class AddProductServlet extends HttpServlet {
             int category_id = Integer.parseInt(request.getParameter("category_id"));
             
             List<Color> listColor = dao2.getAllColors();
-            int product_id = dao.addProduct(category_id, product_name, description, discount, 0, thumbnail);
+            int product_id = dao.addProduct(category_id, product_name.trim(), description.trim(), discount, 0, thumbnail);
             
             request.setAttribute("listColor", listColor);
             request.setAttribute("product_id", product_id);
-            request.getRequestDispatcher("AddProductPriceJSP.jsp").forward(request, response);
+            request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -84,7 +84,7 @@ public class AddProductServlet extends HttpServlet {
 
             // Đường dẫn lưu file
             int productId = maxId+1;
-            String uploadPath = "C:\\Users\\admin\\OneDrive\\Documents\\NetBeansProjects\\RunnerShop\\web\\Image2\\productID_"+ productId;
+            String uploadPath = "C:\\Users\\admin\\ShopRunner\\web\\Image2\\productID_"+ productId;
             File uploadDir = new File(uploadPath);
             
             if (!uploadDir.exists()) {

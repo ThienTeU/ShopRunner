@@ -17,6 +17,8 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 
         <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet" />
@@ -27,18 +29,29 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="product-images">
+                    <!-- Ảnh chính -->
                     <img alt="Main product image showing the product in detail" height="600" id="mainImage"
                          src="${requestScope.listProductImage[0].image_url}"
                          width="600" style="object-fit: contain"/>
-                    <div class="thumbnail-slider">
-                        <c:forEach items="${requestScope.listProductImage}" var="pi">
-                            <img alt="Thumbnail image" height="80"
-                                 onclick="changeImage(this)"
-                                 src="${pi.image_url}"
-                                 width="80" />
-                        </c:forEach>
+
+                    <!-- Slider chứa ảnh thumbnail -->
+                    <div style="display: flex" class="swiper thumbnail-slider">
+                        <div style="margin-left: 10px" class="swiper-wrapper">
+                            <c:forEach items="${requestScope.listProductImage}" var="pi">
+                                <div class="swiper-slide">
+                                    <img alt="Thumbnail image" height="80"
+                                         onclick="changeImage(this)"
+                                         src="${pi.image_url}"
+                                         width="80" />
+                                </div>
+                            </c:forEach>
+                        </div>
                     </div>
+
+                    <!-- Thanh hiển thị vị trí (Pagination) -->
+                    <div style="text-align: center" class="swiper-pagination"></div>
                 </div>
+
                 <br>
                 <div class="left-section">
                     <div class="reviews">
@@ -65,52 +78,53 @@
                                 SẢN PHẨM LIÊN QUAN (${countRelatedProduct})
                             </h2>
                         </a>
-                        <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
-                            <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
-                                <div class="item">
-                                    <c:if test="${rp.isWithin10Days(rp.created_at)}">
-                                        <div class="type">
-                                            <span class="content">SẢN PHẨM MỚI</span>
+                            <div class="item-container">
+                            <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
+                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
+                                    <div class="item">
+                                        <c:if test="${rp.isWithin10Days(rp.created_at)}">
+                                            <div class="type">
+                                                <span class="content">SẢN PHẨM MỚI</span>
+                                            </div>
+                                        </c:if>
+                                        <img alt="${rp.product_name}" height="200"
+                                             src="${rp.thumbnail}"
+                                             width="200" />
+                                        <div class="price">
+                                            <c:forEach items="${listUniqueProductPrice}" var="pp">
+                                                <c:if test="${rp.product_id == pp.product_id}">
+                                                    <c:choose>
+                                                        <c:when test="${rp.discount != 0}">
+                                                            <span class="productPrice original-price">${pp.price}</span>
+                                                            <span class="productPrice discounted-price">${pp.price * (100 - rp.discount) / 100}</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="productPrice">${pp.price}</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:if>
+                                            </c:forEach>
                                         </div>
-                                    </c:if>
-                                    <img alt="${rp.product_name}" height="200"
-                                         src="${rp.thumbnail}"
-                                         width="200" />
-                                    <div class="price">
-                                        <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <c:if test="${rp.product_id == pp.product_id}">
-                                                <c:choose>
-                                                    <c:when test="${rp.discount != 0}">
-                                                        <span class="productPrice original-price">${pp.price}</span>
-                                                        <span class="productPrice discounted-price">${pp.price * (100 - rp.discount) / 100}</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="productPrice">${pp.price}</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </c:if>
-                                        </c:forEach>
+                                        <div class="name" >
+                                            <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rp.product_name}</span>
+                                        </div>
+                                        <div class="category">
+                                            <c:forEach items="${listCategory}" var="c">
+                                                ${c.category_id == rp.category_id ? c.name : ""}
+                                            </c:forEach>
+                                        </div>
                                     </div>
-                                    <div class="name" >
-                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rp.product_name}</span>
-                                    </div>
-                                    <div class="category">
-                                        <c:forEach items="${listCategory}" var="c">
-                                            ${c.category_id == rp.category_id ? c.name : ""}
-                                        </c:forEach>
-                                    </div>
-                                </div>
-                            </a>
-                        </c:forEach>
-
-
+                                </a>
+                            </c:forEach>
+                        </div>
                     </div>
 
                     <div class="complete-look">
                         <h2>
                             VỪA XEM GẦN ĐÂY
                         </h2>
-                        <c:forEach items="${listRecentlyView}" var="rv" begin="0" end="3">
+                        <div class="item-container">
+                            <c:forEach items="${listRecentlyView}" var="rv" begin="0" end="3">
                             <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rv.product_id}">
                                 <div class="item">
                                     <c:if test="${rv.isWithin10Days(rv.created_at)}">
@@ -146,15 +160,17 @@
                                     </div>
                                 </div>
                             </a>
-                        </c:forEach>                       
+                        </c:forEach>        
+                        </div>               
                     </div>
 
                     <div class="complete-look">
                         <h2>
                             XEM NHIỀU NHẤT
                         </h2>
-                        <c:forEach items="${listMostView}" var="mv" begin="0" end="3">
-                            <a style="text-decoration: none" href="ProductDetailServlet?product_id=${mv.product_id}">
+                        <div class="item-container">
+                            <c:forEach items="${listMostView}" var="mv" begin="0" end="3">
+                            <a style="text-decoration: none; " href="ProductDetailServlet?product_id=${mv.product_id}">
                                 <div style="position: relative" class="item">
                                     <c:if test="${mv.isWithin10Days(mv.created_at)}">
                                         <div class="type">
@@ -207,7 +223,8 @@
                                     </div>
                                 </div>
                             </a>
-                        </c:forEach>                       
+                        </c:forEach>  
+                        </div>                     
                     </div>
                 </div>
 
@@ -322,6 +339,40 @@
                 });
                 element.classList.add('active');
             }
+
+            var swiper = new Swiper(".thumbnail-slider", {
+                slidesPerView: 4, // Hiển thị 4 ảnh mỗi lần
+                spaceBetween: 10, // Khoảng cách giữa các ảnh
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true, // Cho phép bấm vào pagination để chọn slide
+                },
+                breakpoints: {
+                    768: {slidesPerView: 5},
+                    1024: {slidesPerView: 6}
+                }
+            });
+
+// Khi bấm vào ảnh thumbnail, slide sẽ tự trượt next/prev nếu cần
+            function changeImage(img) {
+                document.getElementById("mainImage").src = img.src;
+
+                let thumbnails = Array.from(document.querySelectorAll(".swiper-slide img"));
+                let index = thumbnails.indexOf(img);
+                let totalSlides = thumbnails.length;
+                let slidesPerView = swiper.params.slidesPerView;
+
+                // Nếu bấm vào ảnh cuối cùng hiển thị, trượt next
+                if (index >= swiper.activeIndex + slidesPerView - 1 && index < totalSlides - 1) {
+                    swiper.slideNext();
+                }
+                // Nếu bấm vào ảnh đầu tiên hiển thị, trượt prev
+                else if (index <= swiper.activeIndex && index > 0) {
+                    swiper.slidePrev();
+                }
+            }
+
+
         </script>
         <script>document.addEventListener("DOMContentLoaded", function () {
                 const form = document.querySelector(".add-to-bag1 form");

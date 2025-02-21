@@ -49,7 +49,7 @@ public class AddProductQuantityServlet extends HttpServlet {
         }
 
         request.setAttribute("productprice_id", productprice_id);
-        request.getRequestDispatcher("UploadImgJSP.jsp").forward(request, response);
+        request.getRequestDispatcher("NgocHieu/UploadImgJSP.jsp").forward(request, response);
     }
 
     @Override

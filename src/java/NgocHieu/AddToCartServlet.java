@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +32,10 @@ public class AddToCartServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         try {
-            // Lấy tham số từ request và kiểm tra null
             String productIdStr = request.getParameter("product_id");
             String productPriceIdStr = request.getParameter("productprice_id");
             String productQuantityIdStr = request.getParameter("productquantity_id");
@@ -45,37 +45,40 @@ public class AddToCartServlet extends HttpServlet {
                 return;
             }
 
-            // Chuyển đổi sang int
             int productId = Integer.parseInt(productIdStr);
             int productPriceId = Integer.parseInt(productPriceIdStr);
             int productQuantityId = Integer.parseInt(productQuantityIdStr);
 
-            // Kiểm tra giá trị hợp lệ
             if (productId <= 0 || productPriceId <= 0 || productQuantityId <= 0) {
                 response.sendRedirect("error.jsp");
                 return;
             }
 
-            // Tạo đối tượng CartItem
+            Cookie[] cookies = request.getCookies();
+            List<CartItem> cartItems = new ArrayList<>();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().startsWith("cartItem_")) {
+                        String[] itemData = URLDecoder.decode(cookie.getValue(), "UTF-8").split(",");
+                        CartItem cartItem = new CartItem();
+                        cartItem.setProduct_id(Integer.parseInt(itemData[0]));
+                        cartItem.setProductprice_id(Integer.parseInt(itemData[1]));
+                        cartItem.setProductquantity_id(Integer.parseInt(itemData[2]));
+                        cartItem.setQuantity(Integer.parseInt(itemData[3]));
+                        cartItems.add(cartItem);
+                    }
+                }
+            }
+
             CartItem cartItem = new CartItem();
             cartItem.setProduct_id(productId);
             cartItem.setProductprice_id(productPriceId);
             cartItem.setProductquantity_id(productQuantityId);
-            cartItem.setQuantity(1); // Mặc định số lượng = 1 khi thêm mới
+            cartItem.setQuantity(1);
 
-            // Lấy giỏ hàng từ session (hoặc tạo mới)
-            HttpSession session = request.getSession();
-            List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
-
-            if (cartItems == null) {
-                cartItems = new ArrayList<>();
-            }
-
-            // Kiểm tra sản phẩm đã tồn tại hay chưa
             boolean found = false;
             for (CartItem item : cartItems) {
-                if (item.getProduct_id() == cartItem.getProduct_id()
-                        && item.getProductprice_id() == cartItem.getProductprice_id()
+                if (item.getProduct_id() == cartItem.getProduct_id() && item.getProductprice_id() == cartItem.getProductprice_id()
                         && item.getProductquantity_id() == cartItem.getProductquantity_id()) {
                     item.setQuantity(item.getQuantity() + 1);
                     found = true;
@@ -83,19 +86,24 @@ public class AddToCartServlet extends HttpServlet {
                 }
             }
 
-            // Nếu chưa tồn tại, thêm mới vào giỏ hàng
             if (!found) {
                 cartItems.add(cartItem);
             }
 
-            // Lưu lại vào session
-            session.setAttribute("cart", cartItems);
+            for (CartItem item : cartItems) {
+                String cookieName = "cartItem_" + item.getProduct_id() + "_" + item.getProductprice_id() + "_"
+                        + item.getProductquantity_id();
+                String cookieValue = URLEncoder.encode(item.getProduct_id() + "," + item.getProductprice_id() + ","
+                        + item.getProductquantity_id() + "," + item.getQuantity(), "UTF-8");
+                Cookie cookie = new Cookie(cookieName, cookieValue);
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+                response.addCookie(cookie);
+            }
 
-            // Chuyển hướng về trang giỏ hàng
-            response.sendRedirect(" CartDetailServlet");
+            response.sendRedirect("CartDetailServlet");
 
         } catch (NumberFormatException e) {
-            response.sendRedirect("error.jsp"); // Xử lý lỗi nếu tham số không phải số
+            response.sendRedirect("error.jsp");
         }
     }
 
@@ -105,3 +113,4 @@ public class AddToCartServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
