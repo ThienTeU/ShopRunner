@@ -49,7 +49,8 @@ body {
 }
 
 /* Tiêu đề sản phẩm */
-.type{
+
+.type, .main-type{  
     display: flex;
     align-items: center;
     background-color: #e1e3f5;
@@ -59,7 +60,10 @@ body {
     font-size: 11px;
     width: fit-content;
 }
-.type .content{
+.type{
+    position: absolute;
+}
+.type, .main-type .content{
     font-weight: 700;
 }
 .product-title {
@@ -220,6 +224,7 @@ body {
     font-size: 18px;
     margin: 10px 0;
     color: black;
+    font-weight: 550;
 }
 
 .complete-look .item .name {

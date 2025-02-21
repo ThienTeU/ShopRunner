@@ -56,7 +56,7 @@
     <body>
         
         <div class="product-category">                    
-                <a href="homepage" style="text-decoration: none; color: black">Trang chủ</a> - 
+                <a href="home" style="text-decoration: none; color: black">Trang chủ</a> - 
                 <a href="productlist" style="text-decoration: none; color: black">Danh sách sản phẩm</a>  
             <c:forEach items="${listCategory}" var="category">
                 <c:if test="${category.categoryId == id}">
@@ -181,7 +181,6 @@
             </c:forEach>
         </div>
 
-        <p>${end}</p>
         <div class="pagination">
             <c:forEach begin="1" end="${end}" var="i">
                 <c:choose>

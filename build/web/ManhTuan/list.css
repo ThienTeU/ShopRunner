@@ -59,30 +59,48 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 .White {
     background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Black {
     background-color: black;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
-.Blue {
+.BLue {
     background-color: blue;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Green {
     background-color: green;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Red {
     background-color: red;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Purple {
     background-color: purple;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Yellow {
     background-color: yellow;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Gray {
     background-color: gray;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .Pink {
     background-color: pink;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.Blush {
+    background-color: #de5d83;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.Orange{
+    background-color: orange;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 .category-tree {
     list-style-type: none;
