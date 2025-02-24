@@ -20,6 +20,8 @@ public class Product {
     private boolean status;
     private String thumbnail;
     private String created_at;
+    
+   private double price;
 
     public Product() {
     }
@@ -60,6 +62,17 @@ public class Product {
         this.created_at = created_at;
     }
 
+     public Product(int product_id, int category_id, String product_name, String description, int discount, boolean status, String thumbnail, String created_at, double price) {
+        this.product_id = product_id;
+        this.category_id = category_id;
+        this.product_name = product_name;
+        this.description = description;
+        this.discount = discount;
+        this.status = status;
+        this.thumbnail = thumbnail;
+        this.created_at = created_at;
+        this.price = price;
+    }
     public String getThumbnail() {
         return thumbnail;
     }
@@ -123,6 +136,16 @@ public class Product {
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+    
+    
 
     @Override
     public String toString() {

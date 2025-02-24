@@ -1,0 +1,314 @@
+/* General styling */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+}
+
+.carousel-inner img {
+    object-fit: cover;
+    height: 400px;
+}
+
+/* Card styling */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+/* Card hover effect */
+.card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+/* Card image styling */
+.card img {
+    object-fit: cover;
+    height: auto;
+    max-height: 200px; /* Ensure images are uniform */
+}
+
+/* Card body styling */
+.card-body {
+    padding: 1.5rem;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Product title styling */
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Product description styling */
+.card-text {
+    font-size: 0.875rem;
+    color: #555;
+    margin-bottom: 15px;
+    height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Product price styling */
+.product-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e74c3c;
+    margin-top: 10px;
+}
+
+/* Discount badge styling */
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 10px;
+    align-self: center;
+}
+
+/* Button styling */
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: bold;
+    padding: 8px 16px; /* Adjusted button size */
+    text-transform: uppercase;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    width: auto; /* Adjusted to fit content */
+    min-width: 120px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Section title styling */
+.section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Product list styling */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Product column styling */
+.col-md-3, .col-md-4 {
+    flex: 1 1 calc(33.333% - 20px); /* 3 items per row */
+    max-width: calc(33.333% - 20px);
+}
+
+/* Tablet responsiveness */
+@media (max-width: 768px) {
+    .col-md-3, .col-md-4 {
+        flex: 1 1 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    .col-md-3, .col-md-4 {
+        flex: 1 1 calc(100% - 20px);
+        max-width: calc(100% - 20px);
+    }
+}
+
+/* Lazy loading styles */
+.lazyload {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.lazyload.visible {
+    opacity: 1;
+}
+
+#bottom-banners .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+#bottom-banners .col-sm-6 {
+    flex: 1;
+}
+
+#bottom-banners img {
+    width: 100%;
+    height: auto;
+}
+
+ 
+        
+ 
+.category-nav {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: calc(3 * (300px + 20px)); /* 3 sản phẩm */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Danh sách danh mục */
+.category-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+/* Mục danh mục */
+.category-item {
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.category-item:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Responsive: Khi màn hình nhỏ hơn 768px, danh mục sẽ co lại */
+@media (max-width: 992px) {
+    .category-nav {
+        max-width: 100%;
+    }
+    
+    .category-list {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Căn chỉnh thanh tìm kiếm */
+.searchbar-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Tạo khoảng cách với header */
+    margin-bottom: 20px; /* Tạo khoảng cách với danh mục */
+}
+
+/* Giới hạn chiều rộng của thanh tìm kiếm */
+.searchbar {
+    max-width: 600px; /* Tăng chiều dài */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Điều chỉnh kích thước input */
+.searchbar input {
+    width: 80%; /* Chiếm phần lớn không gian */
+    border-radius: 25px 0 0 25px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+}
+
+/* Điều chỉnh kích thước nút tìm kiếm */
+.searchbar button {
+    width: 20%;
+    border-radius: 0 25px 25px 0;
+    padding: 10px;
+}
+
+#featured-products .carousel-inner {
+            display: flex;
+        }
+        #featured-products .carousel-item {
+            width: 100%;
+        }
+        #featured-products .row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+        #featured-products .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            margin: 10px;
+        }
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            z-index: 10;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+         #featured-products .carousel-inner, #newest-products .carousel-inner {
+            display: flex;
+        }
+        #featured-products .carousel-item, #newest-products .carousel-item {
+            width: 100%;
+        }
+        #featured-products .row, #newest-products .row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+        #featured-products .card, #newest-products .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            margin: 10px;
+            max-width: 90%; /* Giảm kích thước thẻ sản phẩm */
+        }
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            z-index: 10;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+
+
