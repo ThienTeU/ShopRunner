@@ -50,7 +50,7 @@ body {
 
 /* Tiêu đề sản phẩm */
 
-.type, .main-type{  
+.type, .main-type{
     background-color: #e1e3f5;
     color: #101010;
     padding: 2px 8px;
@@ -90,7 +90,10 @@ body {
 .product-colours, .product-sizes {
     margin: 20px 0;
 }
-
+.size-button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 /* Nút chọn màu */
 .product-colours button {
     padding: 10px;
@@ -235,7 +238,7 @@ body {
     flex-wrap: wrap;
     justify-content: flex-start; /* Căn giữa các sản phẩm */
     align-items: flex-start; /* Căn tất cả item từ trên xuống */
-    
+
 }
 
 .complete-look .item {

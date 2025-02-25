@@ -35,16 +35,53 @@ public class ProductDAO extends DBContext {
 //            System.out.println(p.getProduct_id());
 //        }
 //    }
-
     PreparedStatement ps = null;
     ResultSet rs = null;
+
+    // Lấy tổng số sản phẩm
+    public int getTotalProducts() throws SQLException {
+        String query = "SELECT COUNT(*) FROM dbo.Product";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    // Lấy danh sách sản phẩm theo trang
+    public List<Product> getProductsByPage(int page, int pageSize) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        String query = "SELECT * FROM Product ORDER BY created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        PreparedStatement ps = connection.prepareStatement(query);
+
+        int offset = (page - 1) * pageSize;
+        ps.setInt(1, offset);
+        ps.setInt(2, pageSize);
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Product product = new Product(
+                    rs.getInt("product_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("product_name"),
+                    rs.getString("description"),
+                    rs.getInt("discount"),
+                    rs.getBoolean("status"),
+                    rs.getString("thumbnail"),
+                    rs.getString("created_at")
+            );
+            productList.add(product);
+        }
+        return productList;
+    }
+
     public List<ProductView> getAllProductView() {
         List<ProductView> productViews = new ArrayList<>();
         String sql = "SELECT * FROM ProductView";
 
         try (
-             PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int viewId = rs.getInt("view_id");
@@ -59,7 +96,7 @@ public class ProductDAO extends DBContext {
         }
         return productViews;
     }
-    
+
     public int getProductCountByCategory(int categoryId) throws SQLException {
         String sql = "SELECT COUNT(*) AS total FROM Product WHERE category_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -449,10 +486,11 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
-      // Lấy danh sách sản phẩm nổi bật (dựa vào lượt xem)
-public ArrayList<Product> getTopViewedProducts(int limit) {
-    ArrayList<Product> products = new ArrayList<>();
-    String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
+    // Lấy danh sách sản phẩm nổi bật (dựa vào lượt xem)
+
+    public ArrayList<Product> getTopViewedProducts(int limit) {
+        ArrayList<Product> products = new ArrayList<>();
+        String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
                 + "SUM(ISNULL(pv.[view], 0)) AS total_views "
                 + "FROM Product p "
                 + "LEFT JOIN ProductView pv ON p.product_id = pv.product_id "
@@ -460,28 +498,27 @@ public ArrayList<Product> getTopViewedProducts(int limit) {
                 + "ORDER BY total_views DESC "
                 + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
 
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setInt(1, limit);  // Truyền số lượng sản phẩm cần lấy
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Product p = new Product(
-                    rs.getInt("product_id"),
-                    rs.getInt("category_id"),
-                    rs.getString("product_name"),
-                    rs.getString("description"),
-                    rs.getInt("discount"),
-                    rs.getBoolean("status"),
-                    rs.getString("thumbnail"),
-                    rs.getString("created_at")
-            );
-            products.add(p);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, limit);  // Truyền số lượng sản phẩm cần lấy
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product p = new Product(
+                        rs.getInt("product_id"),
+                        rs.getInt("category_id"),
+                        rs.getString("product_name"),
+                        rs.getString("description"),
+                        rs.getInt("discount"),
+                        rs.getBoolean("status"),
+                        rs.getString("thumbnail"),
+                        rs.getString("created_at")
+                );
+                products.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return products;
     }
-    return products;
-}
-
 
     // Lấy danh sách 8 sản phẩm mới nhất
     public ArrayList<Product> getNewestProducts(int limit) {
@@ -507,17 +544,18 @@ public ArrayList<Product> getTopViewedProducts(int limit) {
             e.printStackTrace();
         }
         return products;
-}
+    }
+
     public static void main(String[] args) {
         ProductDAO dao = new ProductDAO();
         int limit = 5; // Số lượng sản phẩm muốn lấy
         ArrayList<Product> newestProducts = dao.getNewestProducts(limit);
-        
+
         System.out.println("📌 Danh sách " + limit + " sản phẩm mới nhất:");
         for (Product p : newestProducts) {
-            System.out.println("🛍️ Product ID: " + p.getProduct_id() +
-                               ", Name: " + p.getProduct_name() +
-                               ", Created At: " + p.getCreated_at());
+            System.out.println("🛍️ Product ID: " + p.getProduct_id()
+                    + ", Name: " + p.getProduct_name()
+                    + ", Created At: " + p.getCreated_at());
         }
     }
 }

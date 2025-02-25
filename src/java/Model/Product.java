@@ -4,7 +4,10 @@
  */
 package Model;
 
+import DAL.ProductDAO;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  *
@@ -22,6 +25,12 @@ public class Product {
     private String created_at;
 
     public Product() {
+    }
+    
+    public List<ProductPrice> getProductPricesByProductId() throws SQLException{
+        ProductDAO dao = new ProductDAO();
+        List<ProductPrice> list = dao.getProductPricesByProductId(product_id);  
+        return list;
     }
 
     public boolean isWithin10Days(String inputTime) {
@@ -117,7 +126,7 @@ public class Product {
     }
 
     public String getCreated_at() {
-        return created_at;
+        return created_at.substring(0,10);
     }
 
     public void setCreated_at(String created_at) {

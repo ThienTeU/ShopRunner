@@ -20,7 +20,7 @@
     </head>
     <body class="bg-light text-dark">
         <c:if test="${sessionScope.cart.size() == 0 || sessionScope.cart == null }">
-            <c:redirect url="${sessionScope.contextPath}/CartDetailServlet"></c:redirect>
+            <c:redirect url="CartDetailServlet"></c:redirect>
         </c:if>
         <div class="container custom-container">
             <div class="text-center mb-4">
@@ -29,7 +29,7 @@
             </div>
             <div class="row">
                 <!-- Left Column -->
-                <div class="col-lg-8">
+                <div class="col-lg-7">
                     <!-- Contact Section -->
                     <form action="CheckOutServlet" method="POST">
                         <div class="mb-4">
@@ -92,12 +92,6 @@
                                            type="text" required/>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label class="form-label" for="note">Ghi chú</label>
-                                    <input type="text" name="note" placeholder="" class="form-control">
-                                </div>
-                            </div>
                         </div>
                         <hr><!-- comment -->
                         <div class="mb-4">
@@ -156,7 +150,7 @@
                 </div>
                 <!-- Right Column -->
 
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                     <h2 class="h4 section-title">GIỎ HÀNG CỦA BẠN</h2>
                     <div class="d-flex justify-content-between mb-2">
                         <span>${sessionScope.cart.size()} các sản phẩm</span>

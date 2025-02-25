@@ -4,7 +4,9 @@
  */
 package NgocHieu;
 
+import DAL.ProductDAO;
 import Model.CartItem;
+import Model.ProductQuantity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,8 +18,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,10 +41,11 @@ public class AddToCartServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
+            ProductDAO productDAO = new ProductDAO();
             String productIdStr = request.getParameter("product_id");
             String productPriceIdStr = request.getParameter("productprice_id");
             String productQuantityIdStr = request.getParameter("productquantity_id");
-
+            
             if (productIdStr == null || productPriceIdStr == null || productQuantityIdStr == null) {
                 response.sendRedirect("error.jsp");
                 return;
@@ -48,7 +54,7 @@ public class AddToCartServlet extends HttpServlet {
             int productId = Integer.parseInt(productIdStr);
             int productPriceId = Integer.parseInt(productPriceIdStr);
             int productQuantityId = Integer.parseInt(productQuantityIdStr);
-
+            ProductQuantity pp = productDAO.getProductQuantityById(productQuantityId);
             if (productId <= 0 || productPriceId <= 0 || productQuantityId <= 0) {
                 response.sendRedirect("error.jsp");
                 return;
@@ -80,6 +86,8 @@ public class AddToCartServlet extends HttpServlet {
             for (CartItem item : cartItems) {
                 if (item.getProduct_id() == cartItem.getProduct_id() && item.getProductprice_id() == cartItem.getProductprice_id()
                         && item.getProductquantity_id() == cartItem.getProductquantity_id()) {
+                    int newQuantity = item.getQuantity()+1;
+                    if(newQuantity > pp.getQuantity()) break;
                     item.setQuantity(item.getQuantity() + 1);
                     found = true;
                     break;
@@ -104,8 +112,11 @@ public class AddToCartServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             response.sendRedirect("error.jsp");
+        } catch (SQLException ex) {
+            Logger.getLogger(AddToCartServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
 
     @Override
     public String getServletInfo() {

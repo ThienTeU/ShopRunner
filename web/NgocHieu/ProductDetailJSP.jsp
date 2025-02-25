@@ -78,7 +78,7 @@
                                 SẢN PHẨM LIÊN QUAN (${countRelatedProduct})
                             </h2>
                         </a>
-                            <div class="item-container">
+                        <div class="item-container">
                             <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
                                 <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
                                     <div class="item">
@@ -125,42 +125,42 @@
                         </h2>
                         <div class="item-container">
                             <c:forEach items="${listRecentlyView}" var="rv" begin="0" end="3">
-                            <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rv.product_id}">
-                                <div class="item">
-                                    <c:if test="${rv.isWithin10Days(rv.created_at)}">
-                                        <div class="type">
-                                            <span class="content">SẢN PHẨM MỚI</span>
+                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rv.product_id}">
+                                    <div class="item">
+                                        <c:if test="${rv.isWithin10Days(rv.created_at)}">
+                                            <div class="type">
+                                                <span class="content">SẢN PHẨM MỚI</span>
+                                            </div>
+                                        </c:if>
+                                        <img alt="${rv.product_name}" height="200"
+                                             src="${rv.thumbnail}"
+                                             width="200" />
+                                        <div class="price" >
+                                            <c:forEach items="${listUniqueProductPrice}" var="pp">
+                                                <c:if test="${rv.product_id == pp.product_id}">
+                                                    <c:choose>
+                                                        <c:when test="${rv.discount != 0}">
+                                                            <span class="productPrice original-price">${pp.price}</span>
+                                                            <span class="productPrice discounted-price">${pp.price * (100 - rv.discount) / 100}</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="productPrice">${pp.price}</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:if>
+                                            </c:forEach>
                                         </div>
-                                    </c:if>
-                                    <img alt="${rv.product_name}" height="200"
-                                         src="${rv.thumbnail}"
-                                         width="200" />
-                                    <div class="price" >
-                                        <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <c:if test="${rv.product_id == pp.product_id}">
-                                                <c:choose>
-                                                    <c:when test="${rv.discount != 0}">
-                                                        <span class="productPrice original-price">${pp.price}</span>
-                                                        <span class="productPrice discounted-price">${pp.price * (100 - rv.discount) / 100}</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="productPrice">${pp.price}</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </c:if>
-                                        </c:forEach>
+                                        <div class="name">
+                                            <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rv.product_name}</span>
+                                        </div>
+                                        <div class="category">
+                                            <c:forEach items="${listCategory}" var="c">
+                                                ${c.category_id == rv.category_id ? c.name : ""}
+                                            </c:forEach>
+                                        </div>
                                     </div>
-                                    <div class="name">
-                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rv.product_name}</span>
-                                    </div>
-                                    <div class="category">
-                                        <c:forEach items="${listCategory}" var="c">
-                                            ${c.category_id == rv.category_id ? c.name : ""}
-                                        </c:forEach>
-                                    </div>
-                                </div>
-                            </a>
-                        </c:forEach>        
+                                </a>
+                            </c:forEach>        
                         </div>               
                     </div>
 
@@ -170,60 +170,60 @@
                         </h2>
                         <div class="item-container">
                             <c:forEach items="${listMostView}" var="mv" begin="0" end="3">
-                            <a style="text-decoration: none; " href="ProductDetailServlet?product_id=${mv.product_id}">
-                                <div style="position: relative" class="item">
-                                    <c:if test="${mv.isWithin10Days(mv.created_at)}">
-                                        <div class="type">
-                                            <span class="content">SẢN PHẨM MỚI</span>
-                                        </div>
-                                        <div style="color: black; position: absolute;right: 0; font-size: 13px; margin: 0 5px 0 0; font-weight: 600" class="view">
-                                            <i  class="fa-regular fa-eye"></i>
-                                            <c:forEach items="${listProductView}" var="pv">
-                                                <c:if test="${pv.product_id == mv.product_id}">
-                                                    <span>${pv.view}</span>
+                                <a style="text-decoration: none; " href="ProductDetailServlet?product_id=${mv.product_id}">
+                                    <div style="position: relative" class="item">
+                                        <c:if test="${mv.isWithin10Days(mv.created_at)}">
+                                            <div class="type">
+                                                <span class="content">SẢN PHẨM MỚI</span>
+                                            </div>
+                                            <div style="color: black; position: absolute;right: 0; font-size: 13px; margin: 0 5px 0 0; font-weight: 600" class="view">
+                                                <i  class="fa-regular fa-eye"></i>
+                                                <c:forEach items="${listProductView}" var="pv">
+                                                    <c:if test="${pv.product_id == mv.product_id}">
+                                                        <span>${pv.view}</span>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </div>
+                                        </c:if>
+                                        <c:if test="${!mv.isWithin10Days(mv.created_at)}">
+                                            <div style="color: black; position: absolute;right: 0; font-size: 13px; margin: 0 5px 0 0; font-weight: 600" class="view">
+                                                <i  class="fa-regular fa-eye"></i>
+                                                <c:forEach items="${listProductView}" var="pv">
+                                                    <c:if test="${pv.product_id == mv.product_id}">
+                                                        <span>${pv.view}</span>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </div>
+                                        </c:if>
+                                        <img alt="${mv.product_name}" height="200"
+                                             src="${mv.thumbnail}"
+                                             width="200" />
+                                        <div class="price" >
+                                            <c:forEach items="${listUniqueProductPrice}" var="pp">
+                                                <c:if test="${mv.product_id == pp.product_id}">
+                                                    <c:choose>
+                                                        <c:when test="${mv.discount != 0}">
+                                                            <span class="productPrice original-price">${pp.price}</span>
+                                                            <span class="productPrice discounted-price">${pp.price * (100 - mv.discount) / 100}</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="productPrice">${pp.price}</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:if>
                                             </c:forEach>
                                         </div>
-                                    </c:if>
-                                    <c:if test="${!mv.isWithin10Days(mv.created_at)}">
-                                        <div style="color: black; position: absolute;right: 0; font-size: 13px; margin: 0 5px 0 0; font-weight: 600" class="view">
-                                            <i  class="fa-regular fa-eye"></i>
-                                            <c:forEach items="${listProductView}" var="pv">
-                                                <c:if test="${pv.product_id == mv.product_id}">
-                                                    <span>${pv.view}</span>
-                                                </c:if>
+                                        <div class="name">
+                                            <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${mv.product_name}</span>
+                                        </div>
+                                        <div class="category">
+                                            <c:forEach items="${listCategory}" var="c">
+                                                ${c.category_id == mv.category_id ? c.name : ""}
                                             </c:forEach>
                                         </div>
-                                    </c:if>
-                                    <img alt="${mv.product_name}" height="200"
-                                         src="${mv.thumbnail}"
-                                         width="200" />
-                                    <div class="price" >
-                                        <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                            <c:if test="${mv.product_id == pp.product_id}">
-                                                <c:choose>
-                                                    <c:when test="${mv.discount != 0}">
-                                                        <span class="productPrice original-price">${pp.price}</span>
-                                                        <span class="productPrice discounted-price">${pp.price * (100 - mv.discount) / 100}</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="productPrice">${pp.price}</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </c:if>
-                                        </c:forEach>
                                     </div>
-                                    <div class="name">
-                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${mv.product_name}</span>
-                                    </div>
-                                    <div class="category">
-                                        <c:forEach items="${listCategory}" var="c">
-                                            ${c.category_id == mv.category_id ? c.name : ""}
-                                        </c:forEach>
-                                    </div>
-                                </div>
-                            </a>
-                        </c:forEach>  
+                                </a>
+                            </c:forEach>  
                         </div>                     
                     </div>
                 </div>
@@ -282,11 +282,12 @@
                     <c:forEach items="${listProductQuantity}" var="pq">
                         <c:forEach items="${listSize}" var="s">
                             <c:if test="${pq.size_id == s.size_id}">
-                                <button class="size-button"
-                                        data-size-id="${s.size_id}"
-                                        data-productprice-id="${selectedProductPriceId}"
-                                        data-productquantity-id="${pq.productQuantity_id}"
-                                        data-quantity="${pq.quantity}">
+                                <button ${pq.quantity == 0 ? "disabled" : ""}
+                                    class="size-button"
+                                    data-size-id="${s.size_id}"
+                                    data-productprice-id="${selectedProductPriceId}"
+                                    data-productquantity-id="${pq.productQuantity_id}"
+                                    data-quantity="${pq.quantity}">
                                     ${s.size}
                                 </button>
                             </c:if>
@@ -353,7 +354,7 @@
                 }
             });
 
-// Khi bấm vào ảnh thumbnail, slide sẽ tự trượt next/prev nếu cần
+            // Khi bấm vào ảnh thumbnail, slide sẽ tự trượt next/prev nếu cần
             function changeImage(img) {
                 document.getElementById("mainImage").src = img.src;
 
@@ -374,7 +375,8 @@
 
 
         </script>
-        <script>document.addEventListener("DOMContentLoaded", function () {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
                 const form = document.querySelector(".add-to-bag1 form");
                 const productQuantityInput = document.getElementById("selectedProductQuantityId");
 
@@ -385,6 +387,7 @@
                     }
                 });
             });
+
             document.addEventListener("DOMContentLoaded", function () {
                 const sizeButtons = document.querySelectorAll(".size-button");
                 const quantityDisplay = document.getElementById("selectedQuantity");
@@ -392,11 +395,19 @@
 
                 sizeButtons.forEach(button => {
                     button.addEventListener("click", function (event) {
+                        if (button.disabled) {
+                            return; // Không làm gì nếu nút bị vô hiệu hóa
+                        }
+
                         event.preventDefault(); // Ngăn chặn reload trang
 
-                        // Bỏ highlight của tất cả nút size
-                        sizeButtons.forEach(btn => btn.style.backgroundColor = "white");
-                        sizeButtons.forEach(btn => btn.style.color = "black");
+                        // Bỏ highlight của tất cả nút size không bị vô hiệu hóa
+                        sizeButtons.forEach(btn => {
+                            if (!btn.disabled) {
+                                btn.style.backgroundColor = "white";
+                                btn.style.color = "black";
+                            }
+                        });
 
                         // Đánh dấu nút size được chọn
                         this.style.backgroundColor = "black";
@@ -414,6 +425,7 @@
                     });
                 });
             });
+
         </script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {

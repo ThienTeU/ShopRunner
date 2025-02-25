@@ -4,6 +4,11 @@
  */
 package Model;
 
+import DAL.ProductDAO;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author admin
@@ -15,6 +20,18 @@ public class ProductPrice {
     private double price;
 
     public ProductPrice() {
+    }
+    
+    public List<ProductQuantity> getAllProductQuantitesById() throws SQLException{
+        ProductDAO dao = new ProductDAO();
+        List<ProductQuantity> list = dao.getProductQuantitiesByProductPriceId(ProductPrice_id);
+        return list;
+    }
+    
+    public List<Color> getAllColor() throws SQLException{
+        ProductDAO dao = new ProductDAO();
+        List<Color> list = dao.getAllColors();
+        return list;
     }
 
     public ProductPrice(int ProductPrice_id, int product_id, int color_id, double price) {
