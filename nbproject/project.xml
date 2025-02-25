@@ -35,11 +35,15 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
+<<<<<<< HEAD
                     <file>${file.reference.javax.mail-1.5.1.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${file.reference.javax.activation-1.2.0.jar}</file>
+=======
+                    <file>${file.reference.sqljdbc4-3.0.zip}</file>
+>>>>>>> 9d10c1fe839cf15caa89a6c0260ae4b50673d200
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

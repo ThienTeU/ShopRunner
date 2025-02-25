@@ -1,11 +1,10 @@
 package DAL;
-import DAO.DBcontext;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import Model.Banner;
 
-public class BannerDAO extends DBcontext {
+public class BannerDAO extends DBContext {
     public List<Banner> getAllBanners() {
         List<Banner> banners = new ArrayList<>();
         String query = "SELECT * FROM banner WHERE status = 1 ORDER BY display_order";

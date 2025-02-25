@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import Model.Category;
 import DAO.DBcontext;
 
-public class CategoryDAO extends DBcontext {
+public class CategoryDAO extends DBContext {
 
     private static final Logger LOGGER = Logger.getLogger(CategoryDAO.class.getName());
 
