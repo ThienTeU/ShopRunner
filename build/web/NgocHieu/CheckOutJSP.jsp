@@ -97,11 +97,11 @@
                         <div class="mb-4">
                             <strong class="h4 section-title">TÙY CHỌN GIAO HÀNG</strong>
                             <div class="shipMethod">
-                                <span>Pay Online for Faster Delivery & Faster Return/Refund</span>
+                                <span>Thanh toán trực tuyến để giao hàng nhanh hơn và hoàn trả/hoàn tiền nhanh hơn.</span>
                             </div>
                             <div class="shipOption">
                                 <span id="shippingFee2">Đang tính...</span>
-                                <p>GHTK - Standard</p>
+                                <p>GHTK - Cơ bản</p>
                                 <p>08:00 - 20:00</p>
                             </div>
                         </div>
@@ -194,7 +194,7 @@
                                         ${s.size}
                                     </c:if>
                                 </c:forEach> 
-                                / Quantity: ${item.quantity}
+                                / Số lượng: ${item.quantity}
                             </p> 
                             <p class="small text-muted">
                                 Màu sắc: 

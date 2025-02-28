@@ -23,8 +23,7 @@ public class Product {
     private boolean status;
     private String thumbnail;
     private String created_at;
-    
-   private double price;
+    private double price;
 
     public Product() {
     }
@@ -34,11 +33,14 @@ public class Product {
         List<ProductPrice> list = dao.getProductPricesByProductId(product_id);  
         return list;
     }
-
+    public static void main(String[] args) {
+        Product p = new Product();
+        System.out.println(p.isWithin10Days("2025-02-24 14:12:12.123"));;
+    }
     public boolean isWithin10Days(String inputTime) {
         try {
             // Định dạng thời gian đầu vào
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
             // Chuyển chuỗi đầu vào thành đối tượng Date
             java.util.Date inputDate = sdf.parse(inputTime);

@@ -60,7 +60,7 @@
                 <tr>
                     <td><label>Thumbnail:</label></td>
                     <td>
-                        <input type="file" name="thumbnail" id="fileInput" multiple hidden>
+                        <input type="file" name="thumbnail" id="fileInput" multiple>
                         <div id="dropArea">
                             <p>Tha anh vao & <span id="browse">Chon File</span></p>
                         </div>

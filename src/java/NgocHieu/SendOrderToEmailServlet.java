@@ -116,9 +116,12 @@ public class SendOrderToEmailServlet extends HttpServlet {
                         break; // Thoát vòng lặp khi tìm thấy màu sắc phù hợp
                     }
                 }
-
+                String inputPath = "C:/Users/admin/ShopRunner/web/Image2/productID_" + item.getProduct().getProduct_id() + "/colorID_" + item.getProductPrice().getColor_id() + "/image_1.avif";
+                String outputPath = "C:/Users/admin/ShopRunner/web/Image2/productID_" + item.getProduct().getProduct_id() + "/colorID_" + item.getProductPrice().getColor_id() + "/image_1.jpg";
+                ConvertAvifToJpg convert = new ConvertAvifToJpg();
+                convert.convert(inputPath, outputPath);
                 emailBody += "<tr>"
-                        + "<td><img src='Image2/productID_" + item.getProduct().getProduct_id() + "/colorID_" + item.getProductPrice().getColor_id() + "/image_1.avif' width='50' height='50' /></td>"
+                        + "<td><img src='" + outputPath +"' width='50' height='50' /></td>"
                         + "<td>" + item.getProduct().getProduct_name() + "</td>"
                         + "<td>" + size + "</td>"
                         + "<td>" + color + "</td>"

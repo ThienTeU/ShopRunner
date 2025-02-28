@@ -62,7 +62,7 @@
                     <tr>
                         <td><label>Upload Image:</label></td>
                         <td>
-                            <input type="file" name="images" id="fileInput" multiple hidden>
+                            <input type="file" name="images" id="fileInput" multiple>
                             <div id="dropArea">Drop images here or <span id="browse">browse</span></div>
                             <div class="preview-container" id="previewContainer"></div>
                         </td>

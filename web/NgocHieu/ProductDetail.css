@@ -60,6 +60,7 @@ body {
 .type{
     position: absolute;
 }
+
 .type, .main-type .content{
     font-weight: 700;
 }
@@ -290,7 +291,6 @@ body {
     text-decoration: underline;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;

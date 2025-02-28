@@ -126,7 +126,7 @@ public class ProductDetailServlet extends HttpServlet {
     public static boolean isWithin10Days(String inputTime) {
         try {
             // Định dạng thời gian đầu vào
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
             // Chuyển chuỗi đầu vào thành đối tượng Date
             Date inputDate = sdf.parse(inputTime);

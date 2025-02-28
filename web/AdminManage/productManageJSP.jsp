@@ -1,4 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -77,42 +79,63 @@
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody style="font-size: 14px">
                                     <c:forEach items="${paginatedList}" var="product">
                                         <tr>
-                                            <td style="max-width: 200px"><a href="#">${product.product_name}</a></td>
-                                            <td><img src="${product.thumbnail}" width="70px" height="70px" alt="alt"/></td>
+                                            <td style="max-width: 200px"><a href="ProductDetailServlet?product_id=${product.product_id}">${product.product_name}</a></td>
+                                            <td><img src="${product.thumbnail}" width="100px" height="100px" alt="alt"/></td>
                                             <td>${product.created_at}</td>
-                                            <td style="height: 86px; align-items: center">
+                                            <td style="line-height: 0;align-items: center; font-size: 13px">
                                                 <c:forEach items="${product.getProductPricesByProductId()}" var="pp">
-                                                    <c:forEach items="${pp.getAllColor()}" var="c">
-                                                        <c:if test="${c.color_id == pp.color_id}">
-                                                            <a style="text-decoration: none" href="ProductDetailServlet?product_id=${pp.product_id}&color_id=${c.color_id}">
-                                                                <button style="background-color: ${c.color};
-                                                                        border-radius: 50px;height:30px;
-                                                                        width: 30px; margin-top: 10px;
-                                                                        border: solid 1px gray;"></button>
-                                                            </a>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                    <select style="height: 40px; margin-left: 10px">
-                                                        <c:forEach items="${pp.getAllProductQuantitesById()}" var="pq">
-                                                            <option value="${pq.productQuantity_id}">
-                                                                <c:forEach items="${pq.getAllSize()}" var="s">
-                                                                    <c:if test="${s.size_id == pq.size_id}">
-                                                                        ${s.size}
-                                                                    </c:if>
-                                                                </c:forEach>
-                                                                /${pq.quantity}
-                                                            </option>
-                                                            
+                                                    <form style="display:flex; align-items: center; margin-bottom: 10px" action="UpdateQuantityServlet">
+                                                        <c:forEach items="${pp.getAllColor()}" var="c">
+                                                            <c:if test="${c.color_id == pp.color_id}">
+                                                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${pp.product_id}&color_id=${c.color_id}">
+                                                                    <button style="background-color: ${c.color};
+                                                                            border-radius: 50px;height:30px;
+                                                                            width: 30px; margin-top: 10px;
+                                                                            border: solid 1px gray;"></button>
+                                                                </a>
+                                                            </c:if>
                                                         </c:forEach>
-                                                    </select>
+
+                                                        <select name="productQuantityId" style="height: 30px; margin: 0 10px 0 10px">
+                                                            <c:forEach items="${pp.getAllProductQuantitesById()}" var="pq">
+                                                                <option value="${pq.productQuantity_id}">
+                                                                    <c:forEach items="${pq.getAllSize()}" var="s">
+                                                                        <c:if test="${s.size_id == pq.size_id}">
+                                                                            ${s.size}
+                                                                        </c:if>
+                                                                    </c:forEach>
+                                                                    / ${pq.quantity}
+                                                                </option>
+                                                            </c:forEach>
+                                                        </select>
+
+                                                        <button style="font-size: 13px" type="button" class="btn btn-info" 
+                                                                onclick="editQuantity(event, this)">
+                                                            Edit Quantity <i class="bi bi-pencil-square"></i> 
+                                                        </button>
+
+                                                    </form>
                                                     <br>
                                                 </c:forEach>
                                             </td>
-                                            <td>${product.status == false ? "Active" : "Inactive" }</td>
-                                            <td>Edit/Delete</td>
+                                            <td>
+                                                <c:if test="${product.status == false}">
+                                                    Active <i style="color: green" class="bi bi-check-circle-fill"></i>
+                                                </c:if>
+                                                <c:if test="${product.status == true}">
+                                                    Inactive <i style="color:red" class="bi bi-x-circle-fill"></i>
+                                                </c:if>
+                                            </td>
+                                            <td >
+                                                <a style="font-size: 13px" class="btn btn-light" href="UpdateStatusServlet?product_id=${product.product_id}&status=${product.status}" 
+                                                   onclick="updateStatus(event, '${product.product_id}', '${product.status}')"> 
+                                                    Change Status <i class="bi bi-circle"></i></i>
+                                                </a><br>
+                                                <a style="font-size: 13px" href="AddProductPriceServlet?product_id=${product.product_id}" class="btn mt-1 btn-primary">Add new color <i class="bi bi-plus-circle"></i></a>
+                                            </td>
                                         </tr>
                                     </c:forEach>
                                 </tbody>
@@ -163,4 +186,32 @@
         <script src="${pageContext.request.contextPath}/AdminManage/admin/js/main.js"></script>
     </body>
 
+    <script>
+        function editQuantity(event, button) {
+            event.preventDefault();
+
+            let form = button.closest("form"); // Lấy form cha của button
+            let selectedOption = form.querySelector("select[name='productQuantityId']").value; // Lấy productQuantityId từ select
+
+            if (!selectedOption) {
+                alert("Please select size.");
+                return;
+            }
+
+            let newQuantity = prompt("Nhập số lượng mới:");
+            if (newQuantity !== null && newQuantity !== "") {
+                window.location.href = "UpdateQuantityServlet?productQuantityId=" + selectedOption + "&newQuantity=" + newQuantity;
+            }
+        }
+
+
+        function updateStatus(event, productId, status) {
+            event.preventDefault();//Ngan chan hanh dong mac dinh cua the a
+
+            let confirmation = window.confirm("Bạn có muốn xóa sản phẩm không?");
+            if (confirmation) {
+                window.location.href = "UpdateStatusServlet?product_id=" + productId + "&status=" + status;
+            }
+        }
+    </script>
 </html>

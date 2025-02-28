@@ -72,10 +72,15 @@
                         <p>${requestScope.product.description}</p>
                     </div>
                     <hr>
+                    <c:if test="${!product.isWithin10Days(product.created_at)}">
+                        <div class="type">
+                            <span class="content">SẢN PHẨM MỚI</span>
+                        </div>
+                    </c:if>
                     <div class="complete-look">
                         <a style="text-decoration: none" href="productcategory?categoryId=${product.category_id}">
                             <h2>
-                                SẢN PHẨM LIÊN QUAN (${countRelatedProduct})
+                                SẢN PHẨM CÙNG THỂ LOẠI (${countRelatedProduct-1})
                             </h2>
                         </a>
                         <div class="item-container">
@@ -118,7 +123,6 @@
                             </c:forEach>
                         </div>
                     </div>
-
                     <div class="complete-look">
                         <h2>
                             VỪA XEM GẦN ĐÂY
@@ -269,8 +273,8 @@
                     <c:forEach items="${requestScope.listProductPrice}" var="pp">
                         <c:forEach items="${listColor}" var="c">
                             <c:if test="${pp.color_id == c.color_id}">
-                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${requestScope.product.product_id}&color_id=${c.color_id}">
-                                    <button style="background-color: ${c.color}; border-radius: 50px; width: 40px; margin-top: 10px"></button>
+                                <a style="text-decoration: none;" href="ProductDetailServlet?product_id=${requestScope.product.product_id}&color_id=${c.color_id}">
+                                    <button style="background-color: ${c.color}; border-radius: 50px; width: 40px; margin-top: 10px;  ${selectedColor == c.color_id ? "border: 3px black solid" : ""}"></button>
                                 </a>
                             </c:if>
                         </c:forEach>                       
@@ -296,7 +300,7 @@
                 </div>
                 <!-- Hiển thị số lượng -->
                 <div class="product-quantity">
-                    <strong>Số lượng: </strong> <span id="selectedQuantity">Hãy chọn size</span>
+                    <strong>Số lượng: </strong> <span id="selectedQuantity">Hãy chọn kích cỡ</span>
                 </div>
 
                 <div class="size-guide">
@@ -404,6 +408,7 @@
                         // Bỏ highlight của tất cả nút size không bị vô hiệu hóa
                         sizeButtons.forEach(btn => {
                             if (!btn.disabled) {
+                                
                                 btn.style.backgroundColor = "white";
                                 btn.style.color = "black";
                             }
@@ -438,7 +443,7 @@
                 });
             });
         </script>
-
     </body>
+
 
 </html>

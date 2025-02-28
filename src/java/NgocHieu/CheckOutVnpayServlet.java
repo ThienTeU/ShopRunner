@@ -40,7 +40,8 @@ public class CheckOutVnpayServlet extends HttpServlet {
             OrderDAO orderDAO = new OrderDAO();
             Orders order = (Orders) request.getSession().getAttribute("order");
             int order_id = orderDAO.insertOrder(order);
-
+            order.setOrder_id(order_id);
+            request.getSession().setAttribute("order", order);
             if (order_id > 0) {
                 for (CartItem item : cartItems) {
                     orderDAO.insertOrderDetail(order_id, item);

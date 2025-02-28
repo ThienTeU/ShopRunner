@@ -123,7 +123,6 @@ public class CheckOutServlet extends HttpServlet {
         
         String address = street + ", " + ward + ", " + district + ", " + city;
         Orders order = new Orders(email, Integer.parseInt(total), voucher_id, address, phone);
-        
         if (paymentMethod.equals("cod")) {
             order.setPayment_method(paymentMethod);
             OrderDAO orderDAO = new OrderDAO();
