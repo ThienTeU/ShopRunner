@@ -105,7 +105,7 @@ public class SendOrderToEmailServlet extends HttpServlet {
                 for (Size s : listSize) {
                     if (item.getProductQuantity().getSize_id() == s.getSize_id()) {
                         size = s.getSize();
-                        break; // Thoát vòng lặp khi tìm thấy kích cỡ phù hợp
+                        break; 
                     }
                 }
 
@@ -113,7 +113,7 @@ public class SendOrderToEmailServlet extends HttpServlet {
                 for (Color c : listColor) {
                     if (item.getProductPrice().getColor_id() == c.getColor_id()) {
                         color = c.getColor();
-                        break; // Thoát vòng lặp khi tìm thấy màu sắc phù hợp
+                        break; 
                     }
                 }
                 String inputPath = "C:/Users/admin/ShopRunner/web/Image2/productID_" + item.getProduct().getProduct_id() + "/colorID_" + item.getProductPrice().getColor_id() + "/image_1.avif";

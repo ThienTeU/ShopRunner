@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>ADD PRODUCT</title>
+    <title>Edit PRODUCT</title>
     <style>
         #dropArea {
             border: 2px dashed #ccc;
@@ -50,27 +50,32 @@
 </head>
 <body>
     <h1>Add Product</h1>
-    <form action="AddProductServlet" method="POST" enctype="multipart/form-data">
+    <form action="EditProductServlet" method="POST" enctype="multipart/form-data">
         <table>
             <tbody>
-                
+                <tr>
+                    <td><input type="text" name="product_id" value="${product.product_id}" hidden></td>
+                </tr>
                 <tr>
                     <td><label>Product Name:</label></td>
-                    <td><input type="text" name="product_name" required></td>
+                    <td><input type="text" name="product_name" value="${product.product_name}" required></td>
                 </tr>
                 <tr>
                     <td><label>Thumbnail:</label></td>
                     <td>
-                        <input type="file" name="thumbnail" id="fileInput" multiple>
+                        <input type="file" name="thumbnail" id="fileInput">
                         <div id="dropArea">
                             <p>Tha anh vao & <span id="browse">Chon File</span></p>
                         </div>
-                        <div class="preview-container" id="previewContainer"></div>
+                        <div class="preview-container" id="previewContainer">
+                            <div class="preview-item"><img src="${product.thumbnail}" alt="alt"/></div>
+                            <button class="delete-btn">×</button>
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td><label>Description:</label></td>
-                    <td><textarea name="description" rows="5" cols="20" required></textarea></td>
+                    <td><textarea name="description" rows="10" cols="70" required>${product.description}</textarea></td>
                 </tr>
                 <tr>
                     <td><label>Category:</label></td>
@@ -84,21 +89,25 @@
                                     </c:if>
                                 </c:forEach>
                                 <c:if test="${found == false}">
-                                    <option value="${category.category_id}">${category.name}</option>
-                                </c:if>                      
+                                    <option value="${category.category_id}" ${product.category_id == category.category_id ? "selected" : ""}>${category.name}</option>
+                                </c:if>     
                             </c:forEach>
                         </select>
                     </td>
                 </tr>     
                 <tr>
                     <td><label>Discount:</label></td>
-                    <td><input type="text" name="discount" value="0" required></td>
+                    <td><input type="text" name="discount" value="${product.discount}" required></td>
+                </tr>
+                <tr>
+                    <td><label>Create at:</label></td>
+                    <td><input type="date" name="created_at" value="${product.created_at}" required></td>
                 </tr>
                 <tr>
                     <input type="hidden" name="status" value="1">
                 </tr>
                 <tr>
-                    <td><button type="submit">Thêm Product</button></td>
+                    <td><button type="submit">Edit Product</button></td>
                 </tr>
             </tbody>
         </table>

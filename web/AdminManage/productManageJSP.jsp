@@ -64,9 +64,27 @@
                 <div class="container-fluid pt-4 px-4">
                     <div class="bg-secondary text-center rounded p-4">
                         <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h6 class="mb-0">Products</h6>
-                            <a href="tableOrder">Show All</a>
+                            <h6 class="mb-0">Products </h6>
+                            <a href="AddProductServlet" class="btn btn-success">Add New Product <i class="bi bi-bag-plus-fill"></i></a>
                         </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <!-- Ô tìm kiếm -->
+                            <div class="w-25">
+                                <input type="text" id="searchInput" placeholder=" Tìm kiếm sản phẩm..." onkeyup="searchProduct()">
+                                <button style="border: 1px solid gray; border-radius: 5px; color: gray" type="submit">Tìm</button>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sắp xếp theo ...
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="sortbyname">Sắp xếp theo: Tên</a>
+                                    <a class="dropdown-item" href="sortbydate">Sắp xếp theo: Ngày tạo</a>
+                                    <a class="dropdown-item" href="sortbystatus">Sắp xếp theo: Trạng thái</a>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table text-start align-middle table-bordered table-hover mb-0">
                                 <thead>
@@ -90,10 +108,10 @@
                                                     <form style="display:flex; align-items: center; margin-bottom: 10px" action="UpdateQuantityServlet">
                                                         <c:forEach items="${pp.getAllColor()}" var="c">
                                                             <c:if test="${c.color_id == pp.color_id}">
-                                                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${pp.product_id}&color_id=${c.color_id}">
-                                                                    <button style="background-color: ${c.color};
+                                                                <a style="text-decoration: none; display:flex; align-items: center" href="ProductDetailServlet?product_id=${pp.product_id}&color_id=${c.color_id}">
+                                                                    <button style="display: flex;background-color: ${c.color};
                                                                             border-radius: 50px;height:30px;
-                                                                            width: 30px; margin-top: 10px;
+                                                                            width: 30px;
                                                                             border: solid 1px gray;"></button>
                                                                 </a>
                                                             </c:if>
@@ -112,7 +130,7 @@
                                                             </c:forEach>
                                                         </select>
 
-                                                        <button style="font-size: 13px" type="button" class="btn btn-info" 
+                                                        <button style="font-size: 13px; height: 30px;" type="button" class="btn btn-outline-secondary" 
                                                                 onclick="editQuantity(event, this)">
                                                             Edit Quantity <i class="bi bi-pencil-square"></i> 
                                                         </button>
@@ -130,11 +148,15 @@
                                                 </c:if>
                                             </td>
                                             <td >
-                                                <a style="font-size: 13px" class="btn btn-light" href="UpdateStatusServlet?product_id=${product.product_id}&status=${product.status}" 
+                                                <a style="font-size: 13px; height: 30px;" class="btn btn-light" href="UpdateStatusServlet?product_id=${product.product_id}&status=${product.status}" 
                                                    onclick="updateStatus(event, '${product.product_id}', '${product.status}')"> 
-                                                    Change Status <i class="bi bi-circle"></i></i>
+                                                    Change Status <i class="bi bi-circle"></i>
                                                 </a><br>
-                                                <a style="font-size: 13px" href="AddProductPriceServlet?product_id=${product.product_id}" class="btn mt-1 btn-primary">Add new color <i class="bi bi-plus-circle"></i></a>
+                                                <a style="font-size: 13px; height: 30px" href="AddProductPriceServlet?product_id=${product.product_id}"
+                                                   class="btn mt-1 btn-primary">
+                                                    Add new color <i class="bi bi-plus-circle"></i>
+                                                </a>
+                                                <a style="font-size: 13px; height: 30px" href="EditProductServlet?product_id=${product.product_id}" class="btn btn-outline-danger">Edit product</a>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -187,6 +209,7 @@
     </body>
 
     <script>
+
         function editQuantity(event, button) {
             event.preventDefault();
 
@@ -208,7 +231,7 @@
         function updateStatus(event, productId, status) {
             event.preventDefault();//Ngan chan hanh dong mac dinh cua the a
 
-            let confirmation = window.confirm("Bạn có muốn xóa sản phẩm không?");
+            let confirmation = window.confirm("Bạn có muốn cập nhật lại trạng thái sản phẩm không?");
             if (confirmation) {
                 window.location.href = "UpdateStatusServlet?product_id=" + productId + "&status=" + status;
             }

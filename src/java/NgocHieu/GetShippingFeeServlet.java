@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import org.json.JSONObject;
 import Model.CartItem;
 import java.util.List;
+import org.json.JSONException;
 
 /**
  *
@@ -98,8 +99,7 @@ public class GetShippingFeeServlet extends HttpServlet {
             } else {
                 System.out.println("Lỗi HTTP: " + responseCode);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | JSONException e) {
         }
         return -1;
     }

@@ -31,7 +31,7 @@
                 <!-- Left Column -->
                 <div class="col-lg-7">
                     <!-- Contact Section -->
-                    <form action="CheckOutServlet" method="POST">
+                    <form id="checkoutForm" action="CheckOutServlet" method="POST">
                         <div class="mb-4">
                             <strong class="h4 section-title">LIÊN HỆ</strong>
                             <div class="form-group">
@@ -281,56 +281,75 @@
     </script>
 
     <script>
-        //js validate input
         document.addEventListener("DOMContentLoaded", function () {
+            let form = document.getElementById("checkoutForm"); // Thay "myForm" bằng ID của form bạn muốn validate
             let contactEmail = document.getElementById("contactEmail");
             let emailValid = document.getElementById("emailValid");
             let invalidEmail = document.getElementById("invalidEmail");
-            contactEmail.addEventListener("input", function () {
-                let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                if (regex.test(this.value.trim())) {
-                    contactEmail.style.borderColor = "green";
-                    emailValid.style.display = "flex";
-                    invalidEmail.style.display = "none";
-                } else {
-                    this.style.borderColor = "red";
-                    invalidEmail.style.display = "flex";
-                    emailValid.style.display = "none";
-                }
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function () {
+
             let fullNameInput = document.getElementById("fullName");
             let nameValid = document.getElementById("nameValid");
             let invalidName = document.getElementById("invalidName");
-            fullNameInput.addEventListener("input", function () {
-                let regex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
-                if (regex.test(this.value.trim())) {
-                    this.style.borderColor = "green";
-                    nameValid.style.display = "flex";
-                    invalidName.style.display = "none";
-                } else {
-                    nameValid.style.display = "none";
-                    this.style.borderColor = "red";
-                    invalidName.style.display = "flex";
-                }
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function () {
+
             let phoneInput = document.getElementById("phoneNumber");
             let phoneValid = document.getElementById("phoneValid");
             let invalidPhone = document.getElementById("invalidPhone");
-            phoneInput.addEventListener("input", function () {
+
+            function validateEmail() {
+                let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (regex.test(contactEmail.value.trim())) {
+                    contactEmail.style.borderColor = "green";
+                    emailValid.style.display = "flex";
+                    invalidEmail.style.display = "none";
+                    return true;
+                } else {
+                    contactEmail.style.borderColor = "red";
+                    invalidEmail.style.display = "flex";
+                    emailValid.style.display = "none";
+                    return false;
+                }
+            }
+
+            function validateFullName() {
+                let regex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
+                if (regex.test(fullNameInput.value.trim())) {
+                    fullNameInput.style.borderColor = "green";
+                    nameValid.style.display = "flex";
+                    invalidName.style.display = "none";
+                    return true;
+                } else {
+                    fullNameInput.style.borderColor = "red";
+                    nameValid.style.display = "none";
+                    invalidName.style.display = "flex";
+                    return false;
+                }
+            }
+
+            function validatePhoneNumber() {
                 let regex = /^(0[3-9])([0-9]{8})$/;
-                ;
-                if (regex.test(this.value.trim())) {
-                    this.style.borderColor = "green";
+                if (regex.test(phoneInput.value.trim())) {
+                    phoneInput.style.borderColor = "green";
                     phoneValid.style.display = "flex";
                     invalidPhone.style.display = "none";
+                    return true;
                 } else {
-                    this.style.borderColor = "red";
+                    phoneInput.style.borderColor = "red";
                     phoneValid.style.display = "none";
                     invalidPhone.style.display = "flex";
+                    return false;
+                }
+            }
+
+            // Gọi các hàm validate khi nhập
+            contactEmail.addEventListener("input", validateEmail);
+            fullNameInput.addEventListener("input", validateFullName);
+            phoneInput.addEventListener("input", validatePhoneNumber);
+
+            // Ngăn submit form nếu có lỗi
+            form.addEventListener("submit", function (event) {
+                if (!validateEmail() || !validateFullName() || !validatePhoneNumber()) {
+                    event.preventDefault(); // Ngăn không cho submit
+                    alert("Vui lòng nhập đúng định dạng trước khi gửi!");
                 }
             });
         });

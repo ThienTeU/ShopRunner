@@ -53,6 +53,7 @@
     <form action="AddProductServlet" method="POST" enctype="multipart/form-data">
         <table>
             <tbody>
+                
                 <tr>
                     <td><label>Product Name:</label></td>
                     <td><input type="text" name="product_name" required></td>
