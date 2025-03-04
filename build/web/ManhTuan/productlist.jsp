@@ -54,13 +54,13 @@
         </script>
     </head>
     <body>
-        
+
         <div class="product-category">                    
-                <a href="home" style="text-decoration: none; color: black">Trang chủ</a> - 
-                <a href="productlist" style="text-decoration: none; color: black">Danh sách sản phẩm</a>  
+            <a href="home" style="text-decoration: none; color: black">Trang chủ</a> - 
+            <a href="productlist" style="text-decoration: none; color: black">Danh sách sản phẩm</a>  
             <c:forEach items="${listCategory}" var="category">
                 <c:if test="${category.categoryId == id}">
-                     - 
+                    - 
                     <c:forEach items="${listCategory}" var="cate">
                         <c:if test="${category.parentId == cate.categoryId}">
                             <a href="productcategory?categoryId=${cate.categoryId}" style="text-decoration: none; color: black">${cate.name}</a> -
@@ -71,7 +71,7 @@
             </c:forEach>
         </div>
         <hr>
-        
+
         <div class="slider-container">
             <h2>Chọn khoảng giá</h2>
             <form action="productfilter" method="get">
@@ -115,7 +115,7 @@
                 maxPrice.value = slider.noUiSlider.get()[1].replace(/\./g, '');
             });
         </script>
-        
+
         <form action="ProductListTest" method="get" id="filterForm">
             <input type="text" value="${key}" name="key" placeholder="Nhập từ khóa...">
             <label>Theo ngày:</label>
