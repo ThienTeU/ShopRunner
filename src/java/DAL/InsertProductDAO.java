@@ -4,6 +4,7 @@
  */
 package DAL;
 
+import Model.Product;
 import Model.ProductPrice;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -31,6 +32,28 @@ public class InsertProductDAO extends DBContext {
         //int productprice_id = dao.addProductPrice(product_id, 1, 0);
         //int productquantity_id = dao.addProductQuantity(productprice_id, 1, 1);
         dao.addProductImage(1, "link", 1);
+    }
+
+    public void updateProduct(Product product) throws SQLException {
+        String query = "UPDATE [Product]\n"
+                + "SET \n"
+                + "    [product_name] = ?,\n"
+                + "    [category_id] = ?,\n"
+                + "    [description] = ?,\n"
+                + "    [discount] = ?,\n"
+                + "    [thumbnail] = ?,\n"
+                + "    [created_at] = ?\n"
+                + "WHERE \n"
+                + "    [product_id] = ?;";
+        ps = connection.prepareStatement(query);
+        ps.setString(1, product.getProduct_name());
+        ps.setInt(2, product.getCategory_id());
+        ps.setString(3,product.getDescription());
+        ps.setInt(4, product.getDiscount());
+        ps.setString(5, product.getThumbnail());
+        ps.setString(6, product.getCreated_at());
+        ps.setInt(7, product.getProduct_id());
+        ps.executeUpdate();
     }
 
     //Insert Data

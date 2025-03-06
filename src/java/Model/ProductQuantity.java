@@ -4,6 +4,10 @@
  */
 package Model;
 
+import DAL.ProductDAO;
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  *
  * @author admin
@@ -15,6 +19,12 @@ public class ProductQuantity {
     private int quantity;
 
     public ProductQuantity() {
+    }
+    
+    public List<Size> getAllSize() throws SQLException{
+        ProductDAO dao = new ProductDAO();
+        List<Size> list = dao.getAllSizes();
+        return list;
     }
 
     public ProductQuantity(int ProductQuantity_id, int ProductPrice_id, int size_id, int quantity) {

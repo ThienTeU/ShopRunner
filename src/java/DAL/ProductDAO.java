@@ -28,16 +28,46 @@ import javax.lang.model.util.Types;
  * @author admin
  */
 public class ProductDAO extends DBContext {
-//    public static void main(String[] args) throws SQLException {
-//        ProductDAO dao = new ProductDAO();
-//        List<ProductView> list = dao.getAllProductView();
-//        for(ProductView p : list){
-//            System.out.println(p.getProduct_id());
-//        }
-//    }
 
     PreparedStatement ps = null;
     ResultSet rs = null;
+
+    public int getTotalProducts() throws SQLException {
+        String query = "SELECT COUNT(*) FROM dbo.Product";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    // Lấy danh sách sản phẩm theo trang
+    public List<Product> getProductsByPage(int page, int pageSize) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        String query = "SELECT * FROM Product ORDER BY created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        PreparedStatement ps = connection.prepareStatement(query);
+
+        int offset = (page - 1) * pageSize;
+        ps.setInt(1, offset);
+        ps.setInt(2, pageSize);
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Product product = new Product(
+                    rs.getInt("product_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("product_name"),
+                    rs.getString("description"),
+                    rs.getInt("discount"),
+                    rs.getBoolean("status"),
+                    rs.getString("thumbnail"),
+                    rs.getString("created_at")
+            );
+            productList.add(product);
+        }
+        return productList;
+    }
 
     public List<ProductView> getAllProductView() {
         List<ProductView> productViews = new ArrayList<>();
@@ -79,7 +109,7 @@ public class ProductDAO extends DBContext {
                 + "p.discount, p.status, p.thumbnail, p.created_at, "
                 + "COALESCE(pv.[view], 0) AS total_views "
                 + "FROM Product p "
-                + "LEFT JOIN ProductView pv ON p.product_id = pv.product_id "
+                + "LEFT JOIN ProductView pv ON p.product_id = pv.product_id where p.status = 0"
                 + "ORDER BY pv.[view] DESC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -107,7 +137,7 @@ public class ProductDAO extends DBContext {
                 + "       COALESCE(pv.[view], 0) AS total_views \n"
                 + "FROM Product p \n"
                 + "LEFT JOIN ProductView pv ON p.product_id = pv.product_id \n"
-                + "WHERE p.product_id != ?\n"
+                + "WHERE p.product_id != ? and p.status=0\n"
                 + "ORDER BY pv.viewed_at DESC;";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -134,7 +164,7 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getProductsByCategory(int categoryId, int productId) throws SQLException {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT * FROM Product WHERE category_id = ? and product_id != ?";
+        String sql = "SELECT * FROM Product WHERE category_id = ? and product_id != ? and status = 0";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, categoryId);
@@ -670,6 +700,7 @@ public class ProductDAO extends DBContext {
     public ArrayList<Product> getTopViewedProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
+                + "SUM(ISNULL(pv.[view], 0)) AS total_views "
                 + "SUM(ISNULL(pv.[view], 0)) AS total_views, "
                 + "COALESCE(MIN(pp.price), 0) AS price "
                 + "FROM Product p "
@@ -680,7 +711,7 @@ public class ProductDAO extends DBContext {
                 + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, limit);
+            ps.setInt(1, limit);  // Truyền số lượng sản phẩm cần lấy
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Product p = new Product(
@@ -691,8 +722,7 @@ public class ProductDAO extends DBContext {
                         rs.getInt("discount"),
                         rs.getBoolean("status"),
                         rs.getString("thumbnail"),
-                        rs.getString("created_at"),
-                        rs.getInt("price")
+                        rs.getString("created_at")
                 );
                 products.add(p);
             }
@@ -702,6 +732,20 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
+    
+
+    public static void main(String[] args) {
+        ProductDAO dao = new ProductDAO();
+        int limit = 5; // Số lượng sản phẩm muốn lấy
+        ArrayList<Product> newestProducts = dao.getNewestProducts(limit);
+
+        System.out.println("📌 Danh sách " + limit + " sản phẩm mới nhất:");
+        for (Product p : newestProducts) {
+            System.out.println("🛍️ Product ID: " + p.getProduct_id()
+                    + ", Name: " + p.getProduct_name()
+                    + ", Created At: " + p.getCreated_at());
+        }
+    }
     public ArrayList<Product> getNewestProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
@@ -758,21 +802,4 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-
-    
-    public static void main(String[] args) {
-        ProductDAO dao = new ProductDAO();
-        String sort = "desc";
-        List<Product> topViewedProducts = dao.getAllProductBySort(sort);
-        System.out.println("list ");
-        for (Product p : topViewedProducts) {
-            System.out.println("👀 Product ID: " + p.getProduct_id()
-                    + ", Name: " + p.getProduct_name()
-                    + ", Views: " + p.getDescription()
-                    + // Assuming you have a method to get total views
-                    ", Created At: " + p.getCreated_at()
-                    + ", price: " + p.getPrice());
-        }
-    }
-
 }

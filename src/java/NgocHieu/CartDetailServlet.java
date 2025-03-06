@@ -59,7 +59,7 @@ public class CartDetailServlet extends HttpServlet {
             List<Size> listSize = productDAO.getAllSizes();
             List<Color> listColor = productDAO.getAllColors();
 
-            double total = 0;
+            int total = 0;
             for (CartItem item : cartItems) {
                 Product product = productDAO.getProductById(item.getProduct_id());
                 ProductPrice productPrice = productDAO.getProductPriceById(item.getProductprice_id());

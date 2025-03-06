@@ -30,6 +30,10 @@ public class AddProductPriceServlet extends HttpServlet {
             ProductDAO dao = new ProductDAO();
             List<Color> listColor = dao.getAllColors();
             request.setAttribute("listColor", listColor);
+            String id = request.getParameter("product_id");
+            if(id != null){
+                request.setAttribute("product_id", id);
+            }
             request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductPriceServlet.class.getName()).log(Level.SEVERE, null, ex);

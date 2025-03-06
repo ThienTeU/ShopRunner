@@ -116,7 +116,6 @@
             });
         </script>
 
-        
         <form action="productcheckbox" method="get">
             <strong>Kích thước</strong><br>
             <c:forEach var="s" items="${size}">

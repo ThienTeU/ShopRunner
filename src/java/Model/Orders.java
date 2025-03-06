@@ -15,20 +15,36 @@ public class Orders {
     private int total_price;
     private String status;
     private int voucher_id;
+    private String payment_method;
     private String shipping_address;
-
+    private String phone;
     public Orders() {
     }
 
-    public Orders(String email, int user_id, String order_date, int total_price, String status, int voucher_id, String shipping_address) {
-        this.order_id = order_id;
+    public Orders(String email, int total_price, int voucher_id, String shipping_address, String phone) {
         this.email = email;
-        this.order_date = order_date;
         this.total_price = total_price;
-        this.status = status;
         this.voucher_id = voucher_id;
         this.shipping_address = shipping_address;
+        this.phone = phone;
     }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    public String getPayment_method() {
+        return payment_method;
+    }
+
+    public void setPayment_method(String payment_method) {
+        this.payment_method = payment_method;
+    }
+    
 
     public int getOrder_id() {
         return order_id;

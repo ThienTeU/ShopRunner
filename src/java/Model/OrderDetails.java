@@ -14,18 +14,17 @@ public class OrderDetails {
     private int ProductPrice_id;
     private int size_id;
     private int quantity;
-    private int price;
+    private double unit_price;
 
     public OrderDetails() {
     }
 
-    public OrderDetails(int order_detail_id, int order_id, int ProductPrice_id, int size_id, int quantity, int price) {
-        this.order_detail_id = order_detail_id;
+    public OrderDetails(int order_id, int ProductPrice_id, int size_id, int quantity, double unit_price) {
         this.order_id = order_id;
         this.ProductPrice_id = ProductPrice_id;
         this.size_id = size_id;
         this.quantity = quantity;
-        this.price = price;
+        this.unit_price = unit_price;
     }
 
     public int getOrder_detail_id() {
@@ -68,12 +67,12 @@ public class OrderDetails {
         this.quantity = quantity;
     }
 
-    public int getPrice() {
-        return price;
+    public double getPrice() {
+        return unit_price;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setPrice(double unit_price) {
+        this.unit_price = unit_price;
     }
 
     @Override
@@ -85,7 +84,7 @@ public class OrderDetails {
         sb.append(", ProductPrice_id=").append(ProductPrice_id);
         sb.append(", size_id=").append(size_id);
         sb.append(", quantity=").append(quantity);
-        sb.append(", price=").append(price);
+        sb.append(", unit_price=").append(unit_price);
         sb.append('}');
         return sb.toString();
     }

@@ -6,6 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.time.LocalDateTime" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -18,6 +20,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 
         <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -29,7 +32,6 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="product-images">
-                    <!-- Ảnh chính -->
                     <img alt="Main product image showing the product in detail" height="600" id="mainImage"
                          src="${requestScope.listProductImage[0].image_url}"
                          width="600" style="object-fit: contain"/>
@@ -48,83 +50,232 @@
                         </div>
                     </div>
 
-                    <!-- Thanh hiển thị vị trí (Pagination) -->
+                    <!-- Thanh hiển thị vị trí phân trang-->
                     <div style="text-align: center" class="swiper-pagination"></div>
                 </div>
 
                 <br>
                 <div class="left-section">
                     <div class="reviews">
-                        <h5>
-                            Đánh Giá (1)
+                        <%
+                            LocalDateTime endFeedbackDate = (LocalDateTime) request.getAttribute("endFeedbackDate");
+                            boolean isExpired = (endFeedbackDate != null) && endFeedbackDate.isBefore(java.time.LocalDateTime.now());
+                        %>
+                        <h5 class="reviews">
+                            <span>Đánh Giá (${listFeedback.size()})</span>
                             <span class="rating">
-                                5.0
-                                <i class="fas fa-star">
-                                </i>
+                                ${averageRate} <i class="fas fa-star"></i>
                             </span>
+
+                            <c:if test="${isExpired}">
+                                <h3 id="countdown" class="expired">Hết hạn đánh giá!</h3>
+                            </c:if>
+
+                            <c:if test="${!isExpired && !checkFeedback && orderDate != null}">
+                                <h3 style="font-size: 15px">Thời gian còn lại: <span id="countdown"></span></h3>
+                                </c:if>
+
+                            <button id="feedbackButton" 
+                                    onclick="toggleFeedback()" 
+                                    ${isExpired ? "disabled" :""}
+                                    ${checkFeedback ? "disabled" : ""}
+                                    ${orderDate==null ?"hidden":""}>
+                                ${checkFeedback ? "Bạn đã đánh giá" : "Đánh giá"}
+                            </button>
                         </h5>
-                    </div>
-                    <hr>
-                    <div class="description">
-                        <h5>
-                            Mô Tả
-                        </h5>
-                        <p>${requestScope.product.description}</p>
-                    </div>
-                    <hr>
-                    <div class="complete-look">
-                        <a style="text-decoration: none" href="productcategory?categoryId=${product.category_id}">
-                            <h2>
-                                SẢN PHẨM LIÊN QUAN (${countRelatedProduct})
-                            </h2>
-                        </a>
-                            <div class="item-container">
-                            <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
-                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
-                                    <div class="item">
-                                        <c:if test="${rp.isWithin10Days(rp.created_at)}">
-                                            <div class="type">
-                                                <span class="content">SẢN PHẨM MỚI</span>
-                                            </div>
-                                        </c:if>
-                                        <img alt="${rp.product_name}" height="200"
-                                             src="${rp.thumbnail}"
-                                             width="200" />
-                                        <div class="price">
-                                            <c:forEach items="${listUniqueProductPrice}" var="pp">
-                                                <c:if test="${rp.product_id == pp.product_id}">
-                                                    <c:choose>
-                                                        <c:when test="${rp.discount != 0}">
-                                                            <span class="productPrice original-price">${pp.price}</span>
-                                                            <span class="productPrice discounted-price">${pp.price * (100 - rp.discount) / 100}</span>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <span class="productPrice">${pp.price}</span>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </c:if>
+
+                        <script>
+                            function startCountdown(targetTime) {
+                                function updateCountdown() {
+                                    let now = new Date().getTime();
+                                    let distance = targetTime - now;
+
+                                    if (distance < 0) {
+                                        document.getElementById("countdown").textContent = "Hết hạn đánh giá!";
+                                        document.getElementById("countdown").classList.add("expired");
+                                        document.getElementById("feedbackButton").disabled = true;
+                                        clearInterval(interval);
+                                        return;
+                                    }
+
+                                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                    document.getElementById("countdown").textContent =
+                                            days + " ngày " + hours + " giờ " + minutes + " phút " + seconds + " giây";
+                                }
+
+                                updateCountdown();
+                                let interval = setInterval(updateCountdown, 1000);
+                            }
+
+                            window.onload = function () {
+                                let endFeedbackDate = "<%= (endFeedbackDate != null) ? endFeedbackDate : "" %>";
+                                if (endFeedbackDate) {
+                                    let targetTime = new Date(endFeedbackDate.replace("T", " ")).getTime();
+                                    startCountdown(targetTime);
+                                }
+                            };
+                        </script>
+                        
+                        <div class="feedback-list">
+                            <c:forEach items="${listFeedback}" var="fb" varStatus="status">
+                                <div class="review-container" style="${status.index > 0 ? 'display: none;' : ''}">
+                                    <div class="review-header">
+                                        <div class="star-rating">
+                                            <c:forEach begin="1" end="${fb.rating}">
+                                                <i id="star-review" class="bi bi-star-fill"></i>
                                             </c:forEach>
                                         </div>
-                                        <div class="name" >
-                                            <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rp.product_name}</span>
-                                        </div>
-                                        <div class="category">
-                                            <c:forEach items="${listCategory}" var="c">
-                                                ${c.category_id == rp.category_id ? c.name : ""}
-                                            </c:forEach>
-                                        </div>
+                                        <span class="email">${fb.email}</span>
                                     </div>
-                                </a>
+                                    <p class="review-content">${fb.feedback_content}</p>
+                                    <span class="review-date">${fb.create_at}</span>
+                                </div>
                             </c:forEach>
                         </div>
+
+                        <c:if test="${listFeedback.size() != 0}">
+                            <button id="loadMoreBtn" class="btn btn-outline-dark" onclick="showMoreReviews()">Xem thêm</button>
+                        </c:if>
+                        <script>
+                            let reviews = document.querySelectorAll('.review-container'); // Danh sách tất cả đánh giá
+                            let btn = document.getElementById('loadMoreBtn'); // Button "Xem thêm"
+                            let visibleCount = 1; // Ban đầu hiển thị 1 đánh giá
+                            let loadAmount = 3; // Số lượng đánh giá sẽ hiển thị thêm mỗi lần nhấn
+
+                            function showMoreReviews() {
+                                let totalReviews = reviews.length;
+
+                                for (let i = visibleCount; i < visibleCount + loadAmount && i < totalReviews; i++) {
+                                    reviews[i].style.display = 'block';
+                                }
+
+                                visibleCount += loadAmount;
+
+                                // Ẩn nút nếu đã hiển thị hết
+                                if (visibleCount >= totalReviews) {
+                                    btn.style.display = 'none';
+                                }
+                            }
+                        </script>
+
                     </div>
 
-                    <div class="complete-look">
+                    <!-- Form Đánh Giá -->
+                    <div id="feedback-form" style="display: none;">
+                        <button type="button" class="btn-close" onclick="toggleFeedback()">×</button>
+
+                        <h3>Chia sẻ trải nghiệm của bạn</h3>
+                        <p>Bạn đánh giá sản phẩm này như thế nào?</p>
+
+                        <form action="AddFeedbackServlet" method="POST">
+                            <input type="hidden" name="email" value="${user.email}">
+                            <input type="hidden" name="product_id" value="${product.product_id}">
+                            <div id="star-feedback" class="star-rating">
+                                <input type="hidden" name="rating" id="rating-value"> <!-- Input ẩn lưu số sao -->
+                                <i class="bi bi-star star" data-value="1"></i>
+                                <i class="bi bi-star star" data-value="2"></i>
+                                <i class="bi bi-star star" data-value="3"></i>
+                                <i class="bi bi-star star" data-value="4"></i>
+                                <i class="bi bi-star star" data-value="5"></i>
+                            </div>
+
+                            <p>Cho chúng tôi biết trải nghiệm của bạn:</p>
+                            <textarea name="feedback_content" id="feedback" cols="30" rows="5" placeholder="Viết đánh giá của bạn..." ></textarea>
+
+                            <button type="submit" class="btn-submit">Gửi Đánh Giá</button>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    function toggleFeedback() {
+                        let form = document.getElementById("feedback-form");
+                        form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+                    }
+
+                    // Kích hoạt đánh giá sao
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const stars = document.querySelectorAll(".star");
+                        const ratingInput = document.getElementById("rating-value");
+
+                        stars.forEach(star => {
+                            star.addEventListener("click", function () {
+                                let value = this.getAttribute("data-value");
+                                ratingInput.value = value; // Gán giá trị vào input hidden
+
+                                stars.forEach(s => s.classList.remove("active"));
+                                for (let i = 0; i < value; i++) {
+                                    stars[i].classList.add("active");
+                                }
+                            });
+                        });
+                    });
+                </script>
+
+                <hr>
+                <div class="description">
+                    <h5 style="font-family: Calibri; font-weight: 700">
+                        Mô Tả
+                    </h5>
+                    <p>${requestScope.product.description}</p>
+                </div>
+                <hr>
+
+                <div class="complete-look">
+                    <a style="text-decoration: none" href="productcategory?categoryId=${product.category_id}">
                         <h2>
-                            VỪA XEM GẦN ĐÂY
+                            SẢN PHẨM CÙNG THỂ LOẠI (${countRelatedProduct-1})
                         </h2>
-                        <div class="item-container">
-                            <c:forEach items="${listRecentlyView}" var="rv" begin="0" end="3">
+                    </a>
+                    <div class="item-container">
+                        <c:forEach items="${listRelatedProduct}" var="rp" begin="0" end="3">
+                            <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rp.product_id}">
+                                <div class="item">
+                                    <c:if test="${rp.isWithin10Days(rp.created_at)}">
+                                        <div class="type">
+                                            <span class="content">SẢN PHẨM MỚI</span>
+                                        </div>
+                                    </c:if>
+                                    <img alt="${rp.product_name}" height="200"
+                                         src="${rp.thumbnail}"
+                                         width="200" />
+                                    <div class="price">
+                                        <c:forEach items="${listUniqueProductPrice}" var="pp">
+                                            <c:if test="${rp.product_id == pp.product_id}">
+                                                <c:choose>
+                                                    <c:when test="${rp.discount != 0}">
+                                                        <span class="productPrice original-price">${pp.price}</span>
+                                                        <span class="productPrice discounted-price">${pp.price * (100 - rp.discount) / 100}</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="productPrice">${pp.price}</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
+                                        </c:forEach>
+                                    </div>
+                                    <div class="name" >
+                                        <span style="color: #101010;font-family: Roboto, sans-serif; font-size: 17px">${rp.product_name}</span>
+                                    </div>
+                                    <div class="category">
+                                        <c:forEach items="${listCategory}" var="c">
+                                            ${c.category_id == rp.category_id ? c.name : ""}
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </div>
+                </div>
+                <div class="complete-look">
+                    <h2>
+                        VỪA XEM GẦN ĐÂY
+                    </h2>
+                    <div class="item-container">
+                        <c:forEach items="${listRecentlyView}" var="rv" begin="0" end="3">
                             <a style="text-decoration: none" href="ProductDetailServlet?product_id=${rv.product_id}">
                                 <div class="item">
                                     <c:if test="${rv.isWithin10Days(rv.created_at)}">
@@ -161,15 +312,15 @@
                                 </div>
                             </a>
                         </c:forEach>        
-                        </div>               
-                    </div>
+                    </div>               
+                </div>
 
-                    <div class="complete-look">
-                        <h2>
-                            XEM NHIỀU NHẤT
-                        </h2>
-                        <div class="item-container">
-                            <c:forEach items="${listMostView}" var="mv" begin="0" end="3">
+                <div class="complete-look">
+                    <h2>
+                        XEM NHIỀU NHẤT
+                    </h2>
+                    <div class="item-container">
+                        <c:forEach items="${listMostView}" var="mv" begin="0" end="3">
                             <a style="text-decoration: none; " href="ProductDetailServlet?product_id=${mv.product_id}">
                                 <div style="position: relative" class="item">
                                     <c:if test="${mv.isWithin10Days(mv.created_at)}">
@@ -224,10 +375,8 @@
                                 </div>
                             </a>
                         </c:forEach>  
-                        </div>                     
-                    </div>
+                    </div>                     
                 </div>
-
             </div>
 
             <div class="col-md-4" style="position: fixed; right: 0;">
@@ -269,8 +418,8 @@
                     <c:forEach items="${requestScope.listProductPrice}" var="pp">
                         <c:forEach items="${listColor}" var="c">
                             <c:if test="${pp.color_id == c.color_id}">
-                                <a style="text-decoration: none" href="ProductDetailServlet?product_id=${requestScope.product.product_id}&color_id=${c.color_id}">
-                                    <button style="background-color: ${c.color}; border-radius: 50px; width: 40px; margin-top: 10px"></button>
+                                <a style="text-decoration: none;" href="ProductDetailServlet?product_id=${requestScope.product.product_id}&color_id=${c.color_id}">
+                                    <button style="background-color: ${c.color}; border-radius: 50px; width: 40px; margin-top: 10px;  ${selectedColor == c.color_id ? "border: 3px black solid" : ""}"></button>
                                 </a>
                             </c:if>
                         </c:forEach>                       
@@ -282,11 +431,12 @@
                     <c:forEach items="${listProductQuantity}" var="pq">
                         <c:forEach items="${listSize}" var="s">
                             <c:if test="${pq.size_id == s.size_id}">
-                                <button class="size-button"
-                                        data-size-id="${s.size_id}"
-                                        data-productprice-id="${selectedProductPriceId}"
-                                        data-productquantity-id="${pq.productQuantity_id}"
-                                        data-quantity="${pq.quantity}">
+                                <button ${pq.quantity == 0 ? "disabled" : ""}
+                                    class="size-button"
+                                    data-size-id="${s.size_id}"
+                                    data-productprice-id="${selectedProductPriceId}"
+                                    data-productquantity-id="${pq.productQuantity_id}"
+                                    data-quantity="${pq.quantity}">
                                     ${s.size}
                                 </button>
                             </c:if>
@@ -295,7 +445,7 @@
                 </div>
                 <!-- Hiển thị số lượng -->
                 <div class="product-quantity">
-                    <strong>Số lượng: </strong> <span id="selectedQuantity">Hãy chọn size</span>
+                    <strong>Số lượng: </strong> <span id="selectedQuantity">Hãy chọn kích cỡ</span>
                 </div>
 
                 <div class="size-guide">
@@ -329,6 +479,115 @@
                 </div>
             </div>
         </div>
+
+        <!-- CHAT ICON -->
+        <div id="chat-icon" onclick="toggleChat()">
+            💬 Chat với Admin
+        </div>
+
+        <!-- CỬA SỔ CHAT -->
+        <div id="chat-window">
+            <div id="chat-header" onclick="toggleChat()">
+                Chat Support <span onclick="closeChat(event)">✖</span>
+            </div>
+
+
+            <div id="chat-input">
+                <input type="email" id="email" placeholder="Nhập email">
+                <button onclick="connectWebSocket()">Bắt đầu chat</button>
+
+                <div id="chat-messages"></div>
+
+                <input type="text" id="message" placeholder="Nhập tin nhắn...">
+                <button onclick="sendMessage()">Gửi</button>
+                <button onclick="clearChatHistory()">Xóa lịch sử</button>
+            </div>
+        </div>
+        <script>
+            function toggleChat() {
+                let chatWindow = document.getElementById("chat-window");
+                chatWindow.style.display = (chatWindow.style.display === "none" || chatWindow.style.display === "") ? "block" : "none";
+            }
+            let ws;
+            let currentEmail;
+
+            function connectWebSocket() {
+                let emailInput = document.getElementById("email");
+                let email = emailInput.value.trim();
+
+                if (!email) {
+                    alert("Vui lòng nhập email trước khi bắt đầu chat!");
+                    return;
+                }
+
+                currentEmail = email;
+
+                if (ws) {
+                    ws.close();
+                }
+
+                ws = new WebSocket("ws://" + window.location.host + "/RunnerShop/chat/" + email);
+
+                ws.onopen = function () {
+                    console.log("WebSocket connected for " + email);
+                    loadChatHistory(email);
+                };
+
+                ws.onmessage = function (event) {
+                    displayMessage(event.data);
+                    saveMessage(email, event.data);
+                };
+
+                ws.onclose = function () {
+                    console.log("WebSocket closed");
+                };
+            }
+
+            function displayMessage(message) {
+                let chatMessages = document.getElementById("chat-messages");
+                let messageElement = document.createElement("p");
+                messageElement.textContent = message;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function sendMessage() {
+                let messageInput = document.getElementById("message");
+                let message = messageInput.value.trim();
+                if (message !== "" && ws) {
+                    let formattedMessage = currentEmail + ": " + message;
+                    ws.send(message);
+                    displayMessage(formattedMessage);
+                    saveMessage(currentEmail, formattedMessage);
+                    messageInput.value = "";
+                }
+            }
+
+            function saveMessage(email, message) {
+                let chatHistoryKey = "chat_history_" + email;
+                let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+                chatHistory.push(message);
+                localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+            }
+
+            function loadChatHistory(email) {
+                let chatHistoryKey = "chat_history_" + email;
+                let chatMessages = document.getElementById("chat-messages");
+                chatMessages.innerHTML = "";
+                let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+                chatHistory.forEach(message => {
+                    displayMessage(message);
+                });
+            }
+
+            function clearChatHistory() {
+                if (!currentEmail)
+                    return;
+                let chatHistoryKey = "chat_history_" + currentEmail;
+                localStorage.removeItem(chatHistoryKey);
+                document.getElementById("chat-messages").innerHTML = "";
+            }
+        </script>
         <script>
             function changeImage(element) {
                 var mainImage = document.getElementById('mainImage');
@@ -353,7 +612,7 @@
                 }
             });
 
-// Khi bấm vào ảnh thumbnail, slide sẽ tự trượt next/prev nếu cần
+            // Khi bấm vào ảnh thumbnail, slide sẽ tự trượt next/prev nếu cần
             function changeImage(img) {
                 document.getElementById("mainImage").src = img.src;
 
@@ -374,7 +633,8 @@
 
 
         </script>
-        <script>document.addEventListener("DOMContentLoaded", function () {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
                 const form = document.querySelector(".add-to-bag1 form");
                 const productQuantityInput = document.getElementById("selectedProductQuantityId");
 
@@ -385,6 +645,7 @@
                     }
                 });
             });
+
             document.addEventListener("DOMContentLoaded", function () {
                 const sizeButtons = document.querySelectorAll(".size-button");
                 const quantityDisplay = document.getElementById("selectedQuantity");
@@ -392,11 +653,20 @@
 
                 sizeButtons.forEach(button => {
                     button.addEventListener("click", function (event) {
+                        if (button.disabled) {
+                            return; // Không làm gì nếu nút bị vô hiệu hóa
+                        }
+
                         event.preventDefault(); // Ngăn chặn reload trang
 
-                        // Bỏ highlight của tất cả nút size
-                        sizeButtons.forEach(btn => btn.style.backgroundColor = "white");
-                        sizeButtons.forEach(btn => btn.style.color = "black");
+                        // Bỏ highlight của tất cả nút size không bị vô hiệu hóa
+                        sizeButtons.forEach(btn => {
+                            if (!btn.disabled) {
+
+                                btn.style.backgroundColor = "white";
+                                btn.style.color = "black";
+                            }
+                        });
 
                         // Đánh dấu nút size được chọn
                         this.style.backgroundColor = "black";
@@ -414,6 +684,7 @@
                     });
                 });
             });
+
         </script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -426,7 +697,7 @@
                 });
             });
         </script>
-
     </body>
+
 
 </html>

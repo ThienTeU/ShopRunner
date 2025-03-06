@@ -21,6 +21,93 @@ public class FeedbackDAO extends DBContext {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
+    public static void main(String[] args) throws SQLException {
+        FeedbackDAO dao = new FeedbackDAO();
+        List<Feedback> list = dao.getAllFeedbackById(1);
+        for (Feedback f : list) {
+            System.out.println(f.toString());
+        }
+        //System.out.println(dao.checkOrderOrNot("duonghieu294@gmail.com", 1));
+        //System.out.println(dao.checkFeedbackOrNot("duonghieu294@gmail.com", 1));
+    }
+
+    public boolean checkFeedbackOrNot(String email, int product_id) throws SQLException {
+        String query = "SELECT * FROM dbo.Feedback WHERE email = ? AND product_id = ?";
+        ps = connection.prepareStatement(query);
+        ps.setString(1, email);
+        ps.setInt(2, product_id);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return true;
+            } else {
+                System.out.println("No data found for email: " + email + " and product_id: " + product_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean insertFeedback(String email, int productId, String feedbackContent, int rating) {
+        String query = "INSERT INTO Feedback (email, product_id, feedback_content, rating) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, email);
+            ps.setInt(2, productId);
+            ps.setString(3, feedbackContent);
+            ps.setInt(4, rating);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0; // Trả về true nếu thêm thành công
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String checkOrderOrNot(String email, int product_id) throws SQLException {
+        String query = "SELECT * FROM dbo.Orders LEFT JOIN dbo.OrderDetails ON OrderDetails.order_id = Orders.order_id\n"
+                + "WHERE Product_id = ? AND email = ? ORDER BY order_date desc";
+        ps = connection.prepareStatement(query);
+        ps.setInt(1, product_id);
+        ps.setString(2, email);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getString("order_date");
+            } else {
+                System.out.println("No data found for email: " + email + " and product_id: " + product_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Feedback> getAllFeedbackById(int product_id) throws SQLException {
+        List<Feedback> list = new ArrayList<>();
+        String sql = "SELECT * FROM Feedback WHERE product_id = ?";
+        ps = connection.prepareStatement(sql);
+        ps.setInt(1, product_id);
+        try (ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Feedback feedback = new Feedback(
+                        rs.getInt("feedback_id"),
+                        rs.getInt("product_id"),
+                        rs.getString("email"),
+                        rs.getString("feedback_content"),
+                        rs.getInt("rating"),
+                        rs.getString("created_at"),
+                        rs.getBoolean("status")
+                );
+                list.add(feedback);
+            }
+        }
+        return list;
+    }
+
     public List<Feedback> getAllFeedback() throws SQLException {
         List<Feedback> list = new ArrayList<>();
         String sql = "SELECT * FROM Feedback";
@@ -30,7 +117,7 @@ public class FeedbackDAO extends DBContext {
                 Feedback feedback = new Feedback(
                         rs.getInt("feedback_id"),
                         rs.getInt("product_id"),
-                        rs.getInt("user_id"),
+                        rs.getString("email"),
                         rs.getString("feedback_content"),
                         rs.getInt("rating"),
                         rs.getString("created_at"),

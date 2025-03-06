@@ -20,7 +20,7 @@
     </head>
     <body class="bg-light text-dark">
         <c:if test="${sessionScope.cart.size() == 0 || sessionScope.cart == null }">
-            <c:redirect url="${sessionScope.contextPath}/CartDetailServlet"></c:redirect>
+            <c:redirect url="CartDetailServlet"></c:redirect>
         </c:if>
         <div class="container custom-container">
             <div class="text-center mb-4">
@@ -29,9 +29,9 @@
             </div>
             <div class="row">
                 <!-- Left Column -->
-                <div class="col-lg-8">
+                <div class="col-lg-7">
                     <!-- Contact Section -->
-                    <form action="CheckOutServlet" method="POST">
+                    <form id="checkoutForm" action="CheckOutServlet" method="POST">
                         <div class="mb-4">
                             <strong class="h4 section-title">LIÊN HỆ</strong>
                             <div class="form-group">
@@ -92,22 +92,16 @@
                                            type="text" required/>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label class="form-label" for="note">Ghi chú</label>
-                                    <input type="text" name="note" placeholder="" class="form-control">
-                                </div>
-                            </div>
                         </div>
                         <hr><!-- comment -->
                         <div class="mb-4">
                             <strong class="h4 section-title">TÙY CHỌN GIAO HÀNG</strong>
                             <div class="shipMethod">
-                                <span>Pay Online for Faster Delivery & Faster Return/Refund</span>
+                                <span>Thanh toán trực tuyến để giao hàng nhanh hơn và hoàn trả/hoàn tiền nhanh hơn.</span>
                             </div>
                             <div class="shipOption">
                                 <span id="shippingFee2">Đang tính...</span>
-                                <p>GHTK - Standard</p>
+                                <p>GHTK - Cơ bản</p>
                                 <p>08:00 - 20:00</p>
                             </div>
                         </div>
@@ -156,7 +150,7 @@
                 </div>
                 <!-- Right Column -->
 
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                     <h2 class="h4 section-title">GIỎ HÀNG CỦA BẠN</h2>
                     <div class="d-flex justify-content-between mb-2">
                         <span>${sessionScope.cart.size()} các sản phẩm</span>
@@ -200,7 +194,7 @@
                                         ${s.size}
                                     </c:if>
                                 </c:forEach> 
-                                / Quantity: ${item.quantity}
+                                / Số lượng: ${item.quantity}
                             </p> 
                             <p class="small text-muted">
                                 Màu sắc: 
@@ -287,56 +281,75 @@
     </script>
 
     <script>
-        //js validate input
         document.addEventListener("DOMContentLoaded", function () {
+            let form = document.getElementById("checkoutForm"); // Thay "myForm" bằng ID của form bạn muốn validate
             let contactEmail = document.getElementById("contactEmail");
             let emailValid = document.getElementById("emailValid");
             let invalidEmail = document.getElementById("invalidEmail");
-            contactEmail.addEventListener("input", function () {
-                let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                if (regex.test(this.value.trim())) {
-                    contactEmail.style.borderColor = "green";
-                    emailValid.style.display = "flex";
-                    invalidEmail.style.display = "none";
-                } else {
-                    this.style.borderColor = "red";
-                    invalidEmail.style.display = "flex";
-                    emailValid.style.display = "none";
-                }
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function () {
+
             let fullNameInput = document.getElementById("fullName");
             let nameValid = document.getElementById("nameValid");
             let invalidName = document.getElementById("invalidName");
-            fullNameInput.addEventListener("input", function () {
-                let regex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
-                if (regex.test(this.value.trim())) {
-                    this.style.borderColor = "green";
-                    nameValid.style.display = "flex";
-                    invalidName.style.display = "none";
-                } else {
-                    nameValid.style.display = "none";
-                    this.style.borderColor = "red";
-                    invalidName.style.display = "flex";
-                }
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function () {
+
             let phoneInput = document.getElementById("phoneNumber");
             let phoneValid = document.getElementById("phoneValid");
             let invalidPhone = document.getElementById("invalidPhone");
-            phoneInput.addEventListener("input", function () {
+
+            function validateEmail() {
+                let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (regex.test(contactEmail.value.trim())) {
+                    contactEmail.style.borderColor = "green";
+                    emailValid.style.display = "flex";
+                    invalidEmail.style.display = "none";
+                    return true;
+                } else {
+                    contactEmail.style.borderColor = "red";
+                    invalidEmail.style.display = "flex";
+                    emailValid.style.display = "none";
+                    return false;
+                }
+            }
+
+            function validateFullName() {
+                let regex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
+                if (regex.test(fullNameInput.value.trim())) {
+                    fullNameInput.style.borderColor = "green";
+                    nameValid.style.display = "flex";
+                    invalidName.style.display = "none";
+                    return true;
+                } else {
+                    fullNameInput.style.borderColor = "red";
+                    nameValid.style.display = "none";
+                    invalidName.style.display = "flex";
+                    return false;
+                }
+            }
+
+            function validatePhoneNumber() {
                 let regex = /^(0[3-9])([0-9]{8})$/;
-                ;
-                if (regex.test(this.value.trim())) {
-                    this.style.borderColor = "green";
+                if (regex.test(phoneInput.value.trim())) {
+                    phoneInput.style.borderColor = "green";
                     phoneValid.style.display = "flex";
                     invalidPhone.style.display = "none";
+                    return true;
                 } else {
-                    this.style.borderColor = "red";
+                    phoneInput.style.borderColor = "red";
                     phoneValid.style.display = "none";
                     invalidPhone.style.display = "flex";
+                    return false;
+                }
+            }
+
+            // Gọi các hàm validate khi nhập
+            contactEmail.addEventListener("input", validateEmail);
+            fullNameInput.addEventListener("input", validateFullName);
+            phoneInput.addEventListener("input", validatePhoneNumber);
+
+            // Ngăn submit form nếu có lỗi
+            form.addEventListener("submit", function (event) {
+                if (!validateEmail() || !validateFullName() || !validatePhoneNumber()) {
+                    event.preventDefault(); // Ngăn không cho submit
+                    alert("Vui lòng nhập đúng định dạng trước khi gửi!");
                 }
             });
         });

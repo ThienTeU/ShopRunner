@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import org.json.JSONObject;
 import Model.CartItem;
 import java.util.List;
+import org.json.JSONException;
 
 /**
  *
@@ -54,7 +55,7 @@ public class GetShippingFeeServlet extends HttpServlet {
     public double getShippingFee(String city, String district, String ward, double weight, double value) {
         try {
             String API_URL = "https://services.giaohangtietkiem.vn/services/shipment/fee";
-            String TOKEN = "W8BGwj6ped2keP01GFm77liHsGSgPPASqVdLGV";
+            String TOKEN = "13C9GJOiLh8zRzSXSIKkmYfTNPSvhO3a8sowSla";
             String encodedPickCity = URLEncoder.encode("Hà Nội", "UTF-8");
             String encodedPickDistrict = URLEncoder.encode("Thạch Thất", "UTF-8");
             
@@ -98,8 +99,7 @@ public class GetShippingFeeServlet extends HttpServlet {
             } else {
                 System.out.println("Lỗi HTTP: " + responseCode);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | JSONException e) {
         }
         return -1;
     }
