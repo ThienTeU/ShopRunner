@@ -9,6 +9,7 @@ import DAL.CategoryDAO;
 import DAL.ProductDAO;
 import Model.Banner;
 import Model.Category;
+import Model.CategoryAnh;
 import Model.Product;
 import Model.ProductView;
 import java.io.IOException;
@@ -63,117 +64,112 @@ public class HomeServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        CategoryDAO categoryDAO = new CategoryDAO();
-        BannerDAO bannerDAO = new BannerDAO();
-        ProductDAO productDAO = new ProductDAO();
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    CategoryDAO categoryDAO = new CategoryDAO();
+    BannerDAO bannerDAO = new BannerDAO();
+    ProductDAO productDAO = new ProductDAO();
 
-        // **Lấy tham số tìm kiếm từ request**
-        String searchQuery = request.getParameter("query");
-        
-        String categoryFilter = request.getParameter("category");
-        
-           String sortPrice = request.getParameter("sortPrice");
+    // Lấy các tham số
+    String searchQuery = request.getParameter("query");
+    String categoryFilter = request.getParameter("category");
+    String sortPrice = request.getParameter("sortPrice");
+    
+    // Xử lý phân trang
+    int pageSize = 12;
+    int page = 1;
+    try {
+        page = Integer.parseInt(request.getParameter("page"));
+    } catch (NumberFormatException e) {
+        page = 1;
+    }
+    int offset = (page - 1) * pageSize;
 
-        // **Fetch categories**
-        ArrayList<Category> categoryList = categoryDAO.getAllCategory();
-        ArrayList<Category> categoriesNam = categoryDAO.getAllCategoryNam();
-        ArrayList<Category> categoriesNu = categoryDAO.getAllCategoryNu();
+    // Khởi tạo danh sách sản phẩm
+    List<Product> listproduct;
+    int totalProducts;
 
-    // **Fetch banners**
-        List<Banner> bannerList = bannerDAO.getAllBanners();
-
-      // **Fetch top-viewed products**
-        int topLimit = 9;
-        ArrayList<Product> topViewedProducts = productDAO.getTopViewedProducts(topLimit);
-
-    // **Fetch newest products**
-        int newestLimit = 9;
-        ArrayList<Product> newestProducts = productDAO.getNewestProducts(newestLimit);
-
-    // **Cập nhật phân trang danh sách sản phẩm**
-        int pageSize = 6; // Số sản phẩm trên mỗi trang
-        int page = 1; // Trang mặc định
-
-    // **Lấy tham số page từ request**
-        String pageParam = request.getParameter("page");
-        if (pageParam != null) {
-            try {
-                page = Integer.parseInt(pageParam);
-            } catch (NumberFormatException e) {
-                page = 1; // Nếu lỗi, mặc định về trang 1
-            }
+    // Xử lý tìm kiếm và lọc
+    if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+        // Tìm kiếm sản phẩm
+        listproduct = productDAO.searchProducts(searchQuery, sortPrice, offset, pageSize);
+        totalProducts = productDAO.getTotalSearchResults(searchQuery);
+    } else if (categoryFilter != null && !categoryFilter.trim().isEmpty()) {
+        // Lọc theo danh mục
+        switch (categoryFilter) {
+            case "nam":
+                listproduct = productDAO.getAllProductNam();
+                break;
+            case "nu":
+                listproduct = productDAO.getAllProductNu();
+                break;
+            case "giay":
+                listproduct = productDAO.getAllProductGiay();
+                break;
+            case "other":
+                listproduct = productDAO.getAllProductOther();
+                break;
+            default:
+                listproduct = productDAO.getAllProduct();
+                break;
         }
         
-
-    // **Kiểm tra nếu có từ khóa tìm kiếm**
-        List<Product> allProducts;
-if (categoryFilter != null && !categoryFilter.trim().isEmpty()) {
-    switch (categoryFilter) {
-        case "nam":
-            allProducts = productDAO.getAllProductNam();
-            break;
-        case "nu":
-            allProducts = productDAO.getAllProductNu();
-            break;
-        case "giay":
-            allProducts = productDAO.getAllProductGiay();
-            break;
-        case "other":
-            allProducts = productDAO.getAllProductOther();
-            break;
-        default:
-            allProducts = productDAO.getAllProduct();
-            break;
-    }
-} else {
-    // Nếu không có lọc danh mục, tìm kiếm sản phẩm theo tên
-    if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-        allProducts = productDAO.searchProductsByName(searchQuery);
+        // Áp dụng sắp xếp nếu có
+        if (sortPrice != null && !sortPrice.isEmpty()) {
+            listproduct = productDAO.sortProducts(listproduct, sortPrice);
+        }
+        
+        totalProducts = listproduct.size();
+        
+        // Áp dụng phân trang cho danh sách đã lọc
+        int fromIndex = offset;
+        int toIndex = Math.min(fromIndex + pageSize, totalProducts);
+        listproduct = fromIndex < totalProducts ? 
+            listproduct.subList(fromIndex, toIndex) : 
+            new ArrayList<>();
     } else {
-        allProducts = productDAO.getAllProduct();
+        // Lấy tất cả sản phẩm
+        listproduct = productDAO.getAllProduct();
+        if (sortPrice != null && !sortPrice.isEmpty()) {
+            listproduct = productDAO.sortProducts(listproduct, sortPrice);
+        }
+        totalProducts = listproduct.size();
+        
+        // Áp dụng phân trang
+        int fromIndex = offset;
+        int toIndex = Math.min(fromIndex + pageSize, totalProducts);
+        listproduct = fromIndex < totalProducts ? 
+            listproduct.subList(fromIndex, toIndex) : 
+            new ArrayList<>();
     }
+
+    // Tính tổng số trang
+    int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+
+    // Lấy dữ liệu khác
+    List<Banner> bannerList = bannerDAO.getAllBanners();
+    List<CategoryAnh> categories = categoryDAO.getAllCategories();
+    List<Product> topViewedProducts = productDAO.getTopViewedProducts(9);
+    List<Product> newestProducts = productDAO.getNewestProducts(9);
+
+    // Set attributes
+    request.setAttribute("cbanners", bannerList);
+    request.setAttribute("categories", categories);
+    request.setAttribute("topViewedProducts", topViewedProducts);
+    request.setAttribute("newestProducts", newestProducts);
+    request.setAttribute("listproduct", listproduct);
+    request.setAttribute("currentPage", page);
+    request.setAttribute("totalPages", totalPages);
+    request.setAttribute("pageSize", pageSize);
+    request.setAttribute("query", searchQuery);
+    request.setAttribute("category", categoryFilter);
+    request.setAttribute("sortPrice", sortPrice);
+
+    // Forward to JSP
+    request.getRequestDispatcher("HomePage.jsp").forward(request, response);
 }
 
- if (sortPrice != null) {
-            allProducts = productDAO.getAllProductBySort(sortPrice);
-        }
-
-        int totalProducts = allProducts.size();
-        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
-
-        // **Xác định khoảng sản phẩm hiển thị**
-        int fromIndex = (page - 1) * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, totalProducts);
-        List<Product> listproduct = allProducts.subList(fromIndex, toIndex);
-        System.out.println("Số sản phẩm tìm thấy: " + listproduct.size());
-
-        // **Kiểm tra nếu có sản phẩm để hiển thị**
-        if (fromIndex < totalProducts) {
-            listproduct = allProducts.subList(fromIndex, toIndex);
-        } else {
-            listproduct = new ArrayList<>(); // Tránh lỗi nếu truy cập trang vượt quá số lượng sản phẩm
-        }
-
-        // **Gán dữ liệu vào request**
-        request.setAttribute("categoryList", categoryList);
-        request.setAttribute("categoriesNam", categoriesNam);
-        request.setAttribute("categoriesNu", categoriesNu);
-        request.setAttribute("cbanners", bannerList);
-        request.setAttribute("topViewedProducts", topViewedProducts);
-        request.setAttribute("newestProducts", newestProducts);
-        request.setAttribute("listproduct", listproduct);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("pageSize", pageSize);
-        request.setAttribute("query", searchQuery); 
-        request.setAttribute("category", categoryFilter); 
-
-// **Chuyển hướng đến trang JSP**
-        request.getRequestDispatcher("HomePage.jsp").forward(request, response);
-    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
