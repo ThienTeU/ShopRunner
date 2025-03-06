@@ -116,6 +116,32 @@
             });
         </script>
 
+        <form action="productcheckbox" method="get">
+            <strong>Kích thước</strong><br>
+            <c:forEach var="s" items="${size}">
+                <input type="checkbox" name="size" value="${s.size}"
+                       <c:forEach var="selected" items="${selectedSizes}">
+                           <c:if test="${selected eq s.size}">checked</c:if>
+                       </c:forEach>
+                       > ${s.size} <br>
+            </c:forEach>
+
+            <strong>Màu sắc</strong><br>
+            <c:forEach var="c" items="${colorsAll}">
+                <label>
+                    <input type="checkbox" name="color" value="${c.color}"
+                           <c:forEach var="selected" items="${selectedColors}">
+                               <c:if test="${selected eq c.color}">checked</c:if>
+                           </c:forEach>
+                           > 
+                    <span class="color-box ${c.color}"></span>
+                </label>
+            </c:forEach>
+
+            <br>
+            <button type="submit">Lọc</button>
+        </form>
+
         <form action="ProductListTest" method="get" id="filterForm">
             <input type="text" value="${key}" name="key" placeholder="Nhập từ khóa...">
             <label>Theo ngày:</label>
