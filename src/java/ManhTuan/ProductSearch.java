@@ -47,7 +47,6 @@ public class ProductSearch extends HttpServlet {
         }
         List<ProductTuan> productPage = dao.getAllProductsByPages(index, size, key);
         List<CategoryTuan> categories = dao.getCategoryTree();
-        
         request.setAttribute("categories", categories);
         request.setAttribute("key", key);
         request.setAttribute("end", end);

@@ -18,23 +18,294 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author admin
- */
 public class ProductDAOTuan extends DBContext {
-    
+
+    public List<UserTuan> searchUsers(String userName, String email, String phone, Boolean status, int offset, int size) {
+        List<UserTuan> userList = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, "
+                + "u.gender_id, a.address_id, a.name AS address_name, a.phone AS address_phone, "
+                + "a.city, a.district, a.ward, a.street "
+                + "FROM [User] u "
+                + "LEFT JOIN [Address] a ON u.user_id = a.user_id "
+                + "WHERE u.role_id = 2 "
+                + "AND (? IS NULL OR u.user_name LIKE ?) "
+                + "AND (? IS NULL OR u.email LIKE ?) "
+                + "AND (? IS NULL OR u.phone_number LIKE ?) "
+                + "AND (? IS NULL OR u.status = ?) "
+                + "ORDER BY u.user_id "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setObject(1, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(2, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(3, email != null ? "%" + email + "%" : null);
+            ps.setObject(4, email != null ? "%" + email + "%" : null);
+            ps.setObject(5, phone != null ? "%" + phone + "%" : null);
+            ps.setObject(6, phone != null ? "%" + phone + "%" : null);
+            ps.setObject(7, status);
+            ps.setObject(8, status);
+            ps.setInt(9, offset);
+            ps.setInt(10, size);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    UserTuan customer = new UserTuan();
+                    customer.setUserId(rs.getInt("user_id"));
+                    customer.setUserName(rs.getString("user_name"));
+                    customer.setRoleId(rs.getInt("role_id"));
+                    customer.setEmail(rs.getString("email"));
+                    customer.setPhoneNumber(rs.getString("phone_number"));
+                    customer.setStatus(rs.getBoolean("status"));
+                    customer.setGenderId(rs.getInt("gender_id"));
+                    customer.setAddresses(getAddressById(customer.getUserId()));
+                    userList.add(customer);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+    public List<UserTuan> searchUsers(String userName, String email, String phone, Boolean status) {
+        List<UserTuan> userList = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, "
+                + "u.gender_id, a.address_id, a.name AS address_name, a.phone AS address_phone, "
+                + "a.city, a.district, a.ward, a.street "
+                + "FROM [User] u "
+                + "LEFT JOIN [Address] a ON u.user_id = a.user_id "
+                + "WHERE u.role_id = 2 "
+                + "AND (? IS NULL OR u.user_name LIKE ?) "
+                + "AND (? IS NULL OR u.email LIKE ?) "
+                + "AND (? IS NULL OR u.phone_number LIKE ?) "
+                + "AND (? IS NULL OR u.status = ?) "
+                + "ORDER BY u.user_id ";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setObject(1, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(2, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(3, email != null ? "%" + email + "%" : null);
+            ps.setObject(4, email != null ? "%" + email + "%" : null);
+            ps.setObject(5, phone != null ? "%" + phone + "%" : null);
+            ps.setObject(6, phone != null ? "%" + phone + "%" : null);
+            ps.setObject(7, status);
+            ps.setObject(8, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    UserTuan customer = new UserTuan();
+                    customer.setUserId(rs.getInt("user_id"));
+                    customer.setUserName(rs.getString("user_name"));
+                    customer.setRoleId(rs.getInt("role_id"));
+                    customer.setEmail(rs.getString("email"));
+                    customer.setPhoneNumber(rs.getString("phone_number"));
+                    customer.setStatus(rs.getBoolean("status"));
+                    customer.setGenderId(rs.getInt("gender_id"));
+                    customer.setAddresses(getAddressById(customer.getUserId()));
+                    userList.add(customer);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+
+    public List<AddressTuan> getAddressById(int id) {
+        List<AddressTuan> address = new ArrayList<>();
+        String sql = "select*from Address\n"
+                + "where user_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    address.add(new AddressTuan(rs.getInt("address_id"),
+                            rs.getInt("user_id"),
+                            rs.getString("name"),
+                            rs.getString("phone"),
+                            rs.getString("city"),
+                            rs.getString("district"),
+                            rs.getString("ward"),
+                            rs.getString("street"))
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return address;
+    }
+
+    public List<UserTuan> getAllCustomer() {
+        List<UserTuan> customers = new ArrayList<>();
+        String sql = "SELECT \n"
+                + "    u.user_id, \n"
+                + "	u.role_id,\n"
+                + "    u.user_name, \n"
+                + "    u.email, \n"
+                + "    u.phone_number, \n"
+                + "    u.status, \n"
+                + "	u.gender_id,\n"
+                + "    a.address_id, \n"
+                + "    a.name AS address_name, \n"
+                + "    a.phone AS address_phone, \n"
+                + "    a.city, \n"
+                + "    a.district, \n"
+                + "    a.ward, \n"
+                + "    a.street\n"
+                + "FROM [User] u\n"
+                + "LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
+                + "WHERE u.role_id = 2;";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                UserTuan customer = new UserTuan();
+                customer.setUserId(rs.getInt("user_id"));
+                customer.setUserName(rs.getString("user_name"));
+                customer.setRoleId(rs.getInt("role_id"));
+                customer.setEmail(rs.getString("email"));
+                customer.setPhoneNumber(rs.getString("phone_number"));
+                customer.setStatus(rs.getBoolean("status"));
+                customer.setGenderId(rs.getInt("gender_id"));
+                customer.setAddresses(getAddressById(customer.getUserId()));
+                customers.add(customer);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    public List<UserTuan> getAllCustomer(int index, int size) {
+        List<UserTuan> customers = new ArrayList<>();
+        int offset = (index - 1) * size;
+        String sql = "SELECT \n"
+                + "    u.user_id, \n"
+                + "    u.role_id,\n"
+                + "    u.user_name, \n"
+                + "    u.email, \n"
+                + "    u.phone_number, \n"
+                + "    u.status, \n"
+                + "    u.gender_id,\n"
+                + "    a.address_id, \n"
+                + "    a.name AS address_name, \n"
+                + "    a.phone AS address_phone, \n"
+                + "    a.city, \n"
+                + "    a.district, \n"
+                + "    a.ward, \n"
+                + "    a.street\n"
+                + "FROM [User] u\n"
+                + "LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
+                + "WHERE u.role_id = 2\n"
+                + "ORDER BY u.user_id \n"
+                + "OFFSET ? ROWS \n"
+                + "FETCH NEXT ? ROWS ONLY;";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, offset);
+            ps.setInt(2, size);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    UserTuan customer = new UserTuan();
+                    customer.setUserId(rs.getInt("user_id"));
+                    customer.setUserName(rs.getString("user_name"));
+                    customer.setRoleId(rs.getInt("role_id"));
+                    customer.setEmail(rs.getString("email"));
+                    customer.setPhoneNumber(rs.getString("phone_number"));
+                    customer.setStatus(rs.getBoolean("status"));
+                    customer.setGenderId(rs.getInt("gender_id"));
+                    customer.setAddresses(getAddressById(customer.getUserId()));
+                    customers.add(customer);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    public List<ProductTuan> getProductsByColorAndSize(List<String> colors, List<String> sizes) {
+        List<ProductTuan> products = new ArrayList<>();
+        if (colors == null || colors.isEmpty() || sizes == null || sizes.isEmpty()) {
+            return products;
+        }
+
+        String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating "
+                + "FROM Product p "
+                + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
+                + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
+                + "LEFT JOIN ProductQuantity pq ON pp.ProductPrice_id = pq.ProductPrice_id "
+                + "LEFT JOIN Color c ON pp.color_id = c.color_id "
+                + "LEFT JOIN Size s ON pq.size_id = s.size_id "
+                + "WHERE c.color IN (";
+
+        for (int i = 0; i < colors.size(); i++) {
+            sql += "'" + colors.get(i) + "'";
+            if (i < colors.size() - 1) {
+                sql += ",";
+            }
+        }
+
+        sql += ") AND s.size IN (";
+        for (int i = 0; i < sizes.size(); i++) {
+            sql += "'" + sizes.get(i) + "'";
+            if (i < sizes.size() - 1) {
+                sql += ",";
+            }
+        }
+
+        sql += ") GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
+                + "p.discount, p.status, p.thumbnail, p.created_at "
+                + "ORDER BY p.created_at DESC";
+        System.out.println(sql);
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                products.add(extractProduct(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    public List<Size> getAllSize() {
+        List<Size> list = new ArrayList<>();
+        String sql = "select*from Size";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Size size = new Size(rs.getInt("size_id"), rs.getString("size"));
+                    list.add(size);
+                }
+            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+        }
+        return list;
+    }
+
+    public List<Color> getAllColor() {
+        List<Color> list = new ArrayList<>();
+        String sql = "select*from Color";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Color color = new Color(rs.getInt("color_id"), rs.getString("color"));
+                    list.add(color);
+                }
+            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+        }
+        return list;
+    }
+
     public List<ProductTuan> getProductsByPriceRange(int min, int max) {
         List<ProductTuan> products = new ArrayList<>();
-       String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating, MIN(pp.price) AS price FROM Product p "
-           + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
-           + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
-           + "WHERE pp.price BETWEEN ? AND ? " // Thêm điều kiện lọc giá
-           + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
-           + "p.discount, p.status, p.thumbnail, p.created_at";
+        String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating, MIN(pp.price) AS price FROM Product p "
+                + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
+                + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
+                + "WHERE pp.price BETWEEN ? AND ? "
+                + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
+                + "p.discount, p.status, p.thumbnail, p.created_at";
 
-
-         try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, min);
             ps.setInt(2, max);
             try (ResultSet rs = ps.executeQuery()) {
@@ -50,73 +321,71 @@ public class ProductDAOTuan extends DBContext {
         }
         return products;
     }
-    
+
     public List<ProductTuan> getProducts(String key, String dateSort, String rateSort, String priceSort, int index, int pageSize) {
-    List<ProductTuan> products = new ArrayList<>();
-    StringBuilder sql = new StringBuilder(
-            "WITH RecursiveCategory AS ( "
-            + "    SELECT category_id FROM Category WHERE category_id IN (1, 2) "
-            + "    UNION ALL "
-            + "    SELECT c.category_id FROM Category c INNER JOIN RecursiveCategory rc ON c.parent_id = rc.category_id "
-            + ") "
-            + "SELECT p.*, ISNULL(avgFeedback.rating, 0) AS rating, pp.price "
-            + "FROM Product p "
-            + "LEFT JOIN ( "
-            + "    SELECT product_id, AVG(rating) AS rating FROM Feedback GROUP BY product_id "
-            + ") avgFeedback ON p.product_id = avgFeedback.product_id "
-            + "LEFT JOIN ( "
-            + "    SELECT product_id, MIN(price) AS price FROM ProductPrice GROUP BY product_id "
-            + ") pp ON p.product_id = pp.product_id "
-            + "WHERE p.category_id IN (SELECT category_id FROM RecursiveCategory) "
-    );
+        List<ProductTuan> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "WITH RecursiveCategory AS ( "
+                + "    SELECT category_id FROM Category WHERE category_id IN (1, 2) "
+                + "    UNION ALL "
+                + "    SELECT c.category_id FROM Category c INNER JOIN RecursiveCategory rc ON c.parent_id = rc.category_id "
+                + ") "
+                + "SELECT p.*, ISNULL(avgFeedback.rating, 0) AS rating, pp.price "
+                + "FROM Product p "
+                + "LEFT JOIN ( "
+                + "    SELECT product_id, AVG(rating) AS rating FROM Feedback GROUP BY product_id "
+                + ") avgFeedback ON p.product_id = avgFeedback.product_id "
+                + "LEFT JOIN ( "
+                + "    SELECT product_id, MIN(price) AS price FROM ProductPrice GROUP BY product_id "
+                + ") pp ON p.product_id = pp.product_id "
+                + "WHERE p.category_id IN (SELECT category_id FROM RecursiveCategory) "
+        );
 
-    if (key != null && !key.isEmpty()) {
-        sql.append(" AND p.product_name LIKE ? COLLATE Latin1_General_CI_AI ");
-    }
-
-    StringBuilder orderByClause = new StringBuilder();
-    if (dateSort != null && !dateSort.equals("default")) {
-        orderByClause.append(dateSort.equals("new") ? "p.created_at DESC, " : "p.created_at ASC, ");
-    }
-    if (rateSort != null && !rateSort.equals("default")) {
-        orderByClause.append(rateSort.equals("high") ? "rating DESC, " : "rating ASC, ");
-    }
-    if (priceSort != null && !priceSort.equals("default")) {
-        orderByClause.append(priceSort.equals("high") ? "pp.price DESC, " : "pp.price ASC, ");
-    }
-    if (!orderByClause.isEmpty()) {
-        sql.append(" ORDER BY ").append(orderByClause.substring(0, orderByClause.length() - 2));
-    } else {
-        sql.append(" ORDER BY p.created_at DESC");
-    }
-
-    sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-
-    try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-        int paramIndex = 1;
         if (key != null && !key.isEmpty()) {
-            ps.setString(paramIndex++, "%" + key + "%");
+            sql.append(" AND p.product_name LIKE ? COLLATE Latin1_General_CI_AI ");
         }
-        ps.setInt(paramIndex++, Math.max((index - 1) * pageSize, 0));
-        ps.setInt(paramIndex, pageSize);
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                ProductTuan product = extractProduct(rs);
-                product.setColors(getColorsByProductId(product.getProductId()));
-                product.setPrices(getPricesByProductId(product.getProductId()));
-                products.add(product);
-            }
+        StringBuilder orderByClause = new StringBuilder();
+        if (dateSort != null && !dateSort.equals("default")) {
+            orderByClause.append(dateSort.equals("new") ? "p.created_at DESC, " : "p.created_at ASC, ");
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        if (rateSort != null && !rateSort.equals("default")) {
+            orderByClause.append(rateSort.equals("high") ? "rating DESC, " : "rating ASC, ");
+        }
+        if (priceSort != null && !priceSort.equals("default")) {
+            orderByClause.append(priceSort.equals("high") ? "pp.price DESC, " : "pp.price ASC, ");
+        }
+        if (!orderByClause.isEmpty()) {
+            sql.append(" ORDER BY ").append(orderByClause.substring(0, orderByClause.length() - 2));
+        } else {
+            sql.append(" ORDER BY p.created_at DESC");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (key != null && !key.isEmpty()) {
+                ps.setString(paramIndex++, "%" + key + "%");
+            }
+            ps.setInt(paramIndex++, Math.max((index - 1) * pageSize, 0));
+            ps.setInt(paramIndex, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProductTuan product = extractProduct(rs);
+                    product.setColors(getColorsByProductId(product.getProductId()));
+                    product.setPrices(getPricesByProductId(product.getProductId()));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return products;
     }
 
-    return products;
-}
-
-
-    
     public List<ProductTuan> getProducts(String key, String dateSort, String rateSort, String priceSort) {
         List<ProductTuan> products = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
@@ -564,7 +833,6 @@ public class ProductDAOTuan extends DBContext {
         return roots;
     }
 
-    // Hàm hỗ trợ để tạo Product từ ResultSet
     private ProductTuan extractProduct(ResultSet rs) throws SQLException {
         return new ProductTuan(
                 rs.getInt("product_id"),
@@ -576,8 +844,8 @@ public class ProductDAOTuan extends DBContext {
                 rs.getString("thumbnail"),
                 rs.getString("created_at"),
                 rs.getDouble("rating"),
-                new ArrayList<>(), // Danh sách màu sắc sẽ được set sau
-                new ArrayList<>() // Danh sách giá sẽ được set sau
+                new ArrayList<>(),
+                new ArrayList<>()
         );
     }
 
