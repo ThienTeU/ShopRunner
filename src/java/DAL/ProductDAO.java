@@ -701,7 +701,6 @@ public class ProductDAO extends DBContext {
     public ArrayList<Product> getTopViewedProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
-                + "SUM(ISNULL(pv.[view], 0)) AS total_views "
                 + "SUM(ISNULL(pv.[view], 0)) AS total_views, "
                 + "COALESCE(MIN(pp.price), 0) AS price "
                 + "FROM Product p "
@@ -712,7 +711,7 @@ public class ProductDAO extends DBContext {
                 + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, limit);  // Truyền số lượng sản phẩm cần lấy
+            ps.setInt(1, limit);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Product p = new Product(
@@ -723,7 +722,8 @@ public class ProductDAO extends DBContext {
                         rs.getInt("discount"),
                         rs.getBoolean("status"),
                         rs.getString("thumbnail"),
-                        rs.getString("created_at")
+                        rs.getString("created_at"),
+                        rs.getInt("price")
                 );
                 products.add(p);
             }
@@ -732,21 +732,22 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-
     
 
-    public static void main(String[] args) {
-        ProductDAO dao = new ProductDAO();
-        int limit = 5; // Số lượng sản phẩm muốn lấy
-        ArrayList<Product> newestProducts = dao.getNewestProducts(limit);
+public static void main(String[] args) {
+    ProductDAO dao = new ProductDAO();
+    int limit = 5; // Lấy 5 sản phẩm có lượt xem cao nhất
+    ArrayList<Product> topViewedProducts = dao.getTopViewedProducts(limit);
 
-        System.out.println("📌 Danh sách " + limit + " sản phẩm mới nhất:");
-        for (Product p : newestProducts) {
-            System.out.println("🛍️ Product ID: " + p.getProduct_id()
-                    + ", Name: " + p.getProduct_name()
-                    + ", Created At: " + p.getCreated_at());
-        }
+    System.out.println("🔥 Danh sách " + limit + " sản phẩm có lượt xem cao nhất:");
+    for (Product p : topViewedProducts) {
+        System.out.println("👀 Product ID: " + p.getProduct_id()
+                + ", Name: " + p.getProduct_name()
+                + ", Created At: " + p.getCreated_at());
     }
+}
+
+
     public ArrayList<Product> getNewestProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
