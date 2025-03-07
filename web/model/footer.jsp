@@ -4,7 +4,7 @@
 <!-- Footer -->
 <footer class="footer">
     <!-- Newsletter Section -->
-    <div class="newsletter-section">
+<!--    <div class="newsletter-section" style="background-color: orange;">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-6 text-center">
@@ -23,10 +23,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 
     <!-- Main Footer -->
-    <div class="footer-main">
+    <div class="footer-main" style="background-color: black">
         <div class="container">
             <div class="row">
                 <!-- Company Info -->
@@ -34,7 +34,7 @@
                     <div class="footer-widget">
                         <h4 class="widget-title">Runner Shop</h4>
                         <div class="about-company">
-                            <img src="${pageContext.request.contextPath}/resources/img/logo.png" 
+                            <img src="${pageContext.request.contextPath}/images/LOGO.png" 
                                  alt="Runner Shop Logo" 
                                  class="footer-logo mb-3">
                             <p class="company-description">
@@ -64,10 +64,10 @@
                         <h4 class="widget-title">Liên kết nhanh</h4>
                         <ul class="footer-links">
                             <li><a href="home">Trang chủ</a></li>
-                            <li><a href="about">Giới thiệu</a></li>
-                            <li><a href="products">Sản phẩm</a></li>
-                            <li><a href="contact">Liên hệ</a></li>
-                            <li><a href="blog">Tin tức</a></li>
+                            <li><a href="/RunnerShop/About.jsp">Giới thiệu</a></li>
+                            <li><a href="/RunnerShop/productlist">Sản phẩm</a></li>
+                            <li><a href="footer.jsp">Liên hệ</a></li>
+                            <li><a href="/RunnerShop/PostListController?type=news">Tin tức</a></li>
                         </ul>
                     </div>
                 </div>
@@ -77,10 +77,10 @@
                     <div class="footer-widget">
                         <h4 class="widget-title">Danh mục</h4>
                         <ul class="footer-links">
-                            <li><a href="category?type=men">Đồ nam</a></li>
-                            <li><a href="category?type=women">Đồ nữ</a></li>
-                            <li><a href="category?type=shoes">Giày</a></li>
-                            <li><a href="category?type=accessories">Phụ kiện</a></li>
+                            <li><a href="home?category=nam">Đồ nam</a></li>
+                            <li><a href="home?category=nu">Đồ nữ</a></li>
+                            <li><a href="home?category=giay">Giày</a></li>
+                            <li><a href="home?category=other">Phụ kiện</a></li>
                             <li><a href="category?type=sale">Khuyến mãi</a></li>
                         </ul>
                     </div>
