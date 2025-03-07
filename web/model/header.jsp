@@ -7,7 +7,7 @@
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="/RunnerShop/home">
-            <img src="../images/LOGO.png" alt="Runner Shop Logo"/>
+            <img src="${pageContext.request.contextPath}/images/LOGO.png" />
         </a>
 
         <!-- Toggle Button -->
@@ -27,61 +27,61 @@
                     <a class="nav-link" href="/RunnerShop/About.jsp">Giới thiệu</a>
                 </li>
 
-<!-- Products Dropdown -->
-<li class="nav-item dropdown position-static">
-  <a class="nav-link dropdown-toggle" href="#" id="productDropdown" role="button"
-     data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="fas fa-store me-1"></i> Sản phẩm
-  </a>
-  <div class="dropdown-menu mega-menu" aria-labelledby="productDropdown">
-    <div class="mega-menu-header mb-4">
-      <h5 class="mega-menu-title">Danh mục sản phẩm</h5>
-      <p class="mega-menu-subtitle">Khám phá các sản phẩm chất lượng của chúng tôi</p>
-    </div>
-    <ul class="category-menu">
-      <c:forEach var="category" items="${categories}">
-        <c:if test="${category.parentId == null}">
-          <li class="category-item">
-            <a href="/RunnerShop/productlist?category=${category.id}" class="category-link main-category">
-              <i class="fas fa-angle-right category-icon"></i>
-              ${category.name}
-            </a>
-            <ul class="sub-menu">
-              <c:forEach var="subCategory" items="${categories}">
-                <c:if test="${subCategory.parentId == category.id}">
-                  <li class="category-item">
-                    <a href="/RunnerShop/productlist?category=${subCategory.id}" class="category-link sub-category">
-                      ${subCategory.name}
-                      <c:if test="${hasChildren}">
-                        <i class="fas fa-chevron-right submenu-icon"></i>
-                      </c:if>
+                <!-- Products Dropdown -->
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle" href="#" id="productDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-store me-1"></i> Sản phẩm
                     </a>
-                    <ul class="sub-menu">
-                      <c:forEach var="subSubCategory" items="${categories}">
-                        <c:if test="${subSubCategory.parentId == subCategory.id}">
-                          <li class="category-item">
-                            <a href="/RunnerShop/productlist?category=${subSubCategory.id}" class="category-link sub-sub-category">
-                              ${subSubCategory.name}
+                    <div class="dropdown-menu mega-menu" aria-labelledby="productDropdown">
+                        <div class="mega-menu-header mb-4">
+                            <h5 class="mega-menu-title">Danh mục sản phẩm</h5>
+                            <p class="mega-menu-subtitle">Khám phá các sản phẩm chất lượng của chúng tôi</p>
+                        </div>
+                        <ul class="category-menu">
+                            <c:forEach var="category" items="${categories}">
+                                <c:if test="${category.parentId == null}">
+                                    <li class="category-item">
+                                        <a href="/RunnerShop/productlist?category=${category.id}" class="category-link main-category">
+                                            <i class="fas fa-angle-right category-icon"></i>
+                                            ${category.name}
+                                        </a>
+                                        <ul class="sub-menu">
+                                            <c:forEach var="subCategory" items="${categories}">
+                                                <c:if test="${subCategory.parentId == category.id}">
+                                                    <li class="category-item">
+                                                        <a href="/RunnerShop/productlist?category=${subCategory.id}" class="category-link sub-category">
+                                                            ${subCategory.name}
+                                                            <c:if test="${hasChildren}">
+                                                                <i class="fas fa-chevron-right submenu-icon"></i>
+                                                            </c:if>
+                                                        </a>
+                                                        <ul class="sub-menu">
+                                                            <c:forEach var="subSubCategory" items="${categories}">
+                                                                <c:if test="${subSubCategory.parentId == subCategory.id}">
+                                                                    <li class="category-item">
+                                                                        <a href="/RunnerShop/productlist?category=${subSubCategory.id}" class="category-link sub-sub-category">
+                                                                            ${subSubCategory.name}
+                                                                        </a>
+                                                                    </li>
+                                                                </c:if>
+                                                            </c:forEach>
+                                                        </ul>
+                                                    </li>
+                                                </c:if>
+                                            </c:forEach>
+                                        </ul>
+                                    </li>
+                                </c:if>
+                            </c:forEach>
+                        </ul>
+                        <div class="mega-menu-footer mt-4">
+                            <a href="/RunnerShop/productlist" class="view-all-link">
+                                Xem tất cả sản phẩm <i class="fas fa-arrow-right ms-1"></i>
                             </a>
-                          </li>
-                        </c:if>
-                      </c:forEach>
-                    </ul>
-                  </li>
-                </c:if>
-              </c:forEach>
-            </ul>
-          </li>
-        </c:if>
-      </c:forEach>
-    </ul>
-    <div class="mega-menu-footer mt-4">
-      <a href="/RunnerShop/productlist" class="view-all-link">
-        Xem tất cả sản phẩm <i class="fas fa-arrow-right ms-1"></i>
-      </a>
-    </div>
-  </div>
-</li>
+                        </div>
+                    </div>
+                </li>
 
 
                 <!-- News Dropdown -->
