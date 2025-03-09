@@ -28,613 +28,7 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <style>
-            :root {
-                --primary-color: #ff6600;
-                --secondary-color: #333333;
-                --light-gray: #f8f9fa;
-                --border-radius: 8px;
-                --box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                --transition: all 0.3s ease;
-            }
-
-            body {
-                font-family: 'Segoe UI', Arial, sans-serif;
-                background-color: #fff;
-            }
-
-            /* Header Banner */
-            .header-banner {
-                background-color: var(--primary-color);
-                color: white;
-                text-align: center;
-                padding: 8px 0;
-                font-size: 0.9rem;
-            }
-
-            /* Hero Banner Styles */
-            .slider {
-                margin-bottom: 40px;
-            }
-
-            .carousel-item {
-                height: 500px;
-                position: relative;
-            }
-
-            .carousel-item img {
-                object-fit: cover;
-                height: 100%;
-                width: 100%;
-            }
-
-            .carousel-caption {
-                background: rgba(0, 0, 0, 0.5);
-                padding: 20px;
-                border-radius: 10px;
-                max-width: 600px;
-                margin: 0 auto;
-            }
-
-            .carousel-indicators [data-bs-target] {
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                margin: 0 6px;
-            }
-
-            /* Search Bar Styles */
-            .searchbar-container {
-                margin: -25px auto 40px;
-                position: relative;
-                z-index: 100;
-                max-width: 700px;
-            }
-
-            .searchbar {
-                background: white;
-                padding: 15px;
-                border-radius: 50px;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            }
-
-            .searchbar .form-control {
-                border: none;
-                padding: 10px 20px;
-                font-size: 1.1rem;
-                border-radius: 25px;
-            }
-
-            .searchbar .btn {
-                padding: 10px 30px;
-                border-radius: 25px;
-                font-weight: 600;
-                margin-left: 10px;
-            }
-
-            /* Category Navigation */
-            .category-nav {
-                padding: 40px 0;
-                background-color: var(--light-gray);
-                margin-bottom: 30px;
-            }
-
-            .category-list {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-                display: flex;
-                justify-content: center;
-                gap: 40px;
-            }
-
-            .category-item {
-                text-decoration: none;
-                text-align: center;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                transition: var(--transition);
-                position: relative;
-            }
-
-            .category-item:hover {
-                transform: translateY(-5px);
-            }
-
-            .category-item img {
-                width: 140px;
-                height: 140px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 4px solid #fff;
-                box-shadow: var(--box-shadow);
-                margin-bottom: 15px;
-                transition: var(--transition);
-            }
-
-            .category-item:hover img {
-                border-color: var(--primary-color);
-            }
-
-            .category-item span {
-                font-size: 1.2rem;
-                font-weight: 600;
-                color: var(--secondary-color);
-            }
-
-            .category-item.active {
-                pointer-events: none;
-            }
-
-            .category-item.active img {
-                border-color: var(--primary-color);
-            }
-
-            .category-item.active span {
-                color: var(--primary-color);
-            }
-
-            .category-item.active::after {
-                content: '';
-                position: absolute;
-                bottom: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 40px;
-                height: 3px;
-                background-color: var(--primary-color);
-                border-radius: 3px;
-            }
-
-            /* Product Cards */
-            .product-card {
-                border: none;
-                border-radius: var(--border-radius);
-                box-shadow: var(--box-shadow);
-                transition: var(--transition);
-                height: 100%;
-                position: relative;
-                overflow: hidden;
-                background: #fff;
-            }
-
-            .product-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            }
-
-            .product-image {
-                height: 300px;
-                object-fit: cover;
-                transition: var(--transition);
-                width: 100%;
-            }
-
-            .product-card:hover .product-image {
-                transform: scale(1.05);
-            }
-
-            .discount-badge {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background-color: var(--primary-color);
-                color: white;
-                padding: 8px 12px;
-                border-radius: 20px;
-                font-weight: 600;
-                font-size: 0.9rem;
-                z-index: 2;
-            }
-
-            .product-info {
-                padding: 20px;
-            }
-
-            .product-title {
-                font-size: 1.1rem;
-                font-weight: 600;
-                margin-bottom: 10px;
-                height: 2.4em;
-                overflow: hidden;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-            }
-
-            .price-section {
-                margin: 15px 0;
-            }
-
-            .original-price {
-                text-decoration: line-through;
-                color: #999;
-                font-size: 0.9rem;
-                margin-right: 10px;
-            }
-
-            .discounted-price {
-                color: var(--primary-color);
-                font-weight: 700;
-                font-size: 1.2rem;
-            }
-
-            .btn-primary {
-                background-color: var(--primary-color);
-                border: none;
-                padding: 10px 20px;
-                border-radius: var(--border-radius);
-                font-weight: 600;
-                transition: var(--transition);
-                width: 100%;
-            }
-
-            .btn-primary:hover {
-                background-color: #ff8533;
-                transform: translateY(-2px);
-            }
-
-            /* Newsletter Section */
-            .newsletter-section {
-                background: linear-gradient(rgba(255,102,0,0.9), rgba(255,102,0,0.9)),
-                    url('${pageContext.request.contextPath}/resources/img/newsletter-bg.jpg') center/cover;
-                padding: 60px 0;
-                margin: 60px 0;
-                color: white;
-                text-align: center;
-            }
-
-            .newsletter-content {
-                max-width: 600px;
-                margin: 0 auto;
-            }
-
-            .newsletter-content h3 {
-                font-size: 2rem;
-                margin-bottom: 15px;
-            }
-
-            .newsletter-form {
-                margin-top: 30px;
-            }
-
-            .newsletter-form .input-group {
-                max-width: 500px;
-                margin: 0 auto;
-            }
-
-            .newsletter-form .form-control {
-                padding: 15px;
-                border-radius: 30px 0 0 30px;
-                border: none;
-            }
-
-            .newsletter-form .btn {
-                padding: 15px 30px;
-                border-radius: 0 30px 30px 0;
-                background: var(--secondary-color);
-                border: none;
-            }
-
-            /* Back to Top Button */
-            .back-to-top {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: var(--primary-color);
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                text-decoration: none;
-                opacity: 0;
-                transition: var(--transition);
-                z-index: 1000;
-            }
-
-            .back-to-top.visible {
-                opacity: 1;
-            }
-
-            /* Cart Animation */
-            .cart-animation {
-                position: fixed;
-                z-index: 9999;
-                width: 30px;
-                height: 30px;
-                background: var(--primary-color);
-                border-radius: 50%;
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: flyToCart 1s ease-in-out forwards;
-            }
-
-            @keyframes flyToCart {
-                0% {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(0) translate(100px, -100px);
-                    opacity: 0;
-                }
-            }
-
-            /* Loading Skeleton */
-            @keyframes loading {
-                0% {
-                    background-position: -200px 0;
-                }
-                100% {
-                    background-position: calc(200px + 100%) 0;
-                }
-            }
-
-            .skeleton {
-                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-                background-size: 200px 100%;
-                animation: loading 1.5s infinite;
-            }
-
-            /* Responsive Styles */
-            @media (max-width: 991.98px) {
-                .category-list {
-                    gap: 20px;
-                    flex-wrap: wrap;
-                }
-
-                .category-item img {
-                    width: 100px;
-                    height: 100px;
-                }
-
-                .carousel-item {
-                    height: 400px;
-                }
-
-                .product-image {
-                    height: 250px;
-                }
-            }
-
-            @media (max-width: 767.98px) {
-                .searchbar-container {
-                    margin-top: -15px;
-                }
-
-                .category-item img {
-                    width: 80px;
-                    height: 80px;
-                }
-
-                .category-item span {
-                    font-size: 1rem;
-                }
-
-                .newsletter-content h3 {
-                    font-size: 1.5rem;
-                }
-
-                .newsletter-form .input-group {
-                    flex-direction: column;
-                }
-
-                .newsletter-form .form-control,
-                .newsletter-form .btn {
-                    border-radius: 30px;
-                    margin: 10px 0;
-                }
-            }
-            /* Pagination Styles */
-            .pagination {
-                margin-top: 40px;
-            }
-
-            .page-link {
-                color: var(--primary-color);
-                border: 1px solid #dee2e6;
-                padding: 8px 16px;
-                margin: 0 4px;
-                border-radius: var(--border-radius) !important;
-                transition: var(--transition);
-            }
-
-            .page-link:hover {
-                color: white;
-                background-color: var(--primary-color);
-                border-color: var(--primary-color);
-            }
-
-            .page-item.active .page-link {
-                background-color: var(--primary-color);
-                border-color: var(--primary-color);
-            }
-
-            .page-item.disabled .page-link {
-                color: #6c757d;
-                pointer-events: none;
-                background-color: #fff;
-                border-color: #dee2e6;
-            }
-
-            /* Responsive Pagination */
-            @media (max-width: 576px) {
-                .pagination {
-                    flex-wrap: wrap;
-                    justify-content: center;
-                }
-
-                .page-link {
-                    margin: 2px;
-                    padding: 6px 12px;
-                }
-            }
-            /* Search Results Styles */
-            .alert-info {
-                background-color: #f8f9fa;
-                border-color: #e9ecef;
-                color: var(--secondary-color);
-            }
-
-            mark {
-                background-color: #fff3cd;
-                padding: 0.2em;
-                border-radius: 2px;
-            }
-
-            .empty-search-state {
-                text-align: center;
-                padding: 60px 0;
-            }
-
-            .empty-search-state i {
-                font-size: 4rem;
-                color: var(--primary-color);
-                margin-bottom: 20px;
-            }
-
-            .empty-search-state h3 {
-                color: var(--secondary-color);
-                margin-bottom: 15px;
-            }
-
-            .empty-search-state p {
-                color: #6c757d;
-                margin-bottom: 25px;
-            }
-            /* Product Section Styles */
-            .section-title {
-                font-size: 1.75rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .section-title i {
-                font-size: 1.5rem;
-            }
-            /* Section Header Styles */
-            .section-header {
-                position: relative;
-                margin-bottom: 2rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-                font-weight: 700;
-                margin-bottom: 0;
-            }
-
-            .section-title-text {
-                position: relative;
-                display: inline-block;
-                padding: 0 15px;
-            }
-
-            .section-title-text::before,
-            .section-title-text::after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                width: 60px;
-                height: 2px;
-                background-color: var(--primary-color);
-                transform: translateY(-50%);
-            }
-
-            .section-title-text::before {
-                right: 100%;
-            }
-
-            .section-title-text::after {
-                left: 100%;
-            }
-
-            .section-title i {
-                font-size: 1.75rem;
-                vertical-align: middle;
-            }
-
-            /* Responsive styles */
-            @media (max-width: 768px) {
-                .section-title {
-                    font-size: 1.5rem;
-                }
-
-                .section-title-text::before,
-                .section-title-text::after {
-                    width: 30px;
-                }
-
-                .section-title i {
-                    font-size: 1.25rem;
-                }
-            }
-
-            @media (max-width: 576px) {
-                .section-title-text::before,
-                .section-title-text::after {
-                    display: none;
-                }
-            }
-
-            .product-image-wrapper {
-                position: relative;
-                overflow: hidden;
-            }
-
-            .product-overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.2);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                opacity: 0;
-                transition: var(--transition);
-            }
-
-            .product-card:hover .product-overlay {
-                opacity: 1;
-            }
-
-            .product-badges .badge {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-            }
-
-            .btn-outline-primary {
-                padding: 0.5rem 1.5rem;
-                font-weight: 600;
-                border-width: 2px;
-            }
-
-            /* Responsive adjustments */
-            @media (max-width: 768px) {
-                .section-title {
-                    font-size: 1.5rem;
-                }
-
-                .section-title i {
-                    font-size: 1.25rem;
-                }
-
-                .btn-outline-primary {
-                    padding: 0.375rem 1rem;
-                    font-size: 0.9rem;
-                }
-            }
-
-        </style>
+        <link href="model/css/home.css" rel="stylesheet" type="text/css"/>
     </head>
 
     <body>
@@ -1074,22 +468,88 @@
                 </c:otherwise>
             </c:choose>
 
+<!-- Phần hiển thị bài viết -->
+<%-- Chỉ hiển thị blog section khi KHÔNG có tìm kiếm --%>
+<c:if test="${empty param.query}">
+    <section class="blog-section">
+        <!-- Bài viết mới nhất -->
+<!--        <div class="latest-posts">
+            <div class="section-header">
+                <h2 class="section-title text-center position-relative">
+                    <span class="section-title-text">
+                        <i class="fa-sharp-duotone fa-solid fa-newspaper"></i> Bài Viết  Mới
+                    </span>
+                </h2>
+            </div>
+            <div class="row g-4">
+                <c:forEach items="${latestPosts}" var="post">
+                    <div class="col-md-4">
+                        <article class="post-card">
+                            <div class="post-image">
+                                <img src="images/Post/${post.postbanner}" alt="${post.title}" class="img-fluid lazyload">
+                            </div>
+                            <div class="post-content">
+                                <h3 class="post-title">
+                                    <a href="=postDetail?postID=${post.getPostID()}">${post.title}</a>
+                                </h3>
+                                <p class="post-excerpt">${post.description}</p>
+                                <div class="post-meta">
+                                    <span class="date">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        ${post.dateCreated}
+                                    </span>
+                                    <span class="views">
+                                        <i class="fas fa-eye"></i>
+                                        ${post.views}
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </c:forEach>
+            </div>
+        </div>-->
 
-
-
-
-
-
-
-
-
-
-
-
-
-            <!-- Homepage Content -->
-
+        <!-- Bài viết phổ biến -->
+        <div class="popular-posts mt-5">
+            <div class="section-header">
+                <h2 class="section-title text-center position-relative">
+                    <span class="section-title-text">
+                        <i class="fa-regular fa-newspaper"></i> Bài viết nổi bật
+                    </span>
+                </h2>
+            </div>
+            <div class="row g-4">
+                <c:forEach items="${popularPosts}" var="post">
+                    <div class="col-md-4">
+                        <article class="post-card">
+                            <div class="post-image">
+                                <img src="images/Post/${post.postbanner}" alt="${post.title}" class="img-fluid lazyload">
+                            </div>
+                            <div class="post-content">
+                                <h3 class="post-title">
+                                    <a href="postDetail?postID==${post.postID}">${post.title}</a>
+                                </h3>
+                                <p class="post-excerpt">${post.description}</p>
+                                <div class="post-meta">
+                                    <span class="date">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        ${post.dateCreated}
+                                    </span>
+                                    <span class="views">
+                                        <i class="fas fa-eye"></i>
+                                        ${post.views}
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </c:forEach>
+            </div>
         </div>
+    </section>
+</c:if>
+
 
 
 
@@ -1099,83 +559,7 @@
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://web.nvnstatic.net/js/lazyLoad/lazysizes.min.js" async></script>
+        <link href="model/js/home.js" rel="stylesheet" type="text/css"/>
 
-        <script>
-                                        // Lazy loading initialization
-                                        document.addEventListener('DOMContentLoaded', function () {
-                                            var lazyLoadImages = document.querySelectorAll('img.lazyload');
-                                            lazyLoadImages.forEach(function (img) {
-                                                img.setAttribute('data-src', img.getAttribute('src'));
-                                                img.setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
-                                            });
-
-                                            // Newsletter Form Handler
-                                            document.getElementById('newsletterForm')?.addEventListener('submit', function (e) {
-                                                e.preventDefault();
-                                                const email = this.querySelector('input[type="email"]').value;
-                                                if (email) {
-                                                    alert('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ gửi voucher qua email của bạn.');
-                                                    this.reset();
-                                                }
-                                            });
-
-                                            // Back to Top Button
-                                            const backToTop = document.createElement('a');
-                                            backToTop.href = '#';
-                                            backToTop.className = 'back-to-top';
-                                            backToTop.innerHTML = '<i class="fas fa-arrow-up"></i>';
-                                            document.body.appendChild(backToTop);
-
-                                            window.addEventListener('scroll', () => {
-                                                if (window.pageYOffset > 300) {
-                                                    backToTop.classList.add('visible');
-                                                } else {
-                                                    backToTop.classList.remove('visible');
-                                                }
-                                            });
-
-                                            backToTop.addEventListener('click', (e) => {
-                                                e.preventDefault();
-                                                window.scrollTo({top: 0, behavior: 'smooth'});
-                                            });
-
-                                            // Product Image Loading Animation
-                                            document.querySelectorAll('.product-image').forEach(img => {
-                                                img.addEventListener('load', function () {
-                                                    this.style.animation = 'fadeIn 0.5s ease-in';
-                                                });
-                                            });
-
-                                            // Add to Cart Animation
-                                            document.querySelectorAll('.btn-primary').forEach(btn => {
-                                                btn.addEventListener('click', function () {
-                                                    const icon = document.createElement('div');
-                                                    icon.className = 'cart-animation';
-                                                    icon.innerHTML = '<i class="fas fa-shopping-cart"></i>';
-                                                    document.body.appendChild(icon);
-
-                                                    setTimeout(() => {
-                                                        icon.remove();
-                                                    }, 1000);
-                                                });
-                                            });
-                                        });
-
-                                        // Price Format Helper
-                                        function formatPrice(price) {
-                                            return new Intl.NumberFormat('vi-VN', {
-                                                style: 'currency',
-                                                currency: 'VND'
-                                            }).format(price);
-                                        }
-                                        function validateSearch() {
-                                            const searchInput = document.querySelector('input[name="query"]');
-                                            if (searchInput.value.trim().length < 2) {
-                                                alert('Vui lòng nhập ít nhất 2 ký tự để tìm kiếm');
-                                                return false;
-                                            }
-                                            return true;
-                                        }
-        </script>
     </body>
 </html>
