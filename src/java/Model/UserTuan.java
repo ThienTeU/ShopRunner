@@ -3,6 +3,7 @@ package Model;
 import java.util.List;
 
 public class UserTuan {
+
     private int userId;
     private int roleId;
     private String userName;
@@ -11,11 +12,19 @@ public class UserTuan {
     private String phoneNumber;
     private boolean status;
     private int genderId;
-    private List<AddressTuan> addresses; 
+    private List<AddressTuan> addresses;
 
     public UserTuan() {
     }
 
+    public UserTuan(String userName, String email, String phoneNumber, boolean status, int genderId) {
+        this.userName = userName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
+    
     public UserTuan(int userId, int roleId, String userName, String email, String password, String phoneNumber, boolean status, int genderId, List<AddressTuan> addresses) {
         this.userId = userId;
         this.roleId = roleId;
@@ -27,6 +36,25 @@ public class UserTuan {
         this.genderId = genderId;
         this.addresses = addresses;
     }
+    
+    public UserTuan(int roleId, String userName, String email, String password, String phoneNumber, boolean status, int genderId) {
+        this.roleId = roleId;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
+    
+    public UserTuan(int userId, String userName, String email, String phoneNumber, boolean status, int genderId) {
+        this.userId = userId;
+        this.userName = userName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
 
     public String getUserName() {
         return userName;
@@ -36,8 +64,6 @@ public class UserTuan {
         this.userName = userName;
     }
 
-    
-
     public boolean isStatus() {
         return status;
     }
@@ -45,8 +71,6 @@ public class UserTuan {
     public void setStatus(boolean status) {
         this.status = status;
     }
-
-    
 
     public int getUserId() {
         return userId;
@@ -88,7 +112,6 @@ public class UserTuan {
         this.phoneNumber = phoneNumber;
     }
 
-   
     public int getGenderId() {
         return genderId;
     }
@@ -121,5 +144,7 @@ public class UserTuan {
         sb.append('}');
         return sb.toString();
     }
+
+    
 
 }

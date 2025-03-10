@@ -9,7 +9,7 @@ package Model;
  * @author tuan
  */
 public class AddressTuan {
-     private int addressId;
+    private int addressId;
     private int userId;
     private String name;
     private String phone;
@@ -23,6 +23,16 @@ public class AddressTuan {
 
     public AddressTuan(int addressId, int userId, String name, String phone, String city, String district, String ward, String street) {
         this.addressId = addressId;
+        this.userId = userId;
+        this.name = name;
+        this.phone = phone;
+        this.city = city;
+        this.district = district;
+        this.ward = ward;
+        this.street = street;
+    }
+    
+    public AddressTuan( int userId, String name, String phone, String city, String district, String ward, String street) {
         this.userId = userId;
         this.name = name;
         this.phone = phone;
