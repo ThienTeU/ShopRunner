@@ -20,6 +20,167 @@ import java.util.Map;
 
 public class ProductDAOTuan extends DBContext {
 
+    public static void main(String[] args) {
+        ProductDAOTuan dao = new ProductDAOTuan();
+        UserTuan customer = new UserTuan(2, "tuan", "tuan@gma", "123", "0821441", true, 1);
+        System.out.println(dao.addCustomer(customer));
+    }
+
+    public AddressTuan getCustomerAddressById(int id) {
+        AddressTuan address = null;
+        String sql = "SELECT * FROM Address WHERE user_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    address = new AddressTuan();
+                    address.setAddressId(rs.getInt("address_id"));
+                    address.setUserId(rs.getInt("user_id"));
+                    address.setName(rs.getString("name"));
+                    address.setPhone(rs.getString("phone"));
+                    address.setCity(rs.getString("city"));
+                    address.setDistrict(rs.getString("district"));
+                    address.setWard(rs.getString("ward"));
+                    address.setStreet(rs.getString("street"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return address;
+    }
+
+    public void updateCustomerStatus(int id, boolean status) {
+        String sql = "  update [User]\n"
+                + "  set status = ?\n"
+                + "  where user_id =?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, status);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+        }
+    }
+
+    public int addCustomerAddress(AddressTuan address) {
+        int id = -1;
+        String sql = "INSERT INTO [dbo].[Address]\n"
+                + "           ([user_id]\n"
+                + "           ,[name]\n"
+                + "           ,[phone]\n"
+                + "           ,[city]\n"
+                + "           ,[district]\n"
+                + "           ,[ward]\n"
+                + "           ,[street])\n"
+                + "     VALUES\n"
+                + "           (?,?,?,?,?,?,?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, address.getUserId());
+            ps.setString(2, address.getName());
+            ps.setString(3, address.getPhone());
+            ps.setString(4, address.getCity());
+            ps.setString(5, address.getDistrict());
+            ps.setString(6, address.getWard());
+            ps.setString(7, address.getStreet());
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        id = rs.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+        }
+        return id;
+    }
+
+    public int addCustomer(UserTuan customer) {
+        int id = -1;
+        String sql = "INSERT INTO [RunnerShop].[dbo].[User] ([role_id], [user_name], [email], [password], [phone_number], [status], [gender_id])"
+                + " VALUES (2, ?, ?, '1', ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, customer.getUserName());
+            ps.setString(2, customer.getEmail());
+            ps.setString(3, customer.getPhoneNumber());
+            ps.setBoolean(4, customer.isStatus());
+            ps.setInt(5, customer.getGenderId());
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        id = rs.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+        }
+        return id;
+    }
+
+    public void updateCustomer(UserTuan customer) {
+        String sql = "UPDATE [User]\n"
+                + "SET  user_name = ?,\n"
+                + "    email = ?,\n"
+                + "    phone_number = ?,\n"
+                + "    status = ?,\n"
+                + "	gender_id=?\n"
+                + "WHERE user_id = ?;";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, customer.getUserName());
+            ps.setString(2, customer.getEmail());
+            ps.setString(3, customer.getPhoneNumber());
+            ps.setBoolean(4, customer.isStatus());
+            ps.setInt(5, customer.getUserId());
+            ps.setInt(6, customer.getGenderId());
+            ps.executeUpdate();
+        } catch (Exception e) {
+        }
+    }
+
+    public UserTuan getCustomerById(int id) {
+        UserTuan customer = null;
+        String sql = "SELECT "
+                + "    u.user_id, "
+                + "    u.role_id, "
+                + "    u.user_name, "
+                + "    u.email, "
+                + "    u.phone_number, "
+                + "    u.status, "
+                + "    u.gender_id, "
+                + "    a.address_id, "
+                + "    a.name AS address_name, "
+                + "    a.phone AS address_phone, "
+                + "    a.city, "
+                + "    a.district, "
+                + "    a.ward, "
+                + "    a.street "
+                + "FROM [User] u "
+                + "LEFT JOIN [Address] a ON u.user_id = a.user_id "
+                + "WHERE u.role_id = 2 AND u.user_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new UserTuan();
+                    customer.setUserId(rs.getInt("user_id"));
+                    customer.setUserName(rs.getString("user_name"));
+                    customer.setRoleId(rs.getInt("role_id"));
+                    customer.setEmail(rs.getString("email"));
+                    customer.setPhoneNumber(rs.getString("phone_number"));
+                    customer.setStatus(rs.getBoolean("status"));
+                    customer.setGenderId(rs.getInt("gender_id"));
+                    customer.setAddresses(getAddressById(customer.getUserId()));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customer;
+    }
+
     public List<UserTuan> searchUsers(String userName, String email, String phone, Boolean status, int offset, int size) {
         List<UserTuan> userList = new ArrayList<>();
         String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, "
@@ -65,6 +226,7 @@ public class ProductDAOTuan extends DBContext {
         }
         return userList;
     }
+
     public List<UserTuan> searchUsers(String userName, String email, String phone, Boolean status) {
         List<UserTuan> userList = new ArrayList<>();
         String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, "

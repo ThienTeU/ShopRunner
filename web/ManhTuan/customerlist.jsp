@@ -17,7 +17,7 @@
         <link rel="stylesheet" href="ManhTuan/customerlist.css"/>
     </head>
     <body>
-        <form action= "customerlist" method="post" class="row g-3" id="userSearchForm">
+        <form action= "customersearch" method="post" class="row g-3" id="userSearchForm">
             <div class="col-md-3">
                 <label for="userName" class="form-label">Tên</label>
                 <input type="text" class="form-control" id="userName" name="userName">
@@ -43,25 +43,32 @@
                 <button type="reset" class="btn btn-secondary">Xóa bộ lọc</button>
             </div>
         </form>
-
+        <a href="ManhTuan/customeradd.jsp" class="btn btn-primary">Thêm khách hàng</a>
         <table>
             <tr>
                 <th>ID</th>
                 <th>Tên</th>
                 <th>Email</th>
                 <th>Điện thoại</th>
+                <th>Giới tính</th>
                 <th>Trạng thái</th>
                 <th>Lựa chọn</th>
             </tr>
             <c:forEach var="customer" items="${customers}">
                 <tr>
                     <td>${customer.userId}</td>
-                    <td>${customer.userName}</td>
+                    <td><a href="customeraddressdetail?id=${customer.userId}" class="text-decoration-none">${customer.userName}</a></td>
                     <td>${customer.email}</td>
                     <td>${customer.phoneNumber}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${customer.genderId == 1}">Nam</c:when>
+                            <c:when test="${customer.genderId == 2}">Nữ</c:when>
+                        </c:choose>
+                    </td>
                     <td>${customer.status ? "Hoạt động" : "Bị khóa"}</td>
                     <td>
-                        <a href="editCustomer?id=${customer.userId}">
+                        <a href="customeredit?id=${customer.userId}">
                             <button class="edit-btn">Sửa</button>
                         </a>
                         <form action="changeStatus" method="post" style="display:inline;">
@@ -70,6 +77,7 @@
                                 ${customer.status ? "Khóa" : "Mở khóa"}
                             </button>
                         </form>
+                        <a href="url"></a>
                     </td>
                 </tr>
             </c:forEach>
@@ -77,7 +85,15 @@
 
         <div class="pagination">
             <c:forEach begin="1" end="${end}" var="i">
-                <a href="customerlist?index=${i}">${i}</a>
+                <c:if test="${check eq 'list'}">
+                    <a href="customerlist?index=${i}">${i}</a>
+                </c:if>
+                <c:if test="${check eq 'search'}">
+                    <a href="customersearch?index=${i}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
+                        ${i}
+                    </a>
+                </c:if>
+
             </c:forEach>
         </div>
     </body>
