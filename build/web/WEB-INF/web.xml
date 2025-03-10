@@ -6,6 +6,37 @@
             30
         </session-timeout>
     </session-config>
+
+    <servlet>
+        <servlet-name>AddPostServlet</servlet-name>
+        <servlet-class>Controller.DucAnh.AddPostServlet</servlet-class>
+        <multipart-config>
+            <!--                                <location>D:\images</location>  -->
+            <!-- Đường dẫn tạm thời để lưu trữ các tệp tải lên -->
+            <max-file-size>10485760</max-file-size>
+            <!-- Kích thước tối đa cho mỗi tệp -->
+            <max-request-size>20971520</max-request-size>
+            <!-- Kích thước tối đa cho mỗi yêu cầu -->
+            <file-size-threshold>0</file-size-threshold>
+            <!-- Kích thước tệp tối thiểu để lưu trữ trong bộ nhớ -->
+        </multipart-config>
+    </servlet>
+
+    <servlet>
+        <servlet-name>EditPostServlet</servlet-name>
+        <servlet-class>Controller.DucAnh.EditPostServlet</servlet-class>
+        <multipart-config>
+            <!--                                <location>D:\images</location>  -->
+            <!-- Đường dẫn tạm thời để lưu trữ các tệp tải lên -->
+            <max-file-size>10485760</max-file-size>
+            <!-- Kích thước tối đa cho mỗi tệp -->
+            <max-request-size>20971520</max-request-size>
+            <!-- Kích thước tối đa cho mỗi yêu cầu -->
+            <file-size-threshold>0</file-size-threshold>
+            <!-- Kích thước tệp tối thiểu để lưu trữ trong bộ nhớ -->
+        </multipart-config>
+    </servlet>
+
     <servlet>
         <servlet-name>ajaxServlet</servlet-name>
         <servlet-class>NgocHieu.vnpay.ajaxServlet</servlet-class>

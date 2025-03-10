@@ -1,69 +1,101 @@
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-           <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-                <p class="mb-4"></p>
-                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i></p>
-                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i></p>
-                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
-            </div>
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Links</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="home"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-secondary mb-2" href="shop"><i class="fa fa-angle-right mr-2"></i>Shop</a>
-                            
-                            <a class="text-secondary mb-2" href="cart"><i class="fa fa-angle-right mr-2"></i>Cart</a>
-                            
-                            
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="home"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-secondary mb-2" href="shop"><i class="fa fa-angle-right mr-2"></i>Shop</a>
-                            
-                            <a class="text-secondary mb-2" href="cart"><i class="fa fa-angle-right mr-2"></i>Card</a>
-                            
-                            
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        
-                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Social Media</h6>
-                        <div class="d-flex">
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%-- FOOTER --%>
+  <footer class="text-white text-center text-lg-start" style="background-color: #23242a;" id="footer">
+    <!-- Grid container -->
+    <div class="container p-4">
+      <!--Grid row-->
+      <div class="row mt-4">
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
+          <h5 class="text-uppercase mb-4"><i class="fas fa-tshirt"></i>&nbsp;Thông tin của hàng</h5>
+
+          <p>
+            Vì sức khỏe của nhân loại chúng ta hãy nhau vận động
+          </p>
+
+          <p>
+              Tôi tin rằng bạn sẽ cảm thấy hài lòng khi mua các sản phẩn của của hàng, bạn có thể mua theo sở thích của mình có thể liện hệ với tôi qua các website:
+          </p>
+
+          <div class="my-4">
+            <!-- Facebook -->
+            <a type="button" class="btn btn-floating btn-warning btn-lg"><i class="fab fa-facebook-f"></i></a>
+            <!-- Dribbble -->
+            <a type="button" class="btn btn-floating btn-warning btn-lg"><i class="fab fa-instagram"></i></a>
+            <!-- Twitter -->
+            <a type="button" class="btn btn-floating btn-warning btn-lg"><i class="fab fa-twitter"></i></a>
+            <!-- Google + -->
+            <a type="button" class="btn btn-floating btn-warning btn-lg"><i class="fab fa-google"></i></a>
+            <!-- Linkedin -->
+          </div>
         </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-secondary">
-                    &copy;
-                    <a class="text-primary" href=""> </a>
-                </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="">
-            </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+          <h5 class="text-uppercase mb-4 pb-1"><i class="fas fa-search"></i>&nbsp;Search product</h5>
+          <form method="get" action="${pageContext.request.contextPath}/product">
+            <div class="form-floating mb-4">
+              <input type="hidden" name="page" value="1"/>
+              <input type="search" name="query" id="searchbarFooter" class="form-control" placeholder="Search Something">
+              <input type="hidden" name="subcategory" value="0"/>
+              <input type="hidden" name="brand" value="0"/>
+              <input type="hidden" name="price" value="0"/>
+              <input type="hidden" name="sortType" value="0"/>
+              <input type="hidden" name="sortMode" value="0"/>
+              <label for="searchbarFooter" style="color:black;">Search</label>
+            <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div><div class="form-notch-middle" style="width: 48.8px;"></div><div class="form-notch-trailing"></div></div></div>
+          </form>
+          <ul class="fa-ul" style="margin-left: 1.65em;">
+            <li class="mb-3">
+              <span class="fa-li"><i class="fas fa-home"></i></span><span class="ms-2">Km29 Đại lộ Thăng Long, huyện Thạch Thất, Hà Nội</span>
+            </li>
+            <li class="mb-3">
+              <span class="fa-li"><i class="fas fa-envelope"></i></span><span class="ms-2">manhle@gmail.com</span>
+            </li>
+            <li class="mb-3">
+              <span class="fa-li"><i class="fas fa-phone"></i></span><span class="ms-2">+84 123456789</span>
+            </li>
+            <li class="mb-3">
+              <span class="fa-li"><i class="fas fa-print"></i></span><span class="ms-2">+84 123456789</span>
+            </li>
+          </ul>
         </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+          <h5 class="text-uppercase mb-4"><i class="far fa-clock"></i>&nbsp;Opening hours</h5>
+
+          <table class="table text-center text-white" >
+            <tbody class="font-weight-normal" style="color: white">
+              <tr>
+                <td style="color: white">Mon - Thu:</td>
+                <td style="color: white">8am - 9pm</td>
+              </tr>
+              <tr>
+                <td style="color: white">Fri - Sat:</td>
+                <td style="color: white">8am - 12pm</td>
+              </tr>
+              <tr>
+                <td style="color: white">Sunday:</td>
+                <td style="color: white">9am - 10pm</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!--Grid column-->
+      </div>
+      <!--Grid row-->
     </div>
-    </body>
-</html>
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+      © 2025 Copyright:
+    </div>
+    <!-- Copyright -->
+  </footer>
+<!-- End of .container -->
+<%-- FOOTER --%>
