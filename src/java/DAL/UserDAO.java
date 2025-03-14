@@ -26,9 +26,10 @@ public class UserDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         UserDAO dao = new UserDAO();
-        User user = new User("admin@gmail.com", "123456", "0399488243");
-        dao.addUser(user);
-        System.out.println(dao.getRoleById(1));
+//        User user = new User("admin@gmail.com", "123456", "0399488243");
+//        dao.addUser(user);
+//        System.out.println(dao.getRoleById(1));
+        System.out.println(dao.getUserByUsername("admin"));
     }
 
     public void addUser(User user) throws SQLException {
@@ -43,6 +44,30 @@ public class UserDAO extends DBContext {
         ps.setInt(4,1);
 
         ps.executeUpdate();
+    }
+    
+    public User getUserByUsername(String username) throws SQLException {
+        String query = "SELECT * FROM dbo.[USER] WHERE user_name = ?";
+        User user = null;
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, username); // 
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    user = new User(
+                            rs.getInt("user_id"),
+                            rs.getInt("role_id"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("phone_number"),
+                            rs.getBoolean("status"),
+                            rs.getInt("gender_id"),
+                            rs.getString("created_at")
+                    );
+                }
+            }
+        }
+        return user;
     }
 
     public User getUserByEmail(String email) throws SQLException {

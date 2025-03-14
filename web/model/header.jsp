@@ -26,7 +26,6 @@
                     <a class="nav-link" href="/RunnerShop/About.jsp?uid=${param.uid}">Giới thiệu</a>
                 </li>
 
-<<<<<<< HEAD
         <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 
@@ -127,7 +126,6 @@
                         <div class="carousel-item ${i.index == 0 ? 'active' : ''}">
                             <img src="${pageContext.request.contextPath}/resources/img/banner/${cbanner.image_url}" 
                                  class="d-block w-100" alt="Banner ${cbanner.banner_id}" />
-=======
                 <!-- Products Dropdown -->
                 <li class="nav-item dropdown position-static">
                     <a class="nav-link dropdown-toggle" href="#" id="productDropdown" role="button"
@@ -138,7 +136,6 @@
                         <div class="mega-menu-header mb-4">
                             <h5 class="mega-menu-title">Danh mục sản phẩm</h5>
                             <p class="mega-menu-subtitle">Khám phá các sản phẩm chất lượng của chúng tôi</p>
->>>>>>> 325329cd367540325159eb4f66d60771321bd8c3
                         </div>
                         <ul class="category-menu">
                             <c:forEach var="category" items="${categories}">
@@ -173,6 +170,7 @@
                                     </li>
                                 </c:if>
                             </c:forEach>
+                        </c:forEach>
                         </ul>
                         <div class="mega-menu-footer mt-4">
                             <a href="/RunnerShop/productlist?uid=${param.uid}" class="view-all-link">

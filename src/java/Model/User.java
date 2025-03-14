@@ -15,6 +15,24 @@ public class User {
     private int user_id;
     private int role_id;
     private String email;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFull_name() {
+        return full_name;
+    }
+
+    public void setFull_name(String full_name) {
+        this.full_name = full_name;
+    }
+    private String full_name;
     private String password;
     private String phone_number;
     private boolean status;
@@ -40,8 +58,8 @@ public class User {
         this.password = password;
         this.phone_number = phone_number;
     }
-    public User(String email, String password){
-        this.email = email;
+    public User(String username, String password){
+        this.username = username;
         this.password = password;
     }
     public String getRoleById() throws SQLException{

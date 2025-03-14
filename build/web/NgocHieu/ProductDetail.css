@@ -94,7 +94,7 @@ body {
 /* Modal nền mờ */
 /* Hiển thị modal full màn hình với nền mờ */
 .modal {
-    display: none; /* Ẩn mặc định */
+    display: none;
     position: fixed;
     z-index: 1000; /* Đảm bảo nằm trên cùng */
     left: 0;

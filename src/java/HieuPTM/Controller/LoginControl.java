@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import HieuPTM.model.UserHieu;
 import jakarta.servlet.annotation.WebServlet;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @WebServlet(name = "LoginControl", urlPatterns = {"/LoginControl"})
 public class LoginControl extends HttpServlet {
@@ -29,8 +31,14 @@ public class LoginControl extends HttpServlet {
         String re = request.getParameter("re"); // "Remember me"
 
         UserDAO ad = new UserDAO();
-        UserHieu u = ad.check(username, password); // Kiểm tra tài khoản
-
+        UserHieu u = new UserHieu(); // Kiểm tra tài khoản
+        
+        UserHieu userDB = ad.getUser(username);
+        
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        if(passwordEncoder.matches(password, userDB.getPassword())){
+            u = userDB;
+        }
         // Xử lý Cookie Remember Me
         Cookie cname = new Cookie("name", username);
         Cookie cpass = new Cookie("pass", password);

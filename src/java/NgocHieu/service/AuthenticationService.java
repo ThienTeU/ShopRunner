@@ -51,7 +51,6 @@ public class AuthenticationService extends HttpServlet{
 
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
         signedJWT.sign(new MACSigner(SIGN_KEY));
-
         return signedJWT.serialize();
     }
 
@@ -73,6 +72,7 @@ public class AuthenticationService extends HttpServlet{
                         .collect(Collectors.toList());
     }
     
+    
     public boolean introspect(String token)
             throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGN_KEY.getBytes());
@@ -88,7 +88,7 @@ public class AuthenticationService extends HttpServlet{
 
     public String loginAuthentication(User rawUser) throws SQLException{
         UserDAO dao = new UserDAO();
-        User user = dao.getUserByEmail(rawUser.getEmail());
+        User user = dao.getUserByUsername(rawUser.getUsername());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(rawUser.getPassword(), user.getPassword());
