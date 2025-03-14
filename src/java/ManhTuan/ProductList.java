@@ -15,6 +15,7 @@ import Model.*;
 import java.util.List;
 import DAL.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
@@ -42,7 +43,12 @@ public class ProductList extends HttpServlet {
         }
         List<ProductTuan> products = dao.getAllProductsByPages(index, size);
         List<CategoryTuan> categories = dao.getCategoryTree();
-        
+        List<Size> list = new ArrayList<>();
+        List<Color> colorsAll = new ArrayList<>();
+        colorsAll = dao.getAllColor();
+        list = dao.getAllSize();
+        request.setAttribute("colorsAll", colorsAll);
+        request.setAttribute("size", list);
         request.setAttribute("categories", categories);
         request.setAttribute("end", end);
         request.setAttribute("products", products);

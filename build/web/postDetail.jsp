@@ -60,9 +60,9 @@
 
 </head>
 <body>
+    <%@include file="component/header.jsp" %>
 
     <%@include file="component/topbar.jsp" %>
-    <%@include file="component/navbar.jsp" %>
     <%@ page pageEncoding="UTF-8" %>
 
     <div id="wrapper">
@@ -90,7 +90,7 @@
                     <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                         <div class="sidebar">
                             <div class="widget">
-                                <h2 class="widget-title">New Post</h2>
+                                <h2 class="widget-title">Mới nhất</h2>
                                 <div class="trend-videos">
                                     <c:forEach items="${requestScope.pdtos}" var="c">
                                         <div class="blog-box">

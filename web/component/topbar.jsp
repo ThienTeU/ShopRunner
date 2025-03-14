@@ -21,30 +21,6 @@
                     </div>
                 </div>
                 <div class="col-lg-6 text-center text-lg-right">
-                    <c:if test="${account == null}">
-                        <div class="d-inline-flex align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Account</button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <button  class="dropdown-item" type="button" ><a href="login">Login </a></button>
-                                    <button class="dropdown-item" type="button"><a href="signup">Sign in</a></button>
-                                </div>
-                            </div>
-                        </div>
-                    </c:if>
-                    <c:if test="${account != null}">
-                        <div class="d-inline-flex align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">${account.getFullname()}</button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                     <button class="dropdown-item" type="button"><a href="mypurchase">My Purchase</a></button>
-            
-                                    <button class="dropdown-item" type="button"><a href="UserProfile?aid=${account.getAccountID()}">Profile</a></button>
-                                    <button class="dropdown-item" type="button"><a href="logout">Logout</a></button>
-                                </div>
-                            </div>
-                        </div>
-                    </c:if>
                     <div class="d-inline-flex align-items-center d-block d-lg-none">
                         <a href="" class="btn px-0 ml-2">
                             <i class="fas fa-heart text-dark"></i>
@@ -58,32 +34,8 @@
                 </div>
             </div>
             
-<!--            logo trang chu-->
-            <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
-                <div class="col-lg-4">
-                    <a href="home" class="text-decoration-none">
-                        <span class="h1 text-uppercase text-dark bg-info px-2">Runner</span>
-                        <span class="h1 text-uppercase text-info bg-dark px-2 ml-n1">Shop</span>
-                    </a>
-                </div>
                 
-<!--                Thanh search-->
-                <div class="col-lg-4 col-6 text-left">
-                    <form action="search">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for products" name="key">
-                            <div class="input-group-append">
-                                <span class="input-group-text bg-transparent text-primary">
-                                    <i class="fa fa-search"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-lg-4 col-6 text-right">
-                    <p class="m-0">Hotline</p>
-                    <h5 class="m-0">+012 345 6789</h5>
-                </div>
+
             </div>
         </div>
     </body>

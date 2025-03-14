@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -780,7 +781,6 @@ public class ProductDAO extends DBContext {
     public ArrayList<Product> getTopViewedProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at, "
-                + "SUM(ISNULL(pv.[view], 0)) AS total_views "
                 + "SUM(ISNULL(pv.[view], 0)) AS total_views, "
                 + "COALESCE(MIN(pp.price), 0) AS price "
                 + "FROM Product p "
@@ -791,7 +791,7 @@ public class ProductDAO extends DBContext {
                 + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, limit);  // Truyền số lượng sản phẩm cần lấy
+            ps.setInt(1, limit);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Product p = new Product(
@@ -802,7 +802,8 @@ public class ProductDAO extends DBContext {
                         rs.getInt("discount"),
                         rs.getBoolean("status"),
                         rs.getString("thumbnail"),
-                        rs.getString("created_at")
+                        rs.getString("created_at"),
+                        rs.getInt("price")
                 );
                 products.add(p);
             }
@@ -811,19 +812,32 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+<<<<<<< HEAD
 
     public static void main(String[] args) {
         ProductDAO dao = new ProductDAO();
         int limit = 5; // Số lượng sản phẩm muốn lấy
         ArrayList<Product> newestProducts = dao.getNewestProducts(limit);
+=======
+    
 
-        System.out.println("📌 Danh sách " + limit + " sản phẩm mới nhất:");
-        for (Product p : newestProducts) {
-            System.out.println("🛍️ Product ID: " + p.getProduct_id()
-                    + ", Name: " + p.getProduct_name()
-                    + ", Created At: " + p.getCreated_at());
-        }
+public static void main(String[] args) {
+    ProductDAO dao = new ProductDAO();
+    int limit = 5; // Lấy 5 sản phẩm có lượt xem cao nhất
+    ArrayList<Product> topViewedProducts = dao.getTopViewedProducts(limit);
+>>>>>>> 325329cd367540325159eb4f66d60771321bd8c3
+
+    System.out.println("🔥 Danh sách " + limit + " sản phẩm có lượt xem cao nhất:");
+    for (Product p : topViewedProducts) {
+        System.out.println("👀 Product ID: " + p.getProduct_id()
+                + ", Name: " + p.getProduct_name()
+                + ", Created At: " + p.getCreated_at());
     }
+<<<<<<< HEAD
+=======
+}
+
+>>>>>>> 325329cd367540325159eb4f66d60771321bd8c3
 
     public ArrayList<Product> getNewestProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
@@ -881,4 +895,134 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+    
+    
+    public List<Product> searchProducts(String query, String sortPrice, int offset, int limit) {
+    List<Product> list = new ArrayList<>();
+    String sql = "SELECT DISTINCT p.*, MIN(pp.price) as min_price " +
+                 "FROM Product p " +
+                 "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id " +
+                 "WHERE p.status = 0 " +
+                 "AND (LOWER(p.product_name) LIKE LOWER(?) OR LOWER(p.description) LIKE LOWER(?)) " +
+                 "GROUP BY p.product_id, p.category_id, p.product_name, p.description, " +
+                 "p.discount, p.status, p.thumbnail, p.created_at ";
+
+    if (sortPrice != null) {
+        sql += sortPrice.equals("asc") ? "ORDER BY min_price ASC " :
+               sortPrice.equals("desc") ? "ORDER BY min_price DESC " :
+               "ORDER BY p.created_at DESC ";
+    } else {
+        sql += "ORDER BY p.created_at DESC ";
+    }
+
+    sql += "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        String searchPattern = "%" + query.trim() + "%";
+        ps.setString(1, searchPattern);
+        ps.setString(2, searchPattern);
+        ps.setInt(3, offset);
+        ps.setInt(4, limit);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProduct_id(rs.getInt("product_id"));
+                product.setCategory_id(rs.getInt("category_id"));
+                product.setProduct_name(rs.getString("product_name"));
+                product.setDescription(rs.getString("description"));
+                product.setDiscount(rs.getInt("discount"));
+                product.setStatus(rs.getBoolean("status"));
+                product.setThumbnail(rs.getString("thumbnail"));
+                product.setCreated_at(rs.getString("created_at"));
+                product.setPrice(rs.getDouble("min_price"));
+                list.add(product);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
+
+public int getTotalSearchResults(String query) {
+    int total = 0;
+    String sql = "SELECT COUNT(DISTINCT p.product_id) " +
+                "FROM Product p " +
+                "WHERE p.status = 0 " + // 0 là active trong database của bạn
+                "AND (p.product_name LIKE ? OR p.description LIKE ?)";
+    
+    try {
+        PreparedStatement ps = connection.prepareStatement(sql);
+        String searchPattern = "%" + query + "%";
+        ps.setString(1, searchPattern);
+        ps.setString(2, searchPattern);
+        
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            total = rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return total;
+}
+
+public List<Product> sortProducts(List<Product> products, String sortOrder) {
+    if (sortOrder == null || products == null) {
+        return products;
+    }
+
+    Collections.sort(products, (p1, p2) -> {
+        if (sortOrder.equals("asc")) {
+            return Double.compare(p1.getPrice(), p2.getPrice());
+        } else if (sortOrder.equals("desc")) {
+            return Double.compare(p2.getPrice(), p1.getPrice());
+        }
+        return 0;
+    });
+
+    return products;
+}
+
+
+public List<Product> getProductsByCategory(int categoryId) {
+    List<Product> products = new ArrayList<>();
+    String sql = """
+        WITH CategoryTree AS (
+            SELECT category_id FROM Category WHERE category_id = ?
+            UNION ALL
+            SELECT c.category_id FROM Category c
+            JOIN CategoryTree ct ON c.parent_id = ct.category_id
+        )
+        SELECT p.product_id, p.category_id, p.product_name, p.description, 
+               p.discount, p.status, p.thumbnail, p.created_at, pp.price
+        FROM Product p
+        JOIN CategoryTree ct ON p.category_id = ct.category_id
+        LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id
+    """;
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, categoryId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            products.add(new Product(
+                    rs.getInt("product_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("product_name"),
+                    rs.getString("description"),
+                    rs.getInt("discount"),
+                    rs.getBoolean("status"),
+                    rs.getString("thumbnail"),
+                    rs.getString("created_at"),
+                    rs.getDouble("price")
+            ));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return products;
+}
 }
