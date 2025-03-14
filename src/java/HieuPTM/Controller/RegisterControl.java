@@ -21,6 +21,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @WebServlet(name = "RegisterControl", urlPatterns = {"/RegisterControl"})
 public class RegisterControl extends HttpServlet {
@@ -59,7 +61,8 @@ public class RegisterControl extends HttpServlet {
         request.setAttribute("email", email);
         request.setAttribute("phone", phone);
         request.setAttribute("gender", genderID); // Lưu gender để hiện lại nếu lỗi
-
+        PasswordEncoder passEncoder = new BCryptPasswordEncoder(10);
+        String passHashed = passEncoder.encode(password);
         // Kiểm tra dữ liệu
         if (!validateEmail(email)) {
             request.setAttribute("error", "Định dạng email không hợp lệ!");
@@ -101,7 +104,7 @@ public class RegisterControl extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("otp", otpvalue);
         session.setAttribute("otpTime", System.currentTimeMillis()); // Lưu thời điểm tạo OTP
-        session.setAttribute("userRegister", new UserHieu(userName, fullName, password, phone, email, genderID, roleID));
+        session.setAttribute("userRegister", new UserHieu(userName, fullName, passHashed, phone, email, genderID, roleID));
 
         // Điều hướng sang trang nhập OTP
         request.setAttribute("message", "Xác thực mã OTP đã được gửi qua email để hoàn tất đăng ký.");

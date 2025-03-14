@@ -268,5 +268,11 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
     }
+    
+    public static void main(String[] args) {
+        UserHieu user = new UserHieu("admin","admin","$2a$10$D1KlmGpruxif2dJyBHRz9ed.Y9UByop8SR.YZ9xLStV6iihzKcl1S","0988738872","duonghieu294@gmail.com",1,1);
+        UserDAO dao = new UserDAO();
+        dao.insert(user);
+    }
 
 }

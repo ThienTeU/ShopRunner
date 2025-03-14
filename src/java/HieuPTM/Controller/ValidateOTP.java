@@ -46,14 +46,14 @@ public class ValidateOTP extends HttpServlet {
 
                     // Thêm vào database
                     dao.insert(user);
-
+                    response.getWriter().print(user.getFullName() + "|" + user.getPassword());
                     // Xoá session
                     session.removeAttribute("otp");
                     session.removeAttribute("otpTime");
                     session.removeAttribute("userRegister");
 
                     // Chuyển sang trang thành công
-                    dispatcher = request.getRequestDispatcher("/HieuPTM/RegisterSuccess.jsp");
+                    //dispatcher = request.getRequestDispatcher("/HieuPTM/RegisterSuccess.jsp");
 
                 } else if (session.getAttribute("email") != null) {
                     // Trường hợp Quên mật khẩu
@@ -77,6 +77,6 @@ public class ValidateOTP extends HttpServlet {
             }
         }
 
-        dispatcher.forward(request, response);
+        //dispatcher.forward(request, response);
     }
 }

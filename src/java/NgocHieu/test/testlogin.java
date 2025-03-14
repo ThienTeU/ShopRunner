@@ -29,13 +29,13 @@ public class testlogin extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            User rawUser = new User("admin@gmail.com", "123456");
+            User rawUser = new User("admin", "12345678");
             UserDAO dao = new UserDAO();
             AuthenticationService auth = new AuthenticationService();
             String token = auth.loginAuthentication(rawUser);
             response.getWriter().println("Token: " + token);
             if(token!=null){
-                User user = dao.getUserByEmail(rawUser.getEmail());
+                User user = dao.getUserByUsername(rawUser.getUsername());
                 response.getWriter().println("Role: " + user.getRoleById());
                 request.getSession().setAttribute("token", token);
             }

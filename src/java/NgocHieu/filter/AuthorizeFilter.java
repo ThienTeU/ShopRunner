@@ -30,7 +30,14 @@ public class AuthorizeFilter implements Filter {
     private final AuthenticationService authService = new AuthenticationService();
 
     private static final List<String> publicUrls = Arrays.asList(
+            "/",
             "/home",
+            "/LoginControl",
+            "/RegisterControl",
+            "/ForgotPassword",
+            "/ValidateOTP",
+            "/ChangePassword",
+            "/NewPassword",
             "/RunnerShop",
             "/testlogin",
             "/productlist",
@@ -99,12 +106,12 @@ public class AuthorizeFilter implements Filter {
                 String role = authService.getUserRoleFromToken(token);
                 System.out.println("User Role: " + role); // Debug
 
-                if ("admin".equals(role)) {
+                if ("Admin".equals(role)) {
                     chain.doFilter(request, response);
                     return;
                 }
 
-                if ("user".equals(role) && userAllowedUrls.contains(path)) {
+                if ("User".equals(role) && userAllowedUrls.contains(path)) {
                     chain.doFilter(request, response);
                     return;
                 }

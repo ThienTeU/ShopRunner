@@ -29,7 +29,6 @@
     </head>
 
     <body>       
-        <%@ include file="/model/header.jsp" %>
         <div class="row">
             <div class="col-md-8">
                 <div class="product-images">
@@ -454,7 +453,7 @@
                         Size guide
                     </a>
                 </div>
-                <div id="sizeGuideModal" class="modal">
+                <div id="sizeGuideModal" class="modal" style="display: none">
                     <span class="close" onclick="closeSizeGuide()">&times;</span>
                     <div class="modal-content-wrapper">
                         <img class="modal-content" src="https://hanaichi.vn/blog/wp-content/uploads/2020/09/bang-size-adidas.jpg" alt="Size Guide">
