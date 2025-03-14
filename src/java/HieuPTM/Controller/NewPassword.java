@@ -28,8 +28,8 @@ public class NewPassword extends HttpServlet {
 
 			try {
 				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-				Connection con = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=dataShop", "sa","123");
-				PreparedStatement pst = con.prepareStatement("UPDATE [Users] SET Password = ? WHERE Email = ?");
+				Connection con = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=RunnerShop", "sa","123");
+				PreparedStatement pst = con.prepareStatement("UPDATE [User] SET password = ? WHERE email = ?");
 				pst.setString(1, newPassword);
 				pst.setString(2, (String) session.getAttribute("email"));
 

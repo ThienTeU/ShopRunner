@@ -41,7 +41,7 @@
             <% if(request.getAttribute("message") != null) { %>
                 <p class="text-danger"><%= request.getAttribute("message") %></p>
             <% } %>
-            <form action="ValidateOtp" method="post">
+            <form action="ValidateOTP" method="post">
                 <div class="mb-3 text-start">
                     <label for="otp" class="form-label">Mã OTP:</label>
                     <input type="text" class="form-control" id="otp" name="otp" placeholder="Nhập mã OTP" required>

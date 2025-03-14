@@ -60,13 +60,13 @@ public class GoogleLoginServlet extends HttpServlet {
                 phone = userDetails.getJSONArray("phoneNumbers").getJSONObject(0).optString("value", "N/A");
             }
 
-            //Kiểm tra user có tồn tại trong DB không
-            UserDAO userDAO = new UserDAO();
-            if (!userDAO.checkUserNameDuplicate(email)) {
-                //UserHieu newUser = new UserHieu(email, name, "", "", phone, email, picture, birthday, 2);
-                UserHieu newUser = new UserHieu(email, name, "", phone, email, code, 2);
-                userDAO.insert(newUser);
-            }
+//            //Kiểm tra user có tồn tại trong DB không
+//            UserDAO userDAO = new UserDAO();
+//            if (!userDAO.checkUserNameDuplicate(email)) {
+//                //UserHieu newUser = new UserHieu(email, name, "", "", phone, email, picture, birthday, 2);
+//                UserHieu newUser = new UserHieu(email, name, "", phone, email, code, 2);
+//                userDAO.insert(newUser);
+//            }
 
             //Lưu session và chuyển hướng
             request.getSession().setAttribute("userEmail", email);

@@ -4,7 +4,7 @@
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<title>Thay đổi mật khẩu</title>
+<title>Đặt lại mật khẩu</title>
 <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
 <style>
     body {
@@ -33,7 +33,7 @@
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="col-12 col-md-6">
             <div class="container-box text-center">
-                <h2 class="mb-4">Thay đổi mật khẩu</h2>
+                <h2 class="mb-4">Đặt lại mật khẩu</h2>
                 <form action="NewPassword" method="POST" id="passwordForm" onsubmit="return validatePassword()">
                     <div class="mb-3 text-start">
                         <label for="password" class="form-label">Mật khẩu mới</label>
@@ -46,7 +46,7 @@
                         <small id="confPasswordError" class="text-danger"></small>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-custom">Thay đổi</button>
+                        <button type="submit" class="btn btn-custom">Đặt lại</button>
                     </div>
                 </form>
             </div>

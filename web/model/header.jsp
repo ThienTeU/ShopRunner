@@ -114,9 +114,10 @@
                             <c:otherwise>
                                 <li><a class="dropdown-item" href="#">Xin chào, ${param.uid}</a></li>
                                 <li><a class="dropdown-item" href="/RunnerShop/profile?uid=${param.uid}">Trang cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/RunnerShop/ChangePassword?uid=${param.uid}">Thay đổi mật khẩu</a></li>
                                 <li><a class="dropdown-item" href="/RunnerShop/orders?uid=${param.uid}">Đơn hàng</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/RunnerShop/logout?uid=${param.uid}">Đăng xuất</a></li>
+                                <li><a class="dropdown-item" href="/RunnerShop/LoginControl">Đăng xuất</a></li>
                             </c:otherwise>
                         </c:choose>
                     </ul>

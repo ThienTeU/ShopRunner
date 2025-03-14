@@ -12,8 +12,8 @@
     <div class="container mt-5">
         <div class="alert alert-success">
             <h4>Đăng kí tài khoản thành công!</h4>
-            <p>Chào mừng bạn đến với website.</p>
-            <a href="${pageContext.request.contextPath}/LoginControl" class="btn btn-primary">Hãy đăng nhập</a>
+            <p>Chào mừng bạn đến với Runner Gear Shop.</p>
+            <a href="${pageContext.request.contextPath}/LoginControl" class="btn btn-primary">Đăng nhập</a>
         </div>
     </div>
 </body>

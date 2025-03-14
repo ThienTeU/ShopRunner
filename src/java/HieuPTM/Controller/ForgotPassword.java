@@ -2,85 +2,86 @@ package HieuPTM.controller;
 
 import java.util.Properties;
 import java.util.Random;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
-import jakarta.servlet.ServletException;
+import java.util.Date;
+import javax.mail.*;
+import javax.mail.internet.*;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
+import java.io.IOException;
 
-@WebServlet(name="ForgotPassword", urlPatterns={"/ForgotPassword"})
-
+@WebServlet(name = "ForgotPassword", urlPatterns = {"/ForgotPassword"})
 public class ForgotPassword extends HttpServlet {
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-    }
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         request.getRequestDispatcher("/HieuPTM/ForgotPassword.jsp").forward(request, response);
     }
-    
+
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String email = request.getParameter("email");
-		RequestDispatcher dispatcher = null;
-		int otpvalue = 0;
-		HttpSession mySession = request.getSession();
-		
-		if(email!=null || !email.equals("")) {
-			// sending otp
-			Random rand = new Random();
-			otpvalue = rand.nextInt(1255650);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-			String to = email;// change accordingly
-			// Get the session object
-			Properties props = new Properties();
-			props.put("mail.smtp.host", "smtp.gmail.com");
-			props.put("mail.smtp.socketFactory.port", "465");
-			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.port", "465");
-			Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("hieuphamtran04@gmail.com", "uqrr rrhy mvxz hbzw");
-				}
-			});
-			try {
-				MimeMessage message = new MimeMessage(session);
-				message.setFrom(new InternetAddress(email));// change accordingly
-				message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-				message.setSubject("Xin chào");
-				message.setText("mã OTP của bạn là: " + otpvalue, "UTF-8");
-				// send message
-				Transport.send(message);
-				System.out.println("Tin nhắn đã được gửi thành công");
-			}
+        String email = request.getParameter("email");
+        RequestDispatcher dispatcher;
 
-			catch (MessagingException e) {
-				throw new RuntimeException(e);
-			}
-			dispatcher = request.getRequestDispatcher("HieuPTM/EnterOTP.jsp");
-			request.setAttribute("message","Mã OTP đã được gửi");
-			//request.setAttribute("connection", con);
-			mySession.setAttribute("otp",otpvalue); 
-			mySession.setAttribute("email",email); 
-			dispatcher.forward(request, response);
-			//request.setAttribute("status", "success");
-		}		
-	}
+        if (email != null && !email.trim().isEmpty()) {
+            Random rand = new Random();
+            String otpValue = String.format("%06d", rand.nextInt(999999));
+
+            // Email config
+            String fromEmail = "hieuphamtran04@gmail.com";
+            String password = "uqrr rrhy mvxz hbzw";
+
+            Properties props = new Properties();
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "465");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+            Session sessionMail = Session.getDefaultInstance(props, new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(fromEmail, password);
+                }
+            });
+
+            try {
+                MimeMessage message = new MimeMessage(sessionMail);
+                message.setFrom(new InternetAddress(fromEmail));
+                message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+                message.setSubject("Runner Gear Shop - Đặt Lại Mật Khẩu Tài Khoản", "UTF-8");
+
+                String htmlContent = "<div style='font-family: Arial, sans-serif; color: black;'>"
+                        + "<p>Gần đây, bạn đã yêu cầu đặt lại mật khẩu cho tài khoản.</p>"
+                        + "<ul><li>Nếu không phải bạn, bỏ qua email này.</li>"
+                        + "<li>Sử dụng mã OTP sau để hoàn tất quá trình đặt lại mật khẩu.</li></ul>"
+                        + "<h3 style='color: red;'>Mã OTP: <b>" + otpValue + "</b></h3>"
+                        + "<p style='color: gray;'>Mã OTP có hiệu lực trong 60 phút.</p>"
+                        + "</div>";
+
+                message.setContent(htmlContent, "text/html; charset=UTF-8");
+                Transport.send(message);
+
+                HttpSession session = request.getSession();
+                session.setAttribute("otp", otpValue);
+                session.setAttribute("email", email);
+                session.setAttribute("otpTime", new Date().getTime()); // Thời gian gửi OTP
+
+                request.setAttribute("message", "Mã OTP đã được gửi tới email của bạn!");
+                dispatcher = request.getRequestDispatcher("/HieuPTM/EnterOTP.jsp");
+
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                request.setAttribute("message", "Lỗi gửi email: " + e.getMessage());
+                dispatcher = request.getRequestDispatcher("/HieuPTM/ForgotPassword.jsp");
+            }
+
+        } else {
+            request.setAttribute("message", "Vui lòng nhập email hợp lệ!");
+            dispatcher = request.getRequestDispatcher("/HieuPTM/ForgotPassword.jsp");
+        }
+
+        dispatcher.forward(request, response);
+    }
 }
