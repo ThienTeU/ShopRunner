@@ -812,32 +812,6 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-<<<<<<< HEAD
-
-    public static void main(String[] args) {
-        ProductDAO dao = new ProductDAO();
-        int limit = 5; // Số lượng sản phẩm muốn lấy
-        ArrayList<Product> newestProducts = dao.getNewestProducts(limit);
-=======
-    
-
-public static void main(String[] args) {
-    ProductDAO dao = new ProductDAO();
-    int limit = 5; // Lấy 5 sản phẩm có lượt xem cao nhất
-    ArrayList<Product> topViewedProducts = dao.getTopViewedProducts(limit);
->>>>>>> 325329cd367540325159eb4f66d60771321bd8c3
-
-    System.out.println("🔥 Danh sách " + limit + " sản phẩm có lượt xem cao nhất:");
-    for (Product p : topViewedProducts) {
-        System.out.println("👀 Product ID: " + p.getProduct_id()
-                + ", Name: " + p.getProduct_name()
-                + ", Created At: " + p.getCreated_at());
-    }
-<<<<<<< HEAD
-=======
-}
-
->>>>>>> 325329cd367540325159eb4f66d60771321bd8c3
 
     public ArrayList<Product> getNewestProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
