@@ -75,7 +75,7 @@ public class Email {
     }
     
     public static void main(String[] args) {               
-        String to = "nghieu241203@gmail.com";        
+        String to = "phamtranminhhieu2004@gmail.com";        
         Email email = new Email();
         String subject = "Xác Nhận Đặt Vé Thành Công";
         String name = "Hiếu";

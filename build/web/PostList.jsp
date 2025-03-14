@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Site Metas -->
-    <title>Tech Blog - Stylish Magazine Blog Template</title>
+    <title>Sport Blogs</title>
     <meta name="keywords" content="">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -63,7 +63,11 @@
     <![endif]-->
 
 </head>
+
+
 <body>
+    
+        <%@include file="component/header.jsp" %>
     <%@ page pageEncoding="UTF-8" %>
     <!--    topbar-->
 
@@ -75,30 +79,7 @@
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
-                <c:if test="${empty acc}">
-                    <div class="d-inline-flex align-items-center">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Account</button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button  class="dropdown-item" type="button" ><a href="login">Login </a></button>
-                                <button class="dropdown-item" type="button"><a href="signup">Sign in</a></button>
-                            </div>
-                        </div>
-                    </div>
-                </c:if>
-                <c:if test="${not empty acc}">
-                    <div class="d-inline-flex align-items-center">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">${acc.getFullname()}</button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><a href="mypurchase">My Purchase</a></button>
 
-                                <button class="dropdown-item" type="button"><a href="UserProfile?aid=${acc.getAccountID()}">Profile</a></button>
-                                <button class="dropdown-item" type="button"><a href="logout">Logout</a></button>
-                            </div>
-                        </div>
-                    </div>
-                </c:if>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
                     <a href="" class="btn px-0 ml-2">
                         <i class="fas fa-heart text-dark"></i>
@@ -111,37 +92,24 @@
                 </div>
             </div>
         </div>
-
-        <!--            logo trang chu-->
-        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
-            <div class="col-lg-4">
-                <a href="home" class="text-decoration-none">
-                        <span class="h1 text-uppercase text-dark bg-info px-2">Runner</span>
-                        <span class="h1 text-uppercase text-info bg-dark px-2 ml-n1">Shop</span>
-                </a>
-            </div>
-
-            <!--                Thanh search-->
-            <div class="col-lg-4 col-6 text-left">
-                <form action="PostListController" method="post">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="What are you search for?" name="search">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <button type="submit" class="fa fa-search" style="text-decoration: none; border: none"></button>
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="col-lg-4 col-6 text-right">
-                <p class="m-0">Hotline</p>
-                <h5 class="m-0">+012 345 6789</h5>
-            </div>
-        </div>
-    </div>
     <!--end top bar-->
-    <%@include file="component/navbar.jsp" %>
+    
+    <div id="wrapper" class="d-flex justify-content-center">
+    <div class="col-lg-6 col-md-8 col-12">
+        <form action="PostListController" method="post" class="d-flex justify-content-center">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="What are you search for?" name="search">
+                <div class="input-group-append">
+                    <span class="input-group-text bg-transparent text-primary">
+                        <button type="submit" class="fa fa-search" style="text-decoration: none; border: none"></button>
+                    </span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+    
     <div id="wrapper">
         <form action="PostListController">
             <div class="option">
@@ -154,14 +122,14 @@
         <section id="blog">
             <c:if test="${size < 1}">
                 <div class="blog-heading">
-                    <span>What's thing we have today?</span>
-                    <h3>Oops! No information</h3>
+                    <span>Chúng ta có bài viết gì mới hôm nay?</span>
+                    <h3>Xin lỗi! không có bài viết nào cả</h3>
                 </div>
             </c:if>
             <c:if test="${size > 0}">
                 <div class="blog-heading">
-                    <span>What's thing we have today?</span>
-                    <h3>Recent Blogs</h3>
+                    <span>Chúng ta có bài viết gì mới hôm nay?</span>
+                    <h3>Các bài viết gần đây</h3>
                 </div>
                 <div class="blog-container">
                     <!-- blog1 -->
@@ -177,9 +145,23 @@
                                 <span>${c.getDateCreated()}</span>
                                 <a href="postDetail?postID=${c.getPostID()}" class="blog-title">${c.getTitle()}</a>
                                 <p>${c.getDescription()}</p>
-                                <a href="postDetail?postID=${c.getPostID()}">Read More</a>
-
+                                <a href="postDetail?postID=${c.getPostID()}">Xem thêm</a>
+                                <p>Số lượt xem: ${c.getViews()}</p>
                             </div>
+                                <!-- Phân trang -->
+<div class="pagination">
+    <c:if test="${currentPage > 1}">
+        <a href="PostListController?page=${currentPage - 1}">« Trước</a>
+    </c:if>
+
+    <c:forEach var="i" begin="1" end="${totalPages}">
+        <a href="PostListController?page=${i}" class="${i == currentPage ? 'active' : ''}">${i}</a>
+    </c:forEach>
+
+    <c:if test="${currentPage < totalPages}">
+        <a href="PostListController?page=${currentPage + 1}">Sau »</a>
+    </c:if>
+</div>
                         </div>
                     </c:forEach>
 
