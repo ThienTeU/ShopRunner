@@ -25,8 +25,11 @@ public class OrderDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         OrderDAO dao = new OrderDAO();
+        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+        order.setPayment_method("vnpay");
+        order.setStatus("paid");
+        System.out.println(dao.insertOrder(order));
 
-        System.out.println(dao.updateProductQuantity(1, 2));
     }
 
     public boolean updateProductQuantity(int productQuantityId, int quantity) throws SQLException {
@@ -65,27 +68,27 @@ public class OrderDAO extends DBContext {
     }
 
     public Integer insertOrder(Orders order) throws SQLException {
-        String sql = "INSERT INTO Orders (email, total_price, order_date, status, voucher_id, phone, payment_method, shipping_address) VALUES (?, ?, DEFAULT, DEFAULT, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Orders (email, total_price, order_date, status, voucher_id, phone, payment_method, shipping_address) "
+                + "VALUES (?, ?, DEFAULT, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, order.getEmail());
             ps.setInt(2, order.getTotal_price());
-
+            ps.setString(3, order.getStatus());
             if (order.getVoucher_id() != -1) {
-                ps.setInt(3, order.getVoucher_id());
+                ps.setInt(4, order.getVoucher_id());
             } else {
-                ps.setNull(3, java.sql.Types.INTEGER);
+                ps.setNull(4, java.sql.Types.INTEGER);
             }
-            ps.setString(4, order.getPhone());
-            ps.setString(5, order.getPayment_method());
-            ps.setString(6, order.getShipping_address());
-
-            int affectedRows = ps.executeUpdate(); // Thực thi INSERT
+            ps.setString(5, order.getPhone());
+            ps.setString(6, order.getPayment_method());
+            ps.setString(7, order.getShipping_address());
+            int affectedRows = ps.executeUpdate();
 
             if (affectedRows > 0) {
-                try (ResultSet rs = ps.getGeneratedKeys()) { // Lấy khóa tự động sinh
+                try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        return rs.getInt(1); // Trả về order_id
+                        return rs.getInt(1);
                     }
                 }
             }

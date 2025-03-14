@@ -6,6 +6,8 @@ package NgocHieu;
 
 import Model.CartItem;
 import Model.CartItemDTO;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,8 +19,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,14 +39,12 @@ public class UpdateCart extends HttpServlet {
         List<CartItem> cartItems = new ArrayList<>();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().startsWith("cartItem_")) {
-                    String[] itemData = URLDecoder.decode(cookie.getValue(), "UTF-8").split(",");
-                    CartItem cartItem = new CartItem();
-                    cartItem.setProduct_id(Integer.parseInt(itemData[0]));
-                    cartItem.setProductprice_id(Integer.parseInt(itemData[1]));
-                    cartItem.setProductquantity_id(Integer.parseInt(itemData[2]));
-                    cartItem.setQuantity(Integer.parseInt(itemData[3]));
-                    cartItems.add(cartItem);
+                if (cookie.getName().equals("cart")) {
+                    try {
+                        cartItems = AuthenticationService.decodeCartToken(cookie.getValue());
+                    } catch (JOSEException | ParseException ex) {
+                        Logger.getLogger(UpdateCart.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
@@ -58,15 +61,16 @@ public class UpdateCart extends HttpServlet {
             }
         }
 
-        // Update cookies
-        for (CartItem item : cartItems) {
-            String cookieName = "cartItem_" + item.getProduct_id() + "_" + item.getProductprice_id() + "_"
-                    + item.getProductquantity_id();
-            String cookieValue = URLEncoder.encode(item.getProduct_id() + "," + item.getProductprice_id() + ","
-                    + item.getProductquantity_id() + "," + item.getQuantity(), "UTF-8");
-            Cookie cookie = new Cookie(cookieName, cookieValue);
-            cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-            response.addCookie(cookie);
+        try {
+            // Generate jwt moi
+            String newCartToken = AuthenticationService.generateCartToken(cartItems);
+            Cookie cartCookie = new Cookie("cart", newCartToken);
+                cartCookie.setMaxAge(60 * 60 * 24 * 30);
+                cartCookie.setHttpOnly(true);
+                cartCookie.setSecure(true);
+                response.addCookie(cartCookie);
+        } catch (JOSEException ex) {
+            Logger.getLogger(UpdateCart.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         response.sendRedirect("CartDetailServlet");

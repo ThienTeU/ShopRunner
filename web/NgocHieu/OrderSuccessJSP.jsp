@@ -45,29 +45,28 @@
             }
         </style>
     </head>
+    <%
+        Integer orderId = (Integer) session.getAttribute("order_id");
+//        if (orderId == null) {
+//            response.sendRedirect("handler/error.jsp");
+//            return;
+//        }
+        session.removeAttribute("order_id");
+        session.removeAttribute("order");
+        session.removeAttribute("orderGhtk");
+    %>
     <body>
-
+        <%@ include file="/model/header.jsp" %>
         <div class="confirmation-container">
             <h2 class="fw-bold">THANK YOU</h2>
             <div class="status-box">
                 Your order is being processed
             </div>
-            <p class="mt-3"><strong>Order Number: #${sessionScope.order.order_id}</strong></p>
+            <p class="mt-3"><strong>Order Number: #<%=orderId%></strong></p>
             <p>You’ll receive a confirmation email shortly. The order will appear in your account as soon as you’ve received the email.</p>
             <p class="fst-italic">While you wait on your delivery, you can always explore our website to find more gear.</p>
-            <a href="home" class="btn btn-home">GO TO HOMEPAGE</a>
+            <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-dark">GO TO HOMEPAGE</a>
         </div>
-        <script type="text/javascript">
-            setTimeout(function () {
-
-                var form = document.createElement("form");
-                form.method = "POST";
-                form.action = "${sessionScope.contextPath}/SendOrderToEmailServlet"; // Đường dẫn đến servlet
-
-                document.body.appendChild(form);
-                form.submit();
-            }, 3000);
-        </script>
     </body>
 </html>
 

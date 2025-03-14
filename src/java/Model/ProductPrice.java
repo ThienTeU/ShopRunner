@@ -4,6 +4,7 @@
  */
 package Model;
 
+import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,6 +21,11 @@ public class ProductPrice {
     private double price;
 
     public ProductPrice() {
+    }
+    
+     public boolean isExistedProductPriceId() throws SQLException{
+        InsertProductDAO dao = new InsertProductDAO();
+        return dao.isExistedProductPriceId(ProductPrice_id);
     }
     
     public List<ProductQuantity> getAllProductQuantitesById() throws SQLException{

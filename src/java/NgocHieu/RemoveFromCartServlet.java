@@ -1,9 +1,10 @@
 package NgocHieu;
 
 import Model.CartItem;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,11 +14,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- *
- * @author admin
- */
 @WebServlet(name = "RemoveFromCartServlet", urlPatterns = {"/RemoveFromCartServlet"})
 public class RemoveFromCartServlet extends HttpServlet {
 
@@ -38,24 +37,22 @@ public class RemoveFromCartServlet extends HttpServlet {
             int productPriceId = Integer.parseInt(productprice_id);
             int productQuantityId = Integer.parseInt(productquantity_id);
 
-            // them du lieu cho cart tu cookie
+            // Lay gio hang tu cookie
             Cookie[] cookies = request.getCookies();
             List<CartItem> cartItems = new ArrayList<>();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().startsWith("cartItem_")) {
-                        String[] itemData = URLDecoder.decode(cookie.getValue(), "UTF-8").split(",");
-                        CartItem cartItem = new CartItem();
-                        cartItem.setProduct_id(Integer.parseInt(itemData[0]));
-                        cartItem.setProductprice_id(Integer.parseInt(itemData[1]));
-                        cartItem.setProductquantity_id(Integer.parseInt(itemData[2]));
-                        cartItem.setQuantity(Integer.parseInt(itemData[3]));
-                        cartItems.add(cartItem);
+                    if ("cart".equals(cookie.getName())) {
+                        try {
+                            cartItems = AuthenticationService.decodeCartToken(cookie.getValue());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
 
-            // dung iterator tranh loi 
+            // Xoa san pham khoi gio hang iterator
             Iterator<CartItem> iterator = cartItems.iterator();
             while (iterator.hasNext()) {
                 CartItem item = iterator.next();
@@ -63,18 +60,31 @@ public class RemoveFromCartServlet extends HttpServlet {
                         && item.getProductprice_id() == productPriceId
                         && item.getProductquantity_id() == productQuantityId) {
                     iterator.remove();
-                    // xoa cookie co ten tuong ung bang cach set value ve rong
-                    String cookieName = "cartItem_" + item.getProduct_id() + "_" + item.getProductprice_id() + "_" + item.getProductquantity_id();
-                    Cookie cookie = new Cookie(cookieName, "");
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
                     break;
                 }
             }
 
+            // Xoa cookie neu gio hang trong
+            if (cartItems.isEmpty()) {
+                Cookie emptyCartCookie = new Cookie("cart", "");
+                emptyCartCookie.setMaxAge(0);
+                response.addCookie(emptyCartCookie);
+            } else {
+                // Ma hoa gio hang moi thanh jwt
+                String newCartToken = AuthenticationService.generateCartToken(cartItems);
+                Cookie cartCookie = new Cookie("cart", newCartToken);
+                cartCookie.setMaxAge(60 * 60 * 24 * 30);//Set thoi gian 30 ngay cho cookie
+                cartCookie.setHttpOnly(true);
+                cartCookie.setSecure(true);
+                response.addCookie(cartCookie);
+            }
+
             response.sendRedirect("CartDetailServlet");
+
         } catch (NumberFormatException e) {
-            response.sendRedirect("error.jsp"); // Redirect when number format error
+            response.sendRedirect("error.jsp");
+        } catch (JOSEException ex) {
+            Logger.getLogger(RemoveFromCartServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -86,6 +96,5 @@ public class RemoveFromCartServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }

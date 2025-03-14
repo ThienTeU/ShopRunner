@@ -70,19 +70,30 @@
                         <div class="d-flex justify-content-between mb-3">
                             <!-- Ô tìm kiếm -->
                             <div class="w-25">
-                                <input type="text" id="searchInput" placeholder=" Tìm kiếm sản phẩm..." onkeyup="searchProduct()">
-                                <button style="border: 1px solid gray; border-radius: 5px; color: gray" type="submit">Tìm</button>
+                                <form action="ProductDashboard">
+                                    <input type="text" id="searchInput" placeholder=" Tìm kiếm sản phẩm..." name="searchKey">
+                                    <input type="text" hidden value="${sort == null ? "date" : sort}" name="sort">
+                                    <button style="border: 1px solid gray; border-radius: 5px; color: gray" type="submit">Tìm</button>
+                                </form>
                             </div>
                             <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Sắp xếp theo ...
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sắp xếp theo: 
+                                    <c:choose>
+                                        <c:when test="${sortType == 'name'}">Tên</c:when>
+                                        <c:when test="${sortType == 'date'}">Ngày tạo</c:when>
+                                        <c:when test="${sortType == 'status'}">Trạng thái</c:when>
+                                        <c:otherwise>Mặc định</c:otherwise>
+                                    </c:choose>
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="sortbyname">Sắp xếp theo: Tên</a>
-                                    <a class="dropdown-item" href="sortbydate">Sắp xếp theo: Ngày tạo</a>
-                                    <a class="dropdown-item" href="sortbystatus">Sắp xếp theo: Trạng thái</a>
+                                    <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=name">Sắp xếp theo: Tên</a>
+                                    <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=date">Sắp xếp theo: Ngày tạo</a>
+                                    <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=status">Sắp xếp theo: Trạng thái</a>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="table-responsive">
@@ -166,14 +177,32 @@
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination justify-content-center">
                                         <c:if test="${currentPage > 1}">
-                                            <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/ProductDashboard?page=${currentPage - 1}">Previous</a></li>
-                                            </c:if>
-                                            <c:forEach begin="1" end="${totalPages}" var="i">
-                                            <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/ProductDashboard?page=${i}" style="${i == currentPage ? 'color: black;' : ''}">${i}</a></li>
-                                            </c:forEach>
-                                            <c:if test="${currentPage < totalPages}">
-                                            <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/ProductDashboard?page=${currentPage + 1}">Next</a></li>
-                                            </c:if>
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="ProductDashboard?searchKey=${searchKey}&sort=${sortType}&page=${currentPage - 1}">
+                                                    Previous
+                                                </a>
+                                            </li>
+                                        </c:if>
+
+                                        <c:forEach begin="1" end="${totalPages}" var="i">
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="ProductDashboard?searchKey=${searchKey}&sort=${sortType}&page=${i}"
+                                                   style="${i == currentPage ? 'color: black;' : ''}">
+                                                    ${i}
+                                                </a>
+                                            </li>
+                                        </c:forEach>
+
+                                        <c:if test="${currentPage < totalPages}">
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="ProductDashboard?searchKey=${searchKey}&sort=${sortType}&page=${currentPage + 1}">
+                                                    Next
+                                                </a>
+                                            </li>
+                                        </c:if>
                                     </ul>
                                 </nav>
                             </div>
@@ -210,31 +239,31 @@
 
     <script>
 
-        function editQuantity(event, button) {
-            event.preventDefault();
+                                                       function editQuantity(event, button) {
+                                                           event.preventDefault();
 
-            let form = button.closest("form"); // Lấy form cha của button
-            let selectedOption = form.querySelector("select[name='productQuantityId']").value; // Lấy productQuantityId từ select
+                                                           let form = button.closest("form"); // Lấy form cha của button
+                                                           let selectedOption = form.querySelector("select[name='productQuantityId']").value; // Lấy productQuantityId từ select
 
-            if (!selectedOption) {
-                alert("Please select size.");
-                return;
-            }
+                                                           if (!selectedOption) {
+                                                               alert("Please select size.");
+                                                               return;
+                                                           }
 
-            let newQuantity = prompt("Nhập số lượng mới:");
-            if (newQuantity !== null && newQuantity !== "") {
-                window.location.href = "UpdateQuantityServlet?productQuantityId=" + selectedOption + "&newQuantity=" + newQuantity;
-            }
-        }
+                                                           let newQuantity = prompt("Nhập số lượng mới:");
+                                                           if (newQuantity !== null && newQuantity !== "") {
+                                                               window.location.href = "UpdateQuantityServlet?productQuantityId=" + selectedOption + "&newQuantity=" + newQuantity;
+                                                           }
+                                                       }
 
 
-        function updateStatus(event, productId, status) {
-            event.preventDefault();//Ngan chan hanh dong mac dinh cua the a
+                                                       function updateStatus(event, productId, status) {
+                                                           event.preventDefault();//Ngan chan hanh dong mac dinh cua the a
 
-            let confirmation = window.confirm("Bạn có muốn cập nhật lại trạng thái sản phẩm không?");
-            if (confirmation) {
-                window.location.href = "UpdateStatusServlet?product_id=" + productId + "&status=" + status;
-            }
-        }
+                                                           let confirmation = window.confirm("Bạn có muốn cập nhật lại trạng thái sản phẩm không?");
+                                                           if (confirmation) {
+                                                               window.location.href = "UpdateStatusServlet?product_id=" + productId + "&status=" + status;
+                                                           }
+                                                       }
     </script>
 </html>

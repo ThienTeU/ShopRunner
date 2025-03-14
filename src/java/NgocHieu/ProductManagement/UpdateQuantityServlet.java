@@ -6,7 +6,6 @@ package NgocHieu.ProductManagement;
 
 import DAL.ManageProductDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +27,9 @@ public class UpdateQuantityServlet extends HttpServlet {
             throws ServletException, IOException {
         String productQuantityId = request.getParameter("productQuantityId");
         String newQuantity = request.getParameter("newQuantity");
-        if (productQuantityId == null || newQuantity == null) {
-            response.sendRedirect("ProductDashBoard");
+        if (productQuantityId == null || newQuantity == null || !newQuantity.matches("\\d+")) {
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().println("<script>alert('Quantity không hợp lệ!'); window.location='ProductDashboard';</script>");
             return;
         }
         int _productQuantityId = Integer.parseInt(productQuantityId);

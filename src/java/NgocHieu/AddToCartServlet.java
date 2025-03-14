@@ -7,6 +7,8 @@ package NgocHieu;
 import DAL.ProductDAO;
 import Model.CartItem;
 import Model.ProductQuantity;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -19,6 +21,7 @@ import jakarta.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -39,13 +42,12 @@ public class AddToCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
             ProductDAO productDAO = new ProductDAO();
             String productIdStr = request.getParameter("product_id");
             String productPriceIdStr = request.getParameter("productprice_id");
             String productQuantityIdStr = request.getParameter("productquantity_id");
-            
+
             if (productIdStr == null || productPriceIdStr == null || productQuantityIdStr == null) {
                 response.sendRedirect("error.jsp");
                 return;
@@ -55,68 +57,56 @@ public class AddToCartServlet extends HttpServlet {
             int productPriceId = Integer.parseInt(productPriceIdStr);
             int productQuantityId = Integer.parseInt(productQuantityIdStr);
             ProductQuantity pp = productDAO.getProductQuantityById(productQuantityId);
-            if (productId <= 0 || productPriceId <= 0 || productQuantityId <= 0) {
-                response.sendRedirect("error.jsp");
-                return;
-            }
 
-            Cookie[] cookies = request.getCookies();
+            // Lấy giỏ hàng từ cookie
             List<CartItem> cartItems = new ArrayList<>();
+            Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().startsWith("cartItem_")) {
-                        String[] itemData = URLDecoder.decode(cookie.getValue(), "UTF-8").split(",");
-                        CartItem cartItem = new CartItem();
-                        cartItem.setProduct_id(Integer.parseInt(itemData[0]));
-                        cartItem.setProductprice_id(Integer.parseInt(itemData[1]));
-                        cartItem.setProductquantity_id(Integer.parseInt(itemData[2]));
-                        cartItem.setQuantity(Integer.parseInt(itemData[3]));
-                        cartItems.add(cartItem);
+                    if ("cart".equals(cookie.getName())) {
+                        try {
+                            cartItems = AuthenticationService.decodeCartToken(cookie.getValue()); // ✅ Giải mã JWT từ cookie
+                        } catch (JOSEException | ParseException e) {
+                        }
+                        break;
                     }
                 }
             }
 
-            CartItem cartItem = new CartItem();
-            cartItem.setProduct_id(productId);
-            cartItem.setProductprice_id(productPriceId);
-            cartItem.setProductquantity_id(productQuantityId);
-            cartItem.setQuantity(1);
-
+            // Thêm hoặc cập nhật sản phẩm vào giỏ hàng
             boolean found = false;
             for (CartItem item : cartItems) {
-                if (item.getProduct_id() == cartItem.getProduct_id() && item.getProductprice_id() == cartItem.getProductprice_id()
-                        && item.getProductquantity_id() == cartItem.getProductquantity_id()) {
-                    int newQuantity = item.getQuantity()+1;
-                    if(newQuantity > pp.getQuantity()) break;
-                    item.setQuantity(item.getQuantity() + 1);
+                if (item.getProduct_id() == productId && item.getProductprice_id() == productPriceId && item.getProductquantity_id() == productQuantityId) {
+                    int newQuantity = item.getQuantity() + 1;
+                    if (newQuantity > pp.getQuantity()) {
+                        break;
+                    }
+                    item.setQuantity(newQuantity);
                     found = true;
                     break;
                 }
             }
 
             if (!found) {
-                cartItems.add(cartItem);
+                cartItems.add(new CartItem(productId, productPriceId, productQuantityId, 1));
             }
 
-            for (CartItem item : cartItems) {
-                String cookieName = "cartItem_" + item.getProduct_id() + "_" + item.getProductprice_id() + "_"
-                        + item.getProductquantity_id();
-                String cookieValue = URLEncoder.encode(item.getProduct_id() + "," + item.getProductprice_id() + ","
-                        + item.getProductquantity_id() + "," + item.getQuantity(), "UTF-8");
-                Cookie cookie = new Cookie(cookieName, cookieValue);
-                cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-                response.addCookie(cookie);
-            }
+            // Mã hóa giỏ hàng mới thành JWT
+            String jwtCart = AuthenticationService.generateCartToken(cartItems);
+
+            // Lưu JWT vào cookie
+            Cookie cartCookie = new Cookie("cart", jwtCart);
+            cartCookie.setMaxAge(60 * 60 * 24 * 30); // 30 ngày
+            cartCookie.setHttpOnly(true); // Ngăn JavaScript đọc cookie
+            cartCookie.setSecure(true); // Chỉ gửi qua HTTPS
+            response.addCookie(cartCookie);
 
             response.sendRedirect("CartDetailServlet");
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | SQLException | JOSEException e) {
             response.sendRedirect("error.jsp");
-        } catch (SQLException ex) {
-            Logger.getLogger(AddToCartServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 
     @Override
     public String getServletInfo() {
@@ -124,4 +114,3 @@ public class AddToCartServlet extends HttpServlet {
     }// </editor-fold>
 
 }
-

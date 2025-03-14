@@ -19,9 +19,10 @@
         <link rel="stylesheet" href="NgocHieu/CheckOutStyle.css">
     </head>
     <body class="bg-light text-dark">
-        <c:if test="${sessionScope.cart.size() == 0 || sessionScope.cart == null }">
+        <c:if test="${cartItemsDTO.size() == 0 || cartItemsDTO == null }">
             <c:redirect url="CartDetailServlet"></c:redirect>
         </c:if>
+        <%@ include file="/model/header.jsp" %>
         <div class="container custom-container">
             <div class="text-center mb-4">
                 <Strong class="h2 font-weight-bold">THANH TOÁN</Strong>
@@ -88,8 +89,12 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="form-label" for="streetAddress">Số Đường/Tên Đường<span style="color: red">*</span></label>
-                                    <input name="street" class="form-control" id="streetAddress" placeholder="Nhập số đường/tên đường" 
-                                           type="text" required/>
+                                    <div class="input-group" style="align-items: center">
+                                        <input name="street" class="form-control" id="streetAddress" placeholder="Nhập số đường/tên đường" 
+                                               type="text" required/>
+                                        <i id="streetValid" style="position: absolute; right: 10px; display: none" class="fas fa-check text-success"></i>
+                                    </div>
+                                    <span id="invalidStreet" style="color: red; font-size: 15px;display: none; margin-top: 5px" >Địa chỉ không hợp lệ. Vui lòng nhập một địa chỉ hợp lệ.</span>
                                 </div>
                             </div>
                         </div>
@@ -282,11 +287,11 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let form = document.getElementById("checkoutForm"); // Thay "myForm" bằng ID của form bạn muốn validate
+            let form = document.getElementById("checkoutForm");
             let contactEmail = document.getElementById("contactEmail");
             let emailValid = document.getElementById("emailValid");
             let invalidEmail = document.getElementById("invalidEmail");
-
+            
             let fullNameInput = document.getElementById("fullName");
             let nameValid = document.getElementById("nameValid");
             let invalidName = document.getElementById("invalidName");
@@ -295,6 +300,10 @@
             let phoneValid = document.getElementById("phoneValid");
             let invalidPhone = document.getElementById("invalidPhone");
 
+            let streetInput = document.getElementById("streetAddress");
+            let streetValid = document.getElementById("streetValid");
+            let invalidStreet = document.getElementById("invalidStreet");
+            
             function validateEmail() {
                 let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (regex.test(contactEmail.value.trim())) {
@@ -339,11 +348,27 @@
                     return false;
                 }
             }
+            
+            function validateStreet() {
+                let regex = /^[A-Za-zÀ-Ỹà-ỹ\s0-9,]+$/;
+                if (regex.test(streetInput.value.trim())) {
+                    streetInput.style.borderColor = "green";
+                    streetValid.style.display = "flex";
+                    invalidStreet.style.display = "none";
+                    return true;
+                } else {
+                    streetInput.style.borderColor = "red";
+                    streetValid.style.display = "none";
+                    invalidStreet.style.display = "flex";
+                    return false;
+                }
+            }
 
             // Gọi các hàm validate khi nhập
             contactEmail.addEventListener("input", validateEmail);
             fullNameInput.addEventListener("input", validateFullName);
             phoneInput.addEventListener("input", validatePhoneNumber);
+            streetInput.addEventListener("input",validateStreet);
 
             // Ngăn submit form nếu có lỗi
             form.addEventListener("submit", function (event) {

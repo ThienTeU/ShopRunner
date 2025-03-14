@@ -4,6 +4,7 @@
  */
 package Model;
 
+import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -27,7 +28,10 @@ public class Product {
 
     public Product() {
     }
-    
+    public boolean isExistedId() throws SQLException{
+        InsertProductDAO dao = new InsertProductDAO();
+        return dao.isExistedProductId(product_id);
+    }
     public List<ProductPrice> getProductPricesByProductId() throws SQLException{
         ProductDAO dao = new ProductDAO();
         List<ProductPrice> list = dao.getProductPricesByProductId(product_id);  

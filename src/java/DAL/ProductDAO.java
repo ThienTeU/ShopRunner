@@ -43,6 +43,89 @@ public class ProductDAO extends DBContext {
         return 0;
     }
 
+    // Lấy danh sách sản phẩm có phân trang và sắp xếp theo yêu cầu
+    public List<Product> getProductsByPageSorted(int page, int pageSize, String sortType) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+
+        String orderBy = "created_at DESC";
+        if ("name".equals(sortType)) {
+            orderBy = "product_name ASC";
+        } else if ("status".equals(sortType)) {
+            orderBy = "status DESC";
+        }
+
+        String query = "SELECT * FROM Product ORDER BY " + orderBy + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        PreparedStatement ps = connection.prepareStatement(query);
+        int offset = (page - 1) * pageSize;
+        ps.setInt(1, offset);
+        ps.setInt(2, pageSize);
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Product product = new Product(
+                    rs.getInt("product_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("product_name"),
+                    rs.getString("description"),
+                    rs.getInt("discount"),
+                    rs.getBoolean("status"),
+                    rs.getString("thumbnail"),
+                    rs.getString("created_at")
+            );
+            productList.add(product);
+        }
+        return productList;
+    }
+
+    // Đếm tổng số sản phẩm theo từ khóa tìm kiếm
+    public int getTotalProductsBySearch(String keyword) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Product WHERE product_name LIKE ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, "%" + keyword + "%");
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    public List<Product> searchProductsByNamePage(String keyword, int page, int pageSize, String sortType) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+
+        // Xác định kiểu sắp xếp
+        String orderBy = "created_at DESC"; // Mặc định sắp xếp theo ngày tạo mới nhất
+        if ("name".equals(sortType)) {
+            orderBy = "product_name ASC";
+        } else if ("status".equals(sortType)) {
+            orderBy = "status DESC";
+        }
+
+        String query = "SELECT * FROM Product WHERE product_name LIKE ? ORDER BY " + orderBy + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        PreparedStatement ps = connection.prepareStatement(query);
+        int offset = (page - 1) * pageSize;
+        ps.setString(1, "%" + keyword + "%");
+        ps.setInt(2, offset);
+        ps.setInt(3, pageSize);
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Product product = new Product(
+                    rs.getInt("product_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("product_name"),
+                    rs.getString("description"),
+                    rs.getInt("discount"),
+                    rs.getBoolean("status"),
+                    rs.getString("thumbnail"),
+                    rs.getString("created_at")
+            );
+            productList.add(product);
+        }
+        return productList;
+    }
+
     // Lấy danh sách sản phẩm theo trang
     public List<Product> getProductsByPage(int page, int pageSize) throws SQLException {
         List<Product> productList = new ArrayList<>();
@@ -331,46 +414,45 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
-    
+
     public List<Product> getAllProductBySort(String orderBy) {
-    List<Product> list = new ArrayList<>();
-    String sql = "SELECT " +
-            "    p.product_id, " +
-            "    p.product_name, " +
-            "    p.description, " +
-            "    p.discount, " +
-            "    p.status, " +
-            "    p.thumbnail, " +
-            "    p.created_at, " +
-            "    p.category_id, " +
-            "    pp.price, " +
-            "    pp.color_id " +
-            "FROM Product p " +
-            "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id " +
-            "ORDER BY pp.price " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC") + ";"; // Sắp xếp theo giá
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT "
+                + "    p.product_id, "
+                + "    p.product_name, "
+                + "    p.description, "
+                + "    p.discount, "
+                + "    p.status, "
+                + "    p.thumbnail, "
+                + "    p.created_at, "
+                + "    p.category_id, "
+                + "    pp.price, "
+                + "    pp.color_id "
+                + "FROM Product p "
+                + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
+                + "ORDER BY pp.price " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC") + ";"; // Sắp xếp theo giá
 
-    try (PreparedStatement ps = connection.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        while (rs.next()) {
-            Product product = new Product(
-                    rs.getInt("product_id"),
-                    rs.getInt("category_id"),
-                    rs.getString("product_name"),
-                    rs.getString("description"),
-                    rs.getInt("discount"),
-                    rs.getBoolean("status"),
-                    rs.getString("thumbnail"),
-                    rs.getString("created_at"),
-                    rs.getDouble("price")
-            );
-            list.add(product);
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getInt("category_id"),
+                        rs.getString("product_name"),
+                        rs.getString("description"),
+                        rs.getInt("discount"),
+                        rs.getBoolean("status"),
+                        rs.getString("thumbnail"),
+                        rs.getString("created_at"),
+                        rs.getDouble("price")
+                );
+                list.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
     public List<Product> getAllProduct() {
         List<Product> list = new ArrayList<>();
@@ -448,8 +530,6 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
-    
-    
 
     public List<Product> getAllProductNu() {
         List<Product> list = new ArrayList<>();
@@ -732,21 +812,6 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-    
-
-public static void main(String[] args) {
-    ProductDAO dao = new ProductDAO();
-    int limit = 5; // Lấy 5 sản phẩm có lượt xem cao nhất
-    ArrayList<Product> topViewedProducts = dao.getTopViewedProducts(limit);
-
-    System.out.println("🔥 Danh sách " + limit + " sản phẩm có lượt xem cao nhất:");
-    for (Product p : topViewedProducts) {
-        System.out.println("👀 Product ID: " + p.getProduct_id()
-                + ", Name: " + p.getProduct_name()
-                + ", Created At: " + p.getCreated_at());
-    }
-}
-
 
     public ArrayList<Product> getNewestProducts(int limit) {
         ArrayList<Product> products = new ArrayList<>();
