@@ -29,6 +29,7 @@
     </head>
 
     <body>       
+        <%@ include file="/model/header.jsp" %>
         <div class="row">
             <div class="col-md-8">
                 <div class="product-images">
@@ -119,7 +120,7 @@
                                 }
                             };
                         </script>
-                        
+
                         <div class="feedback-list">
                             <c:forEach items="${listFeedback}" var="fb" varStatus="status">
                                 <div class="review-container" style="${status.index > 0 ? 'display: none;' : ''}">
@@ -379,7 +380,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4" style="position: fixed; right: 0;">
+            <div class="col-md-4" style="position: fixed; right: 0; top: 70px">
                 <c:if test="${checkNew}">
                     <div class="main-type">
                         <span class="content">SẢN PHẨM MỚI</span>
@@ -449,10 +450,35 @@
                 </div>
 
                 <div class="size-guide">
-                    <a href="#">
+                    <a href="#" onclick="showSizeGuide()">
                         Size guide
                     </a>
                 </div>
+                <div id="sizeGuideModal" class="modal">
+                    <span class="close" onclick="closeSizeGuide()">&times;</span>
+                    <div class="modal-content-wrapper">
+                        <img class="modal-content" src="https://hanaichi.vn/blog/wp-content/uploads/2020/09/bang-size-adidas.jpg" alt="Size Guide">
+                        <img class="modal-content" src="https://hanaichi.vn/blog/wp-content/uploads/2020/09/bang-size-quan-ao-adidas.jpg" alt="alt"/>
+                    </div>
+                </div>
+                <script>
+                    function showSizeGuide() {
+                        document.getElementById("sizeGuideModal").style.display = "flex"; // Hiện modal
+                    }
+
+                    function closeSizeGuide() {
+                        document.getElementById("sizeGuideModal").style.display = "none"; // Ẩn modal
+                    }
+
+                    // Đóng modal khi nhấn ra ngoài ảnh
+                    window.onclick = function (event) {
+                        let modal = document.getElementById("sizeGuideModal");
+                        if (event.target === modal) {
+                            modal.style.display = "none";
+                        }
+                    };
+                </script>
+
                 <div class="add-to-bag1">
                     <form action="AddToCartServlet" method="post">
                         <input type="hidden" name="product_id" value="${product.product_id}">

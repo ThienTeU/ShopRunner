@@ -18,7 +18,14 @@ import java.net.URL;
 import java.net.URLEncoder;
 import org.json.JSONObject;
 import Model.CartItem;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
+import jakarta.servlet.http.Cookie;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONException;
 
 /**
@@ -35,10 +42,25 @@ public class GetShippingFeeServlet extends HttpServlet {
         String city = request.getParameter("city");
         String district = request.getParameter("district");
         String ward = request.getParameter("ward");
-        List<CartItem> list = (List<CartItem>) request.getSession().getAttribute("cart");
+        List<CartItem> cartItems = new ArrayList<>();
         
         double totalQuantity = 0;
-        for(CartItem c : list){
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null){
+            for(Cookie cookie : cookies){
+                try {
+                    cartItems = AuthenticationService.decodeCartToken(cookie.getValue());
+                } catch (JOSEException | ParseException ex) {
+                    Logger.getLogger(GetShippingFeeServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        if(cartItems.isEmpty()){
+            response.sendRedirect("CartDetailServlet");
+            return;
+        }
+        
+        for(CartItem c : cartItems){
             totalQuantity += c.getQuantity();
         }
         double weight = totalQuantity * 500;

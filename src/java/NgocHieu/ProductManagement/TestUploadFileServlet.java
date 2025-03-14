@@ -1,9 +1,8 @@
-package Controller.AddProduct;
+package NgocHieu.ProductManagement;
 
 import DAL.InsertProductDAO;
 import Model.ProductPrice;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +16,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,7 +97,7 @@ public class TestUploadFileServlet extends HttpServlet {
             }
         }
 
-        request.setAttribute("notiAdd", "Add thanh cong r may th ngu");
+        request.setAttribute("notiAdd", "Da them san pham thanh cong");
         request.getRequestDispatcher("NgocHieu/UploadImgSuccessJSP.jsp").forward(request, response);
     }
 

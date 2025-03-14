@@ -97,7 +97,7 @@
                 </tr>     
                 <tr>
                     <td><label>Discount:</label></td>
-                    <td><input type="text" name="discount" value="${product.discount}" required></td>
+                    <td><input type="number" name="discount" value="${product.discount}" required></td>
                 </tr>
                 <tr>
                     <td><label>Create at:</label></td>

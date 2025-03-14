@@ -22,16 +22,16 @@
         <title>HEADER DEMO</title>
     </head>
 
-    <body style="min-height: 2000px;">
+    <body style="min-height: 2000px">
 
         <!-- Navbar Chính -->
         <!-- Navbar Chính -->
         <!-- Navbar Chính -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav style="position: fixed; width: 100%; z-index: 1050" class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
                 <!-- Logo -->
                 <a>
-                    <img src="../images/LOGO.png"/>
+                    <img width="20px" height="20px" src="../images/LOGO.png"/>
                 </a>
 
                 <!-- Nút Toggle -->
@@ -86,9 +86,11 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/CartDetailServlet">
                                 <i class="fas fa-shopping-cart"></i>
-                                <span class="cart-count">0</span>
+                                <c:if test="${!empty sessionScope.cart && sessionScope.cart.size()!= null}">
+                                    <span style="padding: 0 6px;border-radius: 10px; background-color: black; color: white" class="cart-count">${sessionScope.cart.size()}</span>
+                                </c:if>
                             </a>
                         </li>
                     </ul>

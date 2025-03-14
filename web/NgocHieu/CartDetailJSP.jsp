@@ -26,13 +26,14 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="NgocHieu/CartDetail.css">
     </head>
-
+    
     <body>
         <c:choose>
             <c:when test="${empty cartItemsDTO}">
                 <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a></div>
             </c:when>
             <c:otherwise>
+                <%@ include file="/model/header.jsp" %>
                 <div class="row mx-4 mt-4">
                     <div class="col-md-8">
                         <h2 class="fw-bold">GIỎ HÀNG CỦA BẠN</h2>

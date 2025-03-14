@@ -1,4 +1,4 @@
-package Controller.AddProduct;
+package NgocHieu.ProductManagement;
 
 import DAL.InsertProductDAO;
 import DAL.ProductDAO;
@@ -22,6 +22,14 @@ public class AddProductQuantityServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        ProductDAO dao2 = new ProductDAO();
+        try {
+            List<Size> listSize = dao2.getAllSizes();
+            request.getSession().setAttribute("listSize", listSize);
+            response.sendRedirect("NgocHieu/AddProductQuantityJSP.jsp");
+        } catch (SQLException ex) {
+            Logger.getLogger(AddProductQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -31,7 +39,21 @@ public class AddProductQuantityServlet extends HttpServlet {
         InsertProductDAO dao = new InsertProductDAO();
 
         int productprice_id = Integer.parseInt(request.getParameter("productprice_id"));
+        try {
+            if(!dao.isExistedProductPriceId(productprice_id)){
+                response.setContentType("text/html;charset=UTF-8");
+                response.getWriter().println("<script>alert('Product Price id không hợp lệ hoặc không tồn tại!'); window.location='AddProductQuantityServlet';</script>");
+                return;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AddProductQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
         String[] listSizeString = request.getParameterValues("size_id");
+        if (listSizeString == null) {
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().println("<script>alert('Vui lòng chọn size!'); window.location='AddProductQuantityServlet';</script>");
+            return;
+        }
         List<Integer> listSizeId = new ArrayList<>();
 
         if (listSizeString != null) {

@@ -7,12 +7,11 @@
         <title>404 - Page Not Found</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <style>
-            body {
-                background-color: #f8f9fa;
+            .bodyS{
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                height: 100vh;
+                height: 600px;
             }
             .error-container {
                 max-width: 600px;
@@ -41,16 +40,17 @@
         </style>
     </head>
     <body>
-
-        <div class="error-container">
+        <%@ include file="/model/header.jsp" %>
+        <div class="bodyS">
+            <div class="error-container">
             <div class="error-icon">🚫</div>
             <h1 class="fw-bold text-danger">404 - Page Not Found</h1>
             <p class="text-muted">
                 Xin lỗi! Trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.  
                 Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ.
             </p>
-            <a href="home" class="btn btn-home">🏠 Quay về Trang Chủ</a>
+            <a href="${pageContext.request.contextPath}/home" class="btn btn-home">🏠 Quay về Trang Chủ</a>
         </div>
-
+        </div>
     </body>
 </html>

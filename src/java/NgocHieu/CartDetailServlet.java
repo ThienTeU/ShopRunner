@@ -12,6 +12,8 @@ import Model.Product;
 import Model.ProductPrice;
 import Model.ProductQuantity;
 import Model.Size;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,9 +22,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,14 +43,12 @@ public class CartDetailServlet extends HttpServlet {
             List<CartItem> cartItems = new ArrayList<>();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().startsWith("cartItem_")) {
-                        String[] itemData = URLDecoder.decode(cookie.getValue(), "UTF-8").split(",");
-                        CartItem cartItem = new CartItem();
-                        cartItem.setProduct_id(Integer.parseInt(itemData[0]));
-                        cartItem.setProductprice_id(Integer.parseInt(itemData[1]));
-                        cartItem.setProductquantity_id(Integer.parseInt(itemData[2]));
-                        cartItem.setQuantity(Integer.parseInt(itemData[3]));
-                        cartItems.add(cartItem);
+                    if (cookie.getName().equals("cart")) {
+                        try {
+                            cartItems = AuthenticationService.decodeCartToken(cookie.getValue()); 
+                        } catch (JOSEException | ParseException e) {
+                        }
+                        break;
                     }
                     out.println(cookie.getName() + "|" + cookie.getValue());
                 }
@@ -71,7 +71,7 @@ public class CartDetailServlet extends HttpServlet {
             request.setAttribute("total", total);
             request.setAttribute("listColor", listColor);
             request.setAttribute("listSize", listSize);
-            request.getSession().setAttribute("cart", cartItems);
+            request.setAttribute("cart", cartItems);
             request.setAttribute("cartItemsDTO", cartItemsDTO);
             
             

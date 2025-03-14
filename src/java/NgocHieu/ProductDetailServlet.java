@@ -2,6 +2,7 @@ package NgocHieu;
 
 import DAL.FeedbackDAO;
 import DAL.ProductDAO;
+import DAL.UserDAO;
 import Model.Category;
 import Model.Color;
 import Model.Feedback;
@@ -29,10 +30,6 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author admin
- */
 @WebServlet(name = "ProductDetailServlet", urlPatterns = {"/ProductDetailServlet"})
 public class ProductDetailServlet extends HttpServlet {
 
@@ -40,7 +37,9 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            User user = new User(1, 1, "nghieu241203@gmail.com", "hieuhieu", "0397761602", "Phuc Tho, Nghi Loc, Nghe An", true);
+            //UserDAO dao = new UserDAO();
+            //User user = dao.getUserByEmail("admin@gmail.com");
+            User user = new User("duonghieu294@gmail.com","0923232332");
             request.getSession().setAttribute("user", user);
             // Lấy product_id và color_id từ request (nếu có)
             int product_id = Integer.parseInt(request.getParameter("product_id"));
@@ -119,7 +118,7 @@ public class ProductDetailServlet extends HttpServlet {
             for (ProductPrice pp : listProductPrice) {
                 if (pp.getColor_id() == color_id) {
                     selectedProductPrice = pp;
-                    break; // Thoát vòng lặp khi tìm thấy kết quả
+                    break;
                 }
             }
 
@@ -135,8 +134,8 @@ public class ProductDetailServlet extends HttpServlet {
             int countRelatedProduct = productDao.getProductCountByCategory(product.getCategory_id());
 
             String contextPath = request.getContextPath();
-            // Gửi dữ liệu sang JSP
-            //Dữ liệu cho feedback
+            
+            
             request.setAttribute("user", user);
             request.setAttribute("orderDate", orderDate);
             request.setAttribute("checkFeedback", checkFeedback);

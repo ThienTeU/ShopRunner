@@ -15,25 +15,25 @@
     </head>
     <body>
         <h1>Add Product Price</h1>
-        <form action="AddProductPriceServlet" method="POST">
+        <form action="${pageContext.request.contextPath}/AddProductPriceServlet" method="POST">
             <table>
                 <tbody>
                     <tr>
                         <td><label>Product Id:</label></td>
-                        <td><input type="text" name="product_id" value="${requestScope.product_id}"></td>
+                        <td><input type="number" name="product_id" value="${requestScope.product_id}" min="0" required></td>
                     </tr>                   
                 <tr>
                     <td><label>Color:</label></td>
                     <td>
                         <select name="color_id" required>
-                            <c:forEach items="${listColor}" var="c">
+                            <c:forEach items="${sessionScope.listColor}" var="c">
                                 <option value="${c.color_id}">${c.color}</option>
                             </c:forEach>
                     </td>
                 </tr>
                 <tr>
                         <td><label>Price:</label></td>
-                        <td><input type="text" name="price" required></td>
+                        <td><input type="text" name="price" required min="0" max="10000000"></td>
                     </tr> 
                 <tr><td><button type="submit" >Thêm Product Price</button></td></tr>
                 </tbody>

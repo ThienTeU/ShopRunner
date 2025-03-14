@@ -50,7 +50,7 @@
 </head>
 <body>
     <h1>Add Product</h1>
-    <form action="AddProductServlet" method="POST" enctype="multipart/form-data">
+    <form action="${pageContext.request.contextPath}/AddProductServlet" method="POST" enctype="multipart/form-data">
         <table>
             <tbody>
                 
@@ -92,7 +92,7 @@
                 </tr>     
                 <tr>
                     <td><label>Discount:</label></td>
-                    <td><input type="text" name="discount" value="0" required></td>
+                    <td><input type="text" name="discount" value="0" min="0" max="99" required></td>
                 </tr>
                 <tr>
                     <input type="hidden" name="status" value="1">

@@ -94,7 +94,6 @@
                         %>
                         <script type="text/javascript">
                             setTimeout(function () {
-
                                 var form = document.createElement("form");
                                 form.method = "POST";
                                 form.action = "${sessionScope.contextPath}/CheckOutVnpayServlet"; 

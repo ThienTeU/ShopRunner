@@ -4,6 +4,7 @@
  */
 package Model;
 
+import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +21,10 @@ public class ProductQuantity {
 
     public ProductQuantity() {
     }
-    
+     public boolean isExistedProductQuantityId() throws SQLException{
+        InsertProductDAO dao = new InsertProductDAO();
+        return dao.isExistedProductQuantityId(ProductQuantity_id);
+    }
     public List<Size> getAllSize() throws SQLException{
         ProductDAO dao = new ProductDAO();
         List<Size> list = dao.getAllSizes();

@@ -1,12 +1,10 @@
-package Controller.AddProduct;
+package NgocHieu.ProductManagement;
 
 import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import Model.Category;
 import Model.Color;
-import Model.Size;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -59,6 +57,17 @@ public class AddProductServlet extends HttpServlet {
             String thumbnail = getThumbnailUrl(filePart);
             
             String product_name = request.getParameter("product_name");
+            
+            if(thumbnail == null || filePart == null || product_name == null){
+                response.setContentType("text/html;charset=UTF-8");
+                response.getWriter().println("<script>alert('Thiếu thông tin!'); window.location='AddProductServlet';</script>");
+                return;
+            }
+            if(dao.isProductNameExists(product_name.trim())){
+                response.setContentType("text/html;charset=UTF-8");
+                response.getWriter().println("<script>alert('Tên sản phẩm này đã tồn tại!'); window.location='AddProductServlet';</script>");
+                return;
+            }
             String description = request.getParameter("description");
             int discount = Integer.parseInt(request.getParameter("discount"));
             int category_id = Integer.parseInt(request.getParameter("category_id"));
@@ -66,7 +75,7 @@ public class AddProductServlet extends HttpServlet {
             List<Color> listColor = dao2.getAllColors();
             int product_id = dao.addProduct(category_id, product_name.trim(), description.trim(), discount, 0, thumbnail);
             
-            request.setAttribute("listColor", listColor);
+            request.getSession().setAttribute("listColor", listColor);
             request.setAttribute("product_id", product_id);
             request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
         } catch (SQLException ex) {

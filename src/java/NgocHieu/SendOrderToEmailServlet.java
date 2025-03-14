@@ -13,16 +13,20 @@ import Model.Product;
 import Model.ProductPrice;
 import Model.ProductQuantity;
 import Model.Size;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,19 +43,41 @@ public class SendOrderToEmailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
         try {
             HttpSession session = request.getSession();
             ProductDAO productDAO = new ProductDAO();
-            List<Size> listSize = productDAO.getAllSizes();
-            List<Color> listColor = productDAO.getAllColors();
+            List<Size> listSize = new ArrayList<>();
+      
+            listSize = productDAO.getAllSizes();
+           
+            List<Color> listColor = new ArrayList<>();
+            listColor = productDAO.getAllColors();
+        
+            
             Orders order = (Orders) request.getSession().getAttribute("order");
             Email email = new Email();
-            List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+
+            Cookie[] cookies = request.getCookies();
+            List<CartItem> cartItems = new ArrayList<>();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("cart")) {
+                        try {
+                            cartItems = AuthenticationService.decodeCartToken(cookie.getValue());
+                        } catch (JOSEException ex) {
+                            Logger.getLogger(SendOrderToEmailServlet.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (ParseException ex) {
+                            Logger.getLogger(SendOrderToEmailServlet.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
+
+            if (cartItems.isEmpty()) {
+                response.sendRedirect("CartDetailServlet");
+                return;
+            }
+
             List<CartItemDTO> cartItemsDTO = new ArrayList<>();
             int total = 0;
             for (CartItem item : cartItems) {
@@ -67,6 +93,7 @@ public class SendOrderToEmailServlet extends HttpServlet {
                     Logger.getLogger(SendOrderToEmailServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
             String subject = "Xác nhận đơn hàng: #" + order.getOrder_id() + " - RunnerShop";
             String emailBody = "<html>"
                     + "<head>"
@@ -105,7 +132,7 @@ public class SendOrderToEmailServlet extends HttpServlet {
                 for (Size s : listSize) {
                     if (item.getProductQuantity().getSize_id() == s.getSize_id()) {
                         size = s.getSize();
-                        break; 
+                        break;
                     }
                 }
 
@@ -113,15 +140,11 @@ public class SendOrderToEmailServlet extends HttpServlet {
                 for (Color c : listColor) {
                     if (item.getProductPrice().getColor_id() == c.getColor_id()) {
                         color = c.getColor();
-                        break; 
+                        break;
                     }
                 }
-                String inputPath = "C:/Users/admin/ShopRunner/web/Image2/productID_" + item.getProduct().getProduct_id() + "/colorID_" + item.getProductPrice().getColor_id() + "/image_1.avif";
-                String outputPath = "C:/Users/admin/ShopRunner/web/Image2/productID_" + item.getProduct().getProduct_id() + "/colorID_" + item.getProductPrice().getColor_id() + "/image_1.jpg";
-                ConvertAvifToJpg convert = new ConvertAvifToJpg();
-                convert.convert(inputPath, outputPath);
                 emailBody += "<tr>"
-                        + "<td><img src='" + outputPath +"' width='50' height='50' /></td>"
+                        + "<td><img src='' width='50' height='50' /></td>"
                         + "<td>" + item.getProduct().getProduct_name() + "</td>"
                         + "<td>" + size + "</td>"
                         + "<td>" + color + "</td>"
@@ -140,6 +163,7 @@ public class SendOrderToEmailServlet extends HttpServlet {
                     + "<p>Tên: " + order.getEmail() + "</p>"
                     + "<p>Số Điện Thoại: " + order.getPhone() + "</p>"
                     + "<p>Địa Chỉ: " + order.getShipping_address() + "</p>"
+                    + "<p>Phương Thức Thanh Toán: " + order.getPayment_method() + "</p>"
                     + "</div>"
                     + "</div>"
                     + "</body>"
@@ -147,11 +171,12 @@ public class SendOrderToEmailServlet extends HttpServlet {
 
             email.SendEmail(order.getEmail(), subject, emailBody);
             System.out.println(emailBody);
-            if (session != null) {
-                session.invalidate();
-            }
-
-            response.sendRedirect(request.getContextPath() + "/productlist");
+            //Xoa thong tin cart token tren cookie khi da thanh toan xong
+            Cookie cartCookie = new Cookie("cart", "");
+            cartCookie.setMaxAge(0);
+            response.addCookie(cartCookie);
+            
+            response.sendRedirect("NgocHieu/OrderSuccessJSP.jsp");
         } catch (SQLException ex) {
             Logger.getLogger(SendOrderToEmailServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

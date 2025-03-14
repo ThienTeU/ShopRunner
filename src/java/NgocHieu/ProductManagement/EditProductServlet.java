@@ -1,13 +1,10 @@
 package NgocHieu.ProductManagement;
 
-import Controller.AddProduct.AddProductServlet;
 import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import Model.Category;
-import Model.Color;
 import Model.Product;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;

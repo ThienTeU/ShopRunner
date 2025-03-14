@@ -14,6 +14,7 @@ import java.util.Random;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.InvalidKeyException;
 
 /**
  *
@@ -37,9 +38,7 @@ public class Config {
                 sb.append(String.format("%02x", b & 0xff));
             }
             digest = sb.toString();
-        } catch (UnsupportedEncodingException ex) {
-            digest = "";
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
             digest = "";
         }
         return digest;
@@ -55,9 +54,7 @@ public class Config {
                 sb.append(String.format("%02x", b & 0xff));
             }
             digest = sb.toString();
-        } catch (UnsupportedEncodingException ex) {
-            digest = "";
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
             digest = "";
         }
         return digest;
@@ -102,7 +99,7 @@ public class Config {
             }
             return sb.toString();
 
-        } catch (Exception ex) {
+        } catch (IllegalStateException | NullPointerException | InvalidKeyException | NoSuchAlgorithmException ex) {
             return "";
         }
     }

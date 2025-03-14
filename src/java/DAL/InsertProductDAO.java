@@ -28,10 +28,71 @@ public class InsertProductDAO extends DBContext {
     public static void main(String[] args) throws SQLException {
         InsertProductDAO dao = new InsertProductDAO();
         //int product_id = dao.addProduct(1, "Test Name", "Test description", 0, 1, "Hi");//success
-
+        System.out.println(dao.isExistedProductQuantityId(186));
         //int productprice_id = dao.addProductPrice(product_id, 1, 0);
         //int productquantity_id = dao.addProductQuantity(productprice_id, 1, 1);
-        dao.addProductImage(1, "link", 1);
+    }
+
+    public boolean isProductNameExists(String productName) {
+        String sql = "SELECT COUNT(*) FROM Product WHERE product_name = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, productName);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // Nếu số lượng > 0, tức là đã tồn tại
+                }
+            }
+        } catch (SQLException e) {
+        }
+        return false; // Trả về false nếu có lỗi
+    }
+
+    public boolean isColorExistsForProduct(int productId, int colorId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM ProductPrice WHERE product_id = ? AND color_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            ps.setInt(2, colorId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isExistedProductQuantityId(int id) throws SQLException {
+        String query = "SELECT * FROM ProductQuantity WHERE ProductQuantity_id = ?";
+        ps = connection.prepareStatement(query);
+        ps.setInt(1, id);
+        rs = ps.executeQuery();
+        return rs.next();
+    }
+
+    public boolean isExistedProductPriceId(int id) throws SQLException {
+        String query = "SELECT * FROM ProductPrice WHERE ProductPrice_id = ?";
+        ps = connection.prepareStatement(query);
+        ps.setInt(1, id);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isExistedProductId(int id) throws SQLException {
+        String query = "SELECT * FROM PRODUCT WHERE product_id = ?";
+        ps = connection.prepareStatement(query);
+        ps.setInt(1, id);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            return true;
+        }
+        return false;
     }
 
     public void updateProduct(Product product) throws SQLException {
@@ -48,7 +109,7 @@ public class InsertProductDAO extends DBContext {
         ps = connection.prepareStatement(query);
         ps.setString(1, product.getProduct_name());
         ps.setInt(2, product.getCategory_id());
-        ps.setString(3,product.getDescription());
+        ps.setString(3, product.getDescription());
         ps.setInt(4, product.getDiscount());
         ps.setString(5, product.getThumbnail());
         ps.setString(6, product.getCreated_at());
