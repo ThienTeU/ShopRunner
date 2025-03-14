@@ -44,9 +44,9 @@
                     link.addEventListener("click", function (e) {
                         let subCategory = document.getElementById("sub-" + this.dataset.id);
                         if (subCategory) {
-                            e.preventDefault(); // Ngăn load trang để xử lý mở danh mục con
+                            e.preventDefault(); 
                             subCategory.style.display = (subCategory.style.display === "none") ? "block" : "none";
-                            window.location.href = this.href; // Vẫn gửi request để lọc sản phẩm
+                            window.location.href = this.href;
                         }
                     });
                 });
