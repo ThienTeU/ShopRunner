@@ -25,7 +25,7 @@ public class Main {
             list.add(product1);
             list.add(product2);
             OrderGhtk order = new OrderGhtk(
-                "102", "0911222333", "Duong Ngoc Hieu",
+                "106", "0911222333", "Duong Ngoc Hieu",
              "123 nguyễn chí thanh", "TP. Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", 100000,1000000
             );
 

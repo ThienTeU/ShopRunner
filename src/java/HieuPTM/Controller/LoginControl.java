@@ -8,7 +8,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import HieuPTM.model.UserHieu;
+import Model.User;
+import NgocHieu.service.AuthenticationService;
 import jakarta.servlet.annotation.WebServlet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -31,7 +36,7 @@ public class LoginControl extends HttpServlet {
         String re = request.getParameter("re"); // "Remember me"
 
         UserDAO ad = new UserDAO();
-        UserHieu u = new UserHieu(); // Kiểm tra tài khoản
+        UserHieu u=null; // Kiểm tra tài khoản
         
         UserHieu userDB = ad.getUser(username);
         
@@ -60,12 +65,21 @@ public class LoginControl extends HttpServlet {
         response.addCookie(cre);
 
         // Xử lý đăng nhập
-        if (u == null) { // Nếu tài khoản không đúng
+        if (u==null) { // Nếu tài khoản không đúng
             request.setAttribute("mess", "Sai tài khoản hoặc mật khẩu!");
             request.setAttribute("user", username); // Giữ lại tên tài khoản khi load lại form
             request.setAttribute("pass", password);
             request.getRequestDispatcher("/HieuPTM/Login.jsp").forward(request, response);
         } else {
+            AuthenticationService auth = new AuthenticationService();
+            User user = new User(userDB.getUserName(),password);
+            try {
+                String token = auth.loginAuthentication(user);
+                request.getSession().setAttribute("token", token);
+                response.getWriter().print(token);
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);
+            }
             // Nếu đăng nhập thành công, redirect về Home và truyền uid qua URL
             response.sendRedirect(request.getContextPath() + "/home?uid=" + u.getUserName());
         }

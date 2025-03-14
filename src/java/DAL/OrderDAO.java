@@ -28,7 +28,8 @@ public class OrderDAO extends DBContext {
         Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
         order.setPayment_method("vnpay");
         order.setStatus("paid");
-        System.out.println(dao.insertOrder(order));
+        int order_id = dao.insertOrder(order);
+        System.out.println(order_id);
 
     }
 
