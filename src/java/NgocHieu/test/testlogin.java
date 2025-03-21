@@ -39,6 +39,9 @@ public class testlogin extends HttpServlet {
                 response.getWriter().println("Role: " + user.getRoleById());
                 request.getSession().setAttribute("token", token);
             }
+            if(token == null){
+                response.getWriter().print("Token null");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(testlogin.class.getName()).log(Level.SEVERE, null, ex);
         }

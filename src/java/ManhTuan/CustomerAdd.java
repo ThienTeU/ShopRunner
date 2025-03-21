@@ -13,6 +13,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
@@ -24,21 +26,36 @@ public class CustomerAdd extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String userName = request.getParameter("userName");
+        String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         boolean status = "1".equals(request.getParameter("status"));
         int gender = Integer.parseInt(request.getParameter("gender"));
-        UserTuan customer = new UserTuan(userName, email, phoneNumber, status, gender);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        String password = "1";
+        String encodedPassword = passwordEncoder.encode(password);
+        UserTuan customer = new UserTuan(userName, fullName, email, encodedPassword, phoneNumber, status, gender);
         ProductDAOTuan dao = new ProductDAOTuan();
-        int id = dao.addCustomer(customer);
-        if (id == -1) {
-            request.setAttribute("error", "Email đã tồn tại");
-            request.getRequestDispatcher("ManhTuan/customeradd.jsp").forward(request, response);
-        } else {
-            request.setAttribute("id", id);
-            request.getRequestDispatcher("ManhTuan/customeraddressadd.jsp").forward(request, response);
+        List<UserTuan> listCustomer = dao.getAllCustomer();
+        request.setAttribute("customer", customer);
+        for (UserTuan cus : listCustomer) {
+            if (cus.getEmail().equals(customer.getEmail())) {
+                request.setAttribute("error", "Email đã tồn tại");
+                request.getRequestDispatcher("ManhTuan/customeradd.jsp").forward(request, response);
+                return;
+            } else if (cus.getPhoneNumber().equals(customer.getPhoneNumber())) {
+                request.setAttribute("error", "Số điện thoại đã tồn tại");
+                request.getRequestDispatcher("ManhTuan/customeradd.jsp").forward(request, response);
+                return;
+            } else if (cus.getUserName().equals(customer.getUserName())) {
+                request.setAttribute("error", "Tên tài khoản đã tồn tại");
+                request.getRequestDispatcher("ManhTuan/customeradd.jsp").forward(request, response);
+                return;
+            }
         }
-
+        int id = dao.addCustomer(customer);
+        request.setAttribute("error", "Thêm thành công");
+        request.getRequestDispatcher("ManhTuan/customeradd.jsp").forward(request, response);
     }
 
     @Override

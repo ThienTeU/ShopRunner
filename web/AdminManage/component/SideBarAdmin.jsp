@@ -30,7 +30,7 @@
                             <a href="tableAccount" class="dropdown-item">Account</a>
                             <a href="tableCategory" class="dropdown-item">Category</a>
                             <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Product</a>
-                            <a href="tableOrder" class="dropdown-item">Order</a>
+                            <a href="${pageContext.request.contextPath}/manageOrder của sv tuấn url vào đây" class="dropdown-item">Order</a>
                             <a href="tableVoucher" class="dropdown-item">Voucher</a>
                             <a href="tableFeedback" class="dropdown-item">Feedback</a>
                             <a href="postDashboard" class="dropdown-item">Post</a>

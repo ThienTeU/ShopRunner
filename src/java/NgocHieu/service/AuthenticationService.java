@@ -103,6 +103,11 @@ public class AuthenticationService extends HttpServlet{
 
         return token;
     }
+    public static void main(String[] args) throws SQLException {
+        User user = new User("admin","12345678");
+        AuthenticationService auth = new AuthenticationService();
+        System.out.println(auth.loginAuthentication(user));
+    }
 
     private String generateToken(User user) throws SQLException{
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);

@@ -15,6 +15,8 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <a href="customerlist" class="btn btn-secondary">Quay lại</a>
+        <a href="customeraddressadd?id=${id}" class="btn btn-warning btn-sm">Thêm</a>
         <table class="table">
             <thead>
                 <tr>
@@ -29,6 +31,7 @@
                 </tr>
             </thead>
             <tbody>
+                <c:forEach var="address" items="${addresses}">
                 <tr>
                     <td>${address.addressId}</td>
                     <td>${address.name}</td>
@@ -38,13 +41,12 @@
                     <td>${address.ward}</td>
                     <td>${address.street}</td>
                     <td>
-                        <a href="editAddress?id=${address.addressId}" class="btn btn-warning btn-sm">Sửa</a>
-                        <form action="deleteAddress" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="${address.addressId}">
-                        </form>
+                        <a href="customeraddressedit?id=${address.addressId}" class="btn btn-warning btn-sm">Sửa</a>
+                        <a href="customeraddresschangestatus?id=${address.addressId}" class="btn btn-warning btn-sm">Ẩn</a>
                     </td>
                 </tr>
-        </tbody>
+                </c:forEach>
+            </tbody>
     </table>
 
 </body>

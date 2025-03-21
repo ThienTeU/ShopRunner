@@ -44,6 +44,7 @@ public class CustomerEdit extends HttpServlet {
         ProductDAOTuan dao = new ProductDAOTuan();
         String id = request.getParameter("userId");
         String userName = request.getParameter("userName");
+        String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String status = request.getParameter("status");
@@ -51,7 +52,7 @@ public class CustomerEdit extends HttpServlet {
         int customerId = Integer.parseInt(id);
         boolean customerStatus = "1".equals(status);
         int customerGender = Integer.parseInt(gender);
-        UserTuan customer = new UserTuan(customerId, userName, email, phoneNumber, customerStatus, customerGender);
+        UserTuan customer = new UserTuan(customerId, userName, fullName, email, phoneNumber, customerStatus, customerGender);
         dao.updateCustomer(customer);
         request.setAttribute("message", "Cập nhật thành công!");
         request.setAttribute("alertType", "success"); 

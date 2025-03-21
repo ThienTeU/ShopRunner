@@ -83,18 +83,44 @@
             </c:forEach>
         </table>
 
-        <div class="pagination">
-            <c:forEach begin="1" end="${end}" var="i">
+        <div class="pagination justify-content-center">
+            <!-- Nút Trước -->
+            <c:if test="${index > 1}">
                 <c:if test="${check eq 'list'}">
-                    <a href="customerlist?index=${i}">${i}</a>
+                    <a class="page-link" href="customerlist?index=${index - 1}">Trước</a>
                 </c:if>
                 <c:if test="${check eq 'search'}">
-                    <a href="customersearch?index=${i}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
+                    <a class="page-link" href="customersearch?index=${index - 1}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
+                        Trước
+                    </a>
+                </c:if>
+            </c:if>
+
+            <!-- Các số trang -->
+            <c:forEach begin="1" end="${end}" var="i">
+                <c:if test="${check eq 'list'}">
+                    <a class="page-link ${i eq index ? 'active' : ''}" href="customerlist?index=${i}">${i}</a>
+                </c:if>
+                <c:if test="${check eq 'search'}">
+                    <a class="page-link ${i eq index ? 'active' : ''}" href="customersearch?index=${i}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
                         ${i}
                     </a>
                 </c:if>
-
             </c:forEach>
+
+            <!-- Nút Sau -->
+            <c:if test="${index < end}">
+                <c:if test="${check eq 'list'}">
+                    <a class="page-link" href="customerlist?index=${index + 1}">Sau</a>
+                </c:if>
+                <c:if test="${check eq 'search'}">
+                    <a class="page-link" href="customersearch?index=${index + 1}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
+                        Sau
+                    </a>
+                </c:if>
+            </c:if>
         </div>
+
+
     </body>
 </html>

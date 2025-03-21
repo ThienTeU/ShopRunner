@@ -23,6 +23,10 @@
                 <input type="text" class="form-control" id="userName" name="userName" value="${customer.userName}" required>
             </div>
             <div class="col-md-6">
+                <label for="fullName" class="form-label">Họ và tên</label>
+                <input type="text" class="form-control" id="fullName" name="fullName" value="${customer.fullName}" required>
+            </div>
+            <div class="col-md-6">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" value="${customer.email}" required>
             </div>

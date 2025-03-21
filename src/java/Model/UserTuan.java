@@ -7,14 +7,27 @@ public class UserTuan {
     private int userId;
     private int roleId;
     private String userName;
+    private String fullName;
     private String email;
     private String password;
     private String phoneNumber;
     private boolean status;
     private int genderId;
+    private String createdAt;
     private List<AddressTuan> addresses;
 
     public UserTuan() {
+    }
+    
+    //userName, fullName, email, encodedPassword, phoneNumber, status, gender
+    public UserTuan(String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId) {
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
     }
 
     public UserTuan(String userName, String email, String phoneNumber, boolean status, int genderId) {
@@ -24,7 +37,30 @@ public class UserTuan {
         this.status = status;
         this.genderId = genderId;
     }
-    
+
+    public UserTuan(String userName, String fullName, String email, String phoneNumber, boolean status, int genderId) {
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
+
+    public UserTuan(int userId, int roleId, String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId, String createdAt, List<AddressTuan> addresses) {
+        this.userId = userId;
+        this.roleId = roleId;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+        this.createdAt = createdAt;
+        this.addresses = addresses;
+    }
+
     public UserTuan(int userId, int roleId, String userName, String email, String password, String phoneNumber, boolean status, int genderId, List<AddressTuan> addresses) {
         this.userId = userId;
         this.roleId = roleId;
@@ -36,20 +72,11 @@ public class UserTuan {
         this.genderId = genderId;
         this.addresses = addresses;
     }
-    
-    public UserTuan(int roleId, String userName, String email, String password, String phoneNumber, boolean status, int genderId) {
-        this.roleId = roleId;
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-        this.genderId = genderId;
-    }
-    
-    public UserTuan(int userId, String userName, String email, String phoneNumber, boolean status, int genderId) {
+
+    public UserTuan(int userId, String userName, String fullName, String email, String phoneNumber, boolean status, int genderId) {
         this.userId = userId;
         this.userName = userName;
+        this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.status = status;
@@ -128,6 +155,22 @@ public class UserTuan {
         this.addresses = addresses;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -144,7 +187,5 @@ public class UserTuan {
         sb.append('}');
         return sb.toString();
     }
-
-    
 
 }
