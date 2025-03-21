@@ -8,6 +8,8 @@ import Model.CartItem;
 import Model.OrderDetails;
 import Model.Orders;
 import Model.ProductPrice;
+import NgocHieu.GHTKService.OrderResponseInfo;
+import NgocHieu.GHTKService.OrderResponse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -25,11 +27,179 @@ public class OrderDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         OrderDAO dao = new OrderDAO();
-        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
-        order.setPayment_method("vnpay");
-        order.setStatus("paid");
-        System.out.println(dao.insertOrder(order));
+//        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+//        order.setPayment_method("vnpay");
+//        order.setStatus("paid");
+//        int order_id = dao.insertOrder(order);
+//        List<OrderResponse> list = dao.getAllOrderResponse();
+//        for (OrderResponse o : list) {
+//            System.out.println(o.getOrder().getLabel());
+//        }
+    dao.restoreProductQuantity(2116);
 
+    }
+    
+    public void restoreProductQuantity(int orderId) {
+        String query = "UPDATE pq "
+                + "SET pq.quantity = pq.quantity + od.quantity "
+                + "FROM ProductQuantity pq "
+                + "INNER JOIN OrderDetails od ON pq.ProductQuantity_id = od.ProductQuantity_id "
+                + "WHERE od.order_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, orderId);
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Đã cập nhật lại số lượng sản phẩm cho đơn hàng #" + orderId);
+            } else {
+                System.out.println(" Không có sản phẩm nào cần cập nhật số lượng.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi cập nhật số lượng sản phẩm khi hủy đơn: " + e.getMessage());
+        }
+    }
+
+    public List<OrderResponse> getAllOrderResponse() {
+        List<OrderResponse> orderList = new ArrayList<>();
+        String query = "SELECT * FROM OrderResponse ORDER BY id DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                // Tạo đối tượng OrderInfo từ dữ liệu database
+                OrderResponseInfo orderInfo = new OrderResponseInfo();
+                orderInfo.setOrderId(rs.getString("order_id"));
+                orderInfo.setLabel(rs.getString("label"));
+                orderInfo.setArea(rs.getInt("area"));
+                orderInfo.setFee(rs.getInt("fee"));
+                orderInfo.setInsuranceFee(rs.getInt("insurance_fee"));
+                orderInfo.setEstimatedPickTime(rs.getString("estimated_pick_time"));
+                orderInfo.setEstimatedDeliverTime(rs.getString("estimated_deliver_time"));
+                orderInfo.setTrackingId(rs.getLong("tracking_id"));
+                orderInfo.setSortingCode(rs.getString("sorting_code"));
+                orderInfo.setStatusId(rs.getInt("status_id"));
+                orderInfo.setPackageId(rs.getString("package_id"));
+
+                // Tạo đối tượng OrderResponse
+                OrderResponse orderResponse = new OrderResponse();
+                orderResponse.setSuccess(rs.getBoolean("success"));
+                orderResponse.setMessage(rs.getString("message"));
+                orderResponse.setOrder(orderInfo);
+
+                orderList.add(orderResponse);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderList;
+    }
+
+    public void updateStatusToCancelledInOrder(String order_id) {
+        String query = "UPDATE dbo.Orders SET status = 'Canceled' WHERE order_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, Integer.parseInt(order_id));
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Đã hủy đơn hàng có label: " + order_id);
+            } else {
+                System.out.println("Không tìm thấy đơn hàng với label: " + order_id);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateStatusInOrderResponse(String label, int status_id) {
+        String query = "UPDATE dbo.OrderResponse SET status_id = ? WHERE label = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, status_id);
+            ps.setString(2, label);
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Đã capaj nhaajt status đơn hàng có label: " + label);
+            } else {
+                System.out.println("Không tìm thấy đơn hàng với label: " + label);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveOrder(OrderResponse orderResponse) {
+        String query = "INSERT INTO dbo.OrderResponse (order_id, label, area, fee, insurance_fee, estimated_pick_time, "
+                + "estimated_deliver_time, tracking_id, sorting_code, status_id, package_id, success, message) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+
+            OrderResponseInfo order = orderResponse.getOrder();
+
+            ps.setString(1, order.getOrderId());
+            ps.setString(2, order.getLabel());
+            ps.setInt(3, order.getArea());
+            ps.setInt(4, order.getFee());
+            ps.setInt(5, order.getInsuranceFee());
+            ps.setString(6, order.getEstimatedPickTime());
+            ps.setString(7, order.getEstimatedDeliverTime());
+            ps.setLong(8, order.getTrackingId());
+            ps.setString(9, order.getSortingCode());
+            ps.setInt(10, order.getStatusId());
+            ps.setString(11, order.getPackageId());
+            ps.setBoolean(12, orderResponse.isSuccess());
+            ps.setString(13, orderResponse.getMessage());
+
+            ps.executeUpdate();
+            System.out.println("Đơn hàng đã được lưu vào SQL Server.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Lấy đơn hàng từ database bằng tracking_id
+    public OrderResponse getOrderByTrackingId(long trackingId) {
+        String query = "SELECT * FROM dbo.OrderResponse WHERE tracking_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+
+            ps.setLong(1, trackingId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                OrderResponseInfo orderInfo = new OrderResponseInfo();
+                orderInfo.setOrderId(rs.getString("order_id"));
+                orderInfo.setLabel(rs.getString("label"));
+                orderInfo.setArea(rs.getInt("area"));
+                orderInfo.setFee(rs.getInt("fee"));
+                orderInfo.setInsuranceFee(rs.getInt("insurance_fee"));
+                orderInfo.setEstimatedPickTime(rs.getString("estimated_pick_time"));
+                orderInfo.setEstimatedDeliverTime(rs.getString("estimated_deliver_time"));
+                orderInfo.setTrackingId(rs.getLong("tracking_id"));
+                orderInfo.setSortingCode(rs.getString("sorting_code"));
+                orderInfo.setStatusId(rs.getInt("status_id"));
+                orderInfo.setPackageId(rs.getString("package_id"));
+
+                OrderResponse orderResponse = new OrderResponse();
+                orderResponse.setSuccess(rs.getBoolean("success"));
+                orderResponse.setMessage(rs.getString("message"));
+                orderResponse.setOrder(orderInfo);
+
+                return orderResponse;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean updateProductQuantity(int productQuantityId, int quantity) throws SQLException {
@@ -138,6 +308,23 @@ public class OrderDAO extends DBContext {
             }
         }
         return list;
+    }
+
+    public int getTotalOrdersByCustomer(String email) {
+        String sql = "SELECT COUNT(*) AS total_orders FROM Orders WHERE email = ?";
+        int totalOrders = 0;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email); // Gán giá trị email vào câu lệnh SQL
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    totalOrders = rs.getInt("total_orders"); // Lấy tổng số đơn hàng
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return totalOrders; // Trả về tổng số đơn hàng
     }
 
 }

@@ -8,11 +8,13 @@ import DAL.OrderDAO;
 import DAL.ProductDAO;
 import Model.CartItem;
 import Model.Orders;
+import Model.Product;
 import NgocHieu.GHTKService.GHTKApiService;
 import NgocHieu.GHTKService.OrderGhtk;
 import NgocHieu.GHTKService.OrderRequest;
 import NgocHieu.GHTKService.ProductGhtk;
 import NgocHieu.service.AuthenticationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -34,64 +36,120 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "CheckOutVnpayServlet", urlPatterns = {"/CheckOutVnpayServlet"})
 public class CheckOutVnpayServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(CheckOutVnpayServlet.class.getName());
+    private final ProductDAO productDAO = new ProductDAO();
+    private final OrderDAO orderDAO = new OrderDAO();
+    private final GHTKApiService ghtkService = new GHTKApiService();
+    private final HttpServletRequest request = null;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Not implemented
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<CartItem> cartItems = new ArrayList<>();
-            List<ProductGhtk> listProductGhtk = new ArrayList<>();
-            ProductDAO productDao = new ProductDAO();
-            
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("cart")) {
-                        cartItems = AuthenticationService.decodeCartToken(cookie.getValue());
-                    }
-                }
+            List<CartItem> cartItems = getCartItemsFromCookies(request);
+            if (cartItems.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cart is empty");
+                return;
             }
 
-            OrderDAO orderDAO = new OrderDAO();
-            Orders order = (Orders) request.getSession().getAttribute("order");
-            order.setStatus("paid");
-            int order_id = orderDAO.insertOrder(order);
-            order.setOrder_id(order_id);
-            request.getSession().setAttribute("order_id", order_id);
-            response.getWriter().println(order_id);
-            response.getWriter().println(order.getStatus());
-            if (order_id > 0) {
-                for (CartItem item : cartItems) {
-                    orderDAO.insertOrderDetail(order_id, item);
-                    listProductGhtk.add(new ProductGhtk(
-                            productDao.getProductById(item.getProduct_id()).getProduct_name(),
-                            0.2,
-                            item.getQuantity(),
-                            item.getProduct_id()
-                    ));
+            Orders order = processOrder(request);
+            if (order == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order");
+                return;
+            }
+
+            int orderId = saveOrder(order);
+            if (orderId <= 0) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to save order");
+                return;
+            }
+
+            List<ProductGhtk> productGhtkList = createProductGhtkList(cartItems);
+            saveOrderDetails(orderId, cartItems);
+            sendOrderToGHTK(orderId, productGhtkList, order);
+
+            response.sendRedirect("SendOrderToEmailServlet");
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error processing VNPay checkout", ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+    }
+
+    private List<CartItem> getCartItemsFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("cart".equals(cookie.getName())) {
+                    try {
+                        return AuthenticationService.decodeCartToken(cookie.getValue());
+                    } catch (JOSEException | ParseException e) {
+                        LOGGER.log(Level.WARNING, "Error decoding cart token", e);
+                    }
+                    break;
                 }
             }
-            //Lay thong tin order o ben check out va set lai cac gia tri khi nguoi dung da thanh toan
-            OrderGhtk orderGhtk = (OrderGhtk) request.getSession().getAttribute("orderGhtk");
-            orderGhtk.setId(String.valueOf(order_id));
+        }
+        return new ArrayList<>();
+    }
+
+    private Orders processOrder(HttpServletRequest request) {
+        Orders order = (Orders) request.getSession().getAttribute("order");
+        if (order == null) {
+            return null;
+        }
+        order.setStatus("paid");
+        return order;
+    }
+
+    private int saveOrder(Orders order) throws SQLException {
+        int orderId = orderDAO.insertOrder(order);
+        if (orderId > 0) {
+            order.setOrder_id(orderId);
+            request.getSession().setAttribute("order_id", orderId);
+        }
+        return orderId;
+    }
+
+    private List<ProductGhtk> createProductGhtkList(List<CartItem> cartItems) throws SQLException {
+        List<ProductGhtk> productGhtkList = new ArrayList<>();
+        for (CartItem item : cartItems) {
+            Product product = productDAO.getProductById(item.getProduct_id());
+            if (product != null) {
+                productGhtkList.add(new ProductGhtk(
+                        product.getProduct_name(),
+                        0.2,
+                        item.getQuantity(),
+                        item.getProduct_id()
+                ));
+            }
+        }
+        return productGhtkList;
+    }
+
+    private void saveOrderDetails(int orderId, List<CartItem> cartItems) throws SQLException {
+        for (CartItem item : cartItems) {
+            orderDAO.insertOrderDetail(orderId, item);
+        }
+    }
+
+    private void sendOrderToGHTK(int orderId, List<ProductGhtk> productGhtkList, Orders order) throws JsonProcessingException, IOException {
+        OrderGhtk orderGhtk = (OrderGhtk) request.getSession().getAttribute("orderGhtk");
+        if (orderGhtk != null) {
+            orderGhtk.setId(String.valueOf(orderId));
             orderGhtk.setPick_money(0);
-            OrderRequest orderRequest = new OrderRequest(listProductGhtk, orderGhtk);
-            GHTKApiService ghtkService = new GHTKApiService();
+            OrderRequest orderRequest = new OrderRequest(productGhtkList, orderGhtk);
             ghtkService.sendOrderToGHTK(orderRequest.toJsonBody(orderRequest));
-            response.sendRedirect("SendOrderToEmailServlet");
-        } catch (SQLException | JOSEException | ParseException ex) {
-            Logger.getLogger(CheckOutVnpayServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "VNPay Checkout Servlet";
+    }
 }

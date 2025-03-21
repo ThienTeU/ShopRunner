@@ -7,14 +7,12 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import DAL.UserDAO;
 import Model.CartItem;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServlet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -102,11 +100,6 @@ public class AuthenticationService extends HttpServlet{
         var token = generateToken(user);
 
         return token;
-    }
-    public static void main(String[] args) throws SQLException {
-        User user = new User("admin","12345678");
-        AuthenticationService auth = new AuthenticationService();
-        System.out.println(auth.loginAuthentication(user));
     }
 
     private String generateToken(User user) throws SQLException{

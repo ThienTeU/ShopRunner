@@ -101,6 +101,10 @@ public class AddToCartServlet extends HttpServlet {
             cartCookie.setSecure(true); // Chỉ gửi qua HTTPS
             response.addCookie(cartCookie);
 
+            int cartQuantity = cartItems.size();
+            
+            request.getSession().setAttribute("cartQuantity", cartQuantity);
+
             response.sendRedirect("CartDetailServlet");
 
         } catch (NumberFormatException | SQLException | JOSEException e) {

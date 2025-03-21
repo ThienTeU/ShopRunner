@@ -146,4 +146,26 @@ public class FeedbackDAO extends DBContext {
         return list;
     }
 
+    public int getTotalFeedbacksByUser(int userId) {
+        String sql = "SELECT COUNT(*) AS total_feedbacks FROM Feedback WHERE user_id = ?";
+        int totalFeedbacks = 0;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            // Gán giá trị userId vào câu truy vấn
+            ps.setInt(1, userId);
+
+            // Thực thi câu truy vấn và xử lý kết quả
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    totalFeedbacks = rs.getInt("total_feedbacks"); // Lấy giá trị từ cột "total_feedbacks"
+                }
+            }
+        } catch (SQLException e) {
+            // Ghi log lỗi nếu có ngoại lệ xảy ra
+            System.err.println("Error while fetching total feedbacks: " + e.getMessage());
+        }
+
+        return totalFeedbacks; // Trả về tổng số lượt đánh giá
+    }
+
 }

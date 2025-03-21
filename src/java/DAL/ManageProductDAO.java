@@ -16,7 +16,20 @@ public class ManageProductDAO extends DBContext {
 
     PreparedStatement ps = null;
     ResultSet rs = null;
-    
+    public int updateProductPrice(int newPrice,int productPriceId) throws SQLException{
+        String query = "UPDATE dbo.ProductPrice SET price = ? WHERE ProductPrice_id =	?";
+        try{
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, newPrice);
+            ps.setInt(2, productPriceId);
+            int rowUpdated = ps.executeUpdate();
+            return rowUpdated;
+        } finally{
+            if(ps !=null){
+                ps.close();
+            }
+        }
+    }
     public int updateProductQuantity(int newQuantity,int productQuantityId) throws SQLException{
         String query = "UPDATE dbo.ProductQuantity SET quantity = ? WHERE ProductQuantity_id =	?";
         try{

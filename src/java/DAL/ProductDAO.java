@@ -52,9 +52,16 @@ public class ProductDAO extends DBContext {
             orderBy = "product_name ASC";
         } else if ("status".equals(sortType)) {
             orderBy = "status DESC";
+        } else if("view".equals(sortType)){
+            orderBy = "pv.[view] DESC";
         }
 
-        String query = "SELECT * FROM Product ORDER BY " + orderBy + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String query = "SELECT p.product_id, p.category_id, p.product_name, p.description, "
+                + "p.discount, p.status, p.thumbnail, p.created_at, "
+                + "COALESCE(pv.[view], 0) AS total_views "
+                + "FROM Product p "
+                + "LEFT JOIN ProductView pv ON p.product_id = pv.product_id "
+                + "ORDER BY "+orderBy+ " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         PreparedStatement ps = connection.prepareStatement(query);
         int offset = (page - 1) * pageSize;
@@ -92,36 +99,52 @@ public class ProductDAO extends DBContext {
 
     public List<Product> searchProductsByNamePage(String keyword, int page, int pageSize, String sortType) throws SQLException {
         List<Product> productList = new ArrayList<>();
-
-        // Xác định kiểu sắp xếp
-        String orderBy = "created_at DESC"; // Mặc định sắp xếp theo ngày tạo mới nhất
-        if ("name".equals(sortType)) {
-            orderBy = "product_name ASC";
-        } else if ("status".equals(sortType)) {
-            orderBy = "status DESC";
+        // Xác định kiểu sắp xếp an toàn
+        String orderBy;
+        switch (sortType) {
+            case "name":
+                orderBy = "product_name ASC";
+                break;
+            case "status":
+                orderBy = "status DESC";
+                break;
+            case "view":
+                orderBy = "total_views DESC"; // Nếu sắp xếp theo view, đổi ORDER BY
+                break;
+            default:
+                orderBy = "created_at ASC"; // Mặc định sắp xếp theo ngày tạo
         }
 
-        String query = "SELECT * FROM Product WHERE product_name LIKE ? ORDER BY " + orderBy + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        // Tạo query chung
+        String query = "SELECT p.product_id, p.category_id, p.product_name, p.description, "
+                + "p.discount, p.status, p.thumbnail, p.created_at, "
+                + "COALESCE(pv.[view], 0) AS total_views "
+                + "FROM Product p "
+                + "LEFT JOIN ProductView pv ON p.product_id = pv.product_id "
+                + "WHERE p.product_name LIKE ? "
+                + "ORDER BY " + orderBy + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-        PreparedStatement ps = connection.prepareStatement(query);
-        int offset = (page - 1) * pageSize;
-        ps.setString(1, "%" + keyword + "%");
-        ps.setInt(2, offset);
-        ps.setInt(3, pageSize);
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            int offset = (page - 1) * pageSize;
+            ps.setString(1, "%" + keyword + "%");
+            ps.setInt(2, offset);
+            ps.setInt(3, pageSize);
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Product product = new Product(
-                    rs.getInt("product_id"),
-                    rs.getInt("category_id"),
-                    rs.getString("product_name"),
-                    rs.getString("description"),
-                    rs.getInt("discount"),
-                    rs.getBoolean("status"),
-                    rs.getString("thumbnail"),
-                    rs.getString("created_at")
-            );
-            productList.add(product);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product(
+                            rs.getInt("product_id"),
+                            rs.getInt("category_id"),
+                            rs.getString("product_name"),
+                            rs.getString("description"),
+                            rs.getInt("discount"),
+                            rs.getBoolean("status"),
+                            rs.getString("thumbnail"),
+                            rs.getString("created_at")
+                    );
+                    productList.add(product);
+                }
+            }
         }
         return productList;
     }
@@ -741,6 +764,17 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
+    public int getViewById(int product_id) throws SQLException {
+        String query = "SELECT * FROM dbo.ProductView WHERE product_id = ?";
+        ps = connection.prepareStatement(query);
+        ps.setInt(1, product_id);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            return rs.getInt("view");
+        }
+        return 0;
+    }
+
     public List<ProductPrice> getAllProductPrices() throws SQLException {
         List<ProductPrice> list = new ArrayList<>();
         String sql = "SELECT * FROM ProductPrice";
@@ -869,101 +903,99 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-    
-    
+
     public List<Product> searchProducts(String query, String sortPrice, int offset, int limit) {
-    List<Product> list = new ArrayList<>();
-    String sql = "SELECT DISTINCT p.*, MIN(pp.price) as min_price " +
-                 "FROM Product p " +
-                 "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id " +
-                 "WHERE p.status = 0 " +
-                 "AND (LOWER(p.product_name) LIKE LOWER(?) OR LOWER(p.description) LIKE LOWER(?)) " +
-                 "GROUP BY p.product_id, p.category_id, p.product_name, p.description, " +
-                 "p.discount, p.status, p.thumbnail, p.created_at ";
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT p.*, MIN(pp.price) as min_price "
+                + "FROM Product p "
+                + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
+                + "WHERE p.status = 0 "
+                + "AND (LOWER(p.product_name) LIKE LOWER(?) OR LOWER(p.description) LIKE LOWER(?)) "
+                + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
+                + "p.discount, p.status, p.thumbnail, p.created_at ";
 
-    if (sortPrice != null) {
-        sql += sortPrice.equals("asc") ? "ORDER BY min_price ASC " :
-               sortPrice.equals("desc") ? "ORDER BY min_price DESC " :
-               "ORDER BY p.created_at DESC ";
-    } else {
-        sql += "ORDER BY p.created_at DESC ";
-    }
+        if (sortPrice != null) {
+            sql += sortPrice.equals("asc") ? "ORDER BY min_price ASC "
+                    : sortPrice.equals("desc") ? "ORDER BY min_price DESC "
+                    : "ORDER BY p.created_at DESC ";
+        } else {
+            sql += "ORDER BY p.created_at DESC ";
+        }
 
-    sql += "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        sql += "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        String searchPattern = "%" + query.trim() + "%";
-        ps.setString(1, searchPattern);
-        ps.setString(2, searchPattern);
-        ps.setInt(3, offset);
-        ps.setInt(4, limit);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            String searchPattern = "%" + query.trim() + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setInt(3, offset);
+            ps.setInt(4, limit);
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Product product = new Product();
-                product.setProduct_id(rs.getInt("product_id"));
-                product.setCategory_id(rs.getInt("category_id"));
-                product.setProduct_name(rs.getString("product_name"));
-                product.setDescription(rs.getString("description"));
-                product.setDiscount(rs.getInt("discount"));
-                product.setStatus(rs.getBoolean("status"));
-                product.setThumbnail(rs.getString("thumbnail"));
-                product.setCreated_at(rs.getString("created_at"));
-                product.setPrice(rs.getDouble("min_price"));
-                list.add(product);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProduct_id(rs.getInt("product_id"));
+                    product.setCategory_id(rs.getInt("category_id"));
+                    product.setProduct_name(rs.getString("product_name"));
+                    product.setDescription(rs.getString("description"));
+                    product.setDiscount(rs.getInt("discount"));
+                    product.setStatus(rs.getBoolean("status"));
+                    product.setThumbnail(rs.getString("thumbnail"));
+                    product.setCreated_at(rs.getString("created_at"));
+                    product.setPrice(rs.getDouble("min_price"));
+                    list.add(product);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
-
-public int getTotalSearchResults(String query) {
-    int total = 0;
-    String sql = "SELECT COUNT(DISTINCT p.product_id) " +
-                "FROM Product p " +
-                "WHERE p.status = 0 " + // 0 là active trong database của bạn
+    public int getTotalSearchResults(String query) {
+        int total = 0;
+        String sql = "SELECT COUNT(DISTINCT p.product_id) "
+                + "FROM Product p "
+                + "WHERE p.status = 0 "
+                + // 0 là active trong database của bạn
                 "AND (p.product_name LIKE ? OR p.description LIKE ?)";
-    
-    try {
-        PreparedStatement ps = connection.prepareStatement(sql);
-        String searchPattern = "%" + query + "%";
-        ps.setString(1, searchPattern);
-        ps.setString(2, searchPattern);
-        
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            total = rs.getInt(1);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return total;
-}
 
-public List<Product> sortProducts(List<Product> products, String sortOrder) {
-    if (sortOrder == null || products == null) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            String searchPattern = "%" + query + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    public List<Product> sortProducts(List<Product> products, String sortOrder) {
+        if (sortOrder == null || products == null) {
+            return products;
+        }
+
+        Collections.sort(products, (p1, p2) -> {
+            if (sortOrder.equals("asc")) {
+                return Double.compare(p1.getPrice(), p2.getPrice());
+            } else if (sortOrder.equals("desc")) {
+                return Double.compare(p2.getPrice(), p1.getPrice());
+            }
+            return 0;
+        });
+
         return products;
     }
 
-    Collections.sort(products, (p1, p2) -> {
-        if (sortOrder.equals("asc")) {
-            return Double.compare(p1.getPrice(), p2.getPrice());
-        } else if (sortOrder.equals("desc")) {
-            return Double.compare(p2.getPrice(), p1.getPrice());
-        }
-        return 0;
-    });
-
-    return products;
-}
-
-
-public List<Product> getProductsByCategory(int categoryId) {
-    List<Product> products = new ArrayList<>();
-    String sql = """
+    public List<Product> getProductsByCategory(int categoryId) {
+        List<Product> products = new ArrayList<>();
+        String sql = """
         WITH CategoryTree AS (
             SELECT category_id FROM Category WHERE category_id = ?
             UNION ALL
@@ -977,26 +1009,26 @@ public List<Product> getProductsByCategory(int categoryId) {
         LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id
     """;
 
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setInt(1, categoryId);
-        ResultSet rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            products.add(new Product(
-                    rs.getInt("product_id"),
-                    rs.getInt("category_id"),
-                    rs.getString("product_name"),
-                    rs.getString("description"),
-                    rs.getInt("discount"),
-                    rs.getBoolean("status"),
-                    rs.getString("thumbnail"),
-                    rs.getString("created_at"),
-                    rs.getDouble("price")
-            ));
+            while (rs.next()) {
+                products.add(new Product(
+                        rs.getInt("product_id"),
+                        rs.getInt("category_id"),
+                        rs.getString("product_name"),
+                        rs.getString("description"),
+                        rs.getInt("discount"),
+                        rs.getBoolean("status"),
+                        rs.getString("thumbnail"),
+                        rs.getString("created_at"),
+                        rs.getDouble("price")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return products;
     }
-    return products;
-}
 }

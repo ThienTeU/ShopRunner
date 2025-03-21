@@ -14,7 +14,8 @@ public class EnvConfig {
     static {
         try {
             // Xác định đường dẫn file .env
-            String path = "D:/swp/git/ShopRunner/config.env";
+            String path = "C:/Users/admin/ShopRunner/config.env";
+
             FileInputStream fileInputStream = new FileInputStream(path);
             properties.load(fileInputStream);
         } catch (IOException e) {
@@ -25,6 +26,10 @@ public class EnvConfig {
     // Hàm lấy giá trị từ .env
     public static String get(String key) {
         return properties.getProperty(key);
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(get("SIGN_KEY"));
     }
 }
 

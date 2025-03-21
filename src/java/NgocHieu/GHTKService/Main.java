@@ -10,12 +10,13 @@ package NgocHieu.GHTKService;
  */
 import DAL.OrderDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try {
             OrderDAO dao = new OrderDAO();
             
@@ -25,7 +26,7 @@ public class Main {
             list.add(product1);
             list.add(product2);
             OrderGhtk order = new OrderGhtk(
-                "102", "0911222333", "Duong Ngoc Hieu",
+                "128", "0911222333", "Duong Ngoc Hieu",
              "123 nguyễn chí thanh", "TP. Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", 100000,1000000
             );
 
@@ -35,10 +36,27 @@ public class Main {
             String jsonBody = objectMapper.writeValueAsString(orderRequest);
 //            System.out.println(jsonBody);
             GHTKApiService service = new GHTKApiService();
-            System.out.println(service.sendOrderToGHTK(jsonBody));
+            
+            // Chuyển JSON response thành object OrderResponse
+            OrderResponse orderResponse = service.sendOrderToGHTK(jsonBody);
+            
+            // In ra thông tin đơn hàng
+            System.out.println("Success: " + orderResponse.isSuccess());
+            System.out.println("Message: " + orderResponse.getMessage());
+            System.out.println(orderResponse.getOrder().toString());
+            
+            System.out.println("-----------");
+            System.out.println("Hủy đơn----------");
+            
+            CancelResponse cancelResponse = service.cancelOrder(orderResponse.getOrder().getLabel(), orderResponse.getOrder().getOrderId());
+            System.out.println(cancelResponse);
+            
+            System.out.println(service.getOrderByTrackingId(orderResponse.getOrder().getTrackingId()));
         } catch (Exception e) {
             e.printStackTrace();
         }
+//            GHTKApiService service = new GHTKApiService();
+//            service.cancelOrder("S19268530.MB21-02-B3.1212836697");
     }
 }
 

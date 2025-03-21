@@ -21,6 +21,7 @@
 
         <!-- Icon Font Stylesheet -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
         <!--Link bootstrap phan trang-->
@@ -65,6 +66,7 @@
                     <div class="bg-secondary text-center rounded p-4">
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <h6 class="mb-0">Products </h6>
+
                             <a href="AddProductServlet" class="btn btn-success">Add New Product <i class="bi bi-bag-plus-fill"></i></a>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
@@ -74,8 +76,10 @@
                                     <input type="text" id="searchInput" placeholder=" Tìm kiếm sản phẩm..." name="searchKey">
                                     <input type="text" hidden value="${sort == null ? "date" : sort}" name="sort">
                                     <button style="border: 1px solid gray; border-radius: 5px; color: gray" type="submit">Tìm</button>
+
                                 </form>
                             </div>
+                            <a href="ProductDashboard">Xem tất cả sản phẩm</a>
                             <div class="dropdown">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -84,6 +88,7 @@
                                         <c:when test="${sortType == 'name'}">Tên</c:when>
                                         <c:when test="${sortType == 'date'}">Ngày tạo</c:when>
                                         <c:when test="${sortType == 'status'}">Trạng thái</c:when>
+                                        <c:when test="${sortType == 'view'}">Lượt xem</c:when>
                                         <c:otherwise>Mặc định</c:otherwise>
                                     </c:choose>
                                 </button>
@@ -91,6 +96,7 @@
                                     <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=name">Sắp xếp theo: Tên</a>
                                     <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=date">Sắp xếp theo: Ngày tạo</a>
                                     <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=status">Sắp xếp theo: Trạng thái</a>
+                                    <a class="dropdown-item" href="ProductDashboard?searchKey=${searchKey}&sort=view">Sắp xếp theo: Lượt xem</a>
                                 </div>
                             </div>
 
@@ -112,19 +118,37 @@
                                     <c:forEach items="${paginatedList}" var="product">
                                         <tr>
                                             <td style="max-width: 200px"><a href="ProductDetailServlet?product_id=${product.product_id}">${product.product_name}</a></td>
-                                            <td><img src="${product.thumbnail}" width="100px" height="100px" alt="alt"/></td>
+                                            <td>
+                                                <div style="position: relative">
+                                                    <div style="padding: 0 5px;background-color: #cff4fc;color: black;
+                                                         position: absolute; right: 0px; font-size: 13px; margin: 0 5px 0 0;
+                                                         font-weight: 600; border-bottom-left-radius:5px;border-bottom-right-radius:5px" class="view">
+                                                        <i class="fa-regular fa-eye"></i>
+                                                        <span>${product.getView()}</span>
+                                                    </div>
+                                                    <img src="${product.thumbnail}" width="100px" height="100px" alt="alt"/>
+                                                </div>
+
+                                            </td>
                                             <td>${product.created_at}</td>
-                                            <td style="line-height: 0;align-items: center; font-size: 13px">
+                                            <td style="line-height: 0;align-items: center; font-size: 13px;">
                                                 <c:forEach items="${product.getProductPricesByProductId()}" var="pp">
                                                     <form style="display:flex; align-items: center; margin-bottom: 10px" action="UpdateQuantityServlet">
                                                         <c:forEach items="${pp.getAllColor()}" var="c">
                                                             <c:if test="${c.color_id == pp.color_id}">
-                                                                <a style="text-decoration: none; display:flex; align-items: center" href="ProductDetailServlet?product_id=${pp.product_id}&color_id=${c.color_id}">
-                                                                    <button style="display: flex;background-color: ${c.color};
-                                                                            border-radius: 50px;height:30px;
-                                                                            width: 30px;
-                                                                            border: solid 1px gray;"></button>
-                                                                </a>
+                                                                <div style="border: 1px solid gray; padding: 3px; border-radius: 8px; display: flex; align-items: center; width: fit-content;">
+                                                                    <a style="text-decoration: none; display: flex; align-items: center; gap: 5px;" 
+                                                                       title="Sửa giá sản phẩm" href="#" onclick="editPrice(event, this)">
+                                                                        <input type="hidden" name="productPriceId" value="${pp.productPrice_id}">
+                                                                        <button style="display: flex; background-color: ${c.color}; border-radius: 50%;
+                                                                                height: 30px; width: 30px; border: solid 1px gray; cursor: pointer;">
+                                                                        </button>
+                                                                        <div class="productPrice" style="color: red; font-weight: bold; font-size: 14px;">
+                                                                            ${pp.price} VND
+                                                                        </div>
+                                                                    </a>
+                                                                </div>
+
                                                             </c:if>
                                                         </c:forEach>
 
@@ -167,7 +191,7 @@
                                                    class="btn mt-1 btn-primary">
                                                     Add new color <i class="bi bi-plus-circle"></i>
                                                 </a>
-                                                <a style="font-size: 13px; height: 30px" href="EditProductServlet?product_id=${product.product_id}" class="btn btn-outline-danger">Edit product</a>
+                                                <a style="font-size: 13px; height: 30px" href="EditProductServlet?product_id=${product.product_id}" class="btn mt-1 btn-outline-danger">Edit product</a>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -256,6 +280,19 @@
                                                            }
                                                        }
 
+                                                       function editPrice(event, button) {
+                                                           event.preventDefault();
+
+                                                           let form = button.closest("form"); // Lấy form cha của button
+                                                           let productPriceId = form.querySelector("input[name='productPriceId']").value;
+
+
+                                                           let newPrice = prompt("Nhập giá tiền mới:");
+                                                           if (newPrice !== null && newPrice !== "") {
+                                                               window.location.href = "UpdatePriceServlet?productPriceId=" + productPriceId + "&newPrice=" + newPrice;
+                                                           }
+                                                       }
+
 
                                                        function updateStatus(event, productId, status) {
                                                            event.preventDefault();//Ngan chan hanh dong mac dinh cua the a
@@ -265,5 +302,14 @@
                                                                window.location.href = "UpdateStatusServlet?product_id=" + productId + "&status=" + status;
                                                            }
                                                        }
+                                                       document.addEventListener("DOMContentLoaded", function () {
+                                                           let priceElements = document.querySelectorAll(".productPrice");
+                                                           priceElements.forEach(function (element) {
+                                                               let price = parseFloat(element.textContent);
+                                                               if (!isNaN(price)) {
+                                                                   element.textContent = price.toLocaleString("vi-VN") + "₫";
+                                                               }
+                                                           });
+                                                       });
     </script>
 </html>

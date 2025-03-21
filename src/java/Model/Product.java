@@ -28,6 +28,11 @@ public class Product {
 
     public Product() {
     }
+    
+    public int getView() throws SQLException{
+        ProductDAO dao = new ProductDAO();
+        return dao.getViewById(product_id);
+    }
     public boolean isExistedId() throws SQLException{
         InsertProductDAO dao = new InsertProductDAO();
         return dao.isExistedProductId(product_id);

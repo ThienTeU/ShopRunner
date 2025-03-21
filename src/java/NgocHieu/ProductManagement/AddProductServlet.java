@@ -57,7 +57,11 @@ public class AddProductServlet extends HttpServlet {
             String thumbnail = getThumbnailUrl(filePart);
             
             String product_name = request.getParameter("product_name");
-            
+            if(!product_name.matches("^.{1,255}")){
+                response.setContentType("text/html;charset=UTF-8");
+                response.getWriter().println("<script>alert('Tên sản phẩm không vượt quá 255 kí tự!'); window.location='AddProductServlet';</script>");
+                return;
+            }
             if(thumbnail == null || filePart == null || product_name == null){
                 response.setContentType("text/html;charset=UTF-8");
                 response.getWriter().println("<script>alert('Thiếu thông tin!'); window.location='AddProductServlet';</script>");
@@ -70,6 +74,10 @@ public class AddProductServlet extends HttpServlet {
             }
             String description = request.getParameter("description");
             int discount = Integer.parseInt(request.getParameter("discount"));
+            if(discount < 0 ){
+                response.setContentType("text/html;charset=UTF-8");
+                response.getWriter().println("<script>alert('Discount không hợp lệ!'); window.location='AddProductServlet';</script>");
+            }
             int category_id = Integer.parseInt(request.getParameter("category_id"));
             
             List<Color> listColor = dao2.getAllColors();
@@ -89,6 +97,7 @@ public class AddProductServlet extends HttpServlet {
             
             // Xử lý file upload
             String fileExtension = ".avif"; // Chỉ chấp nhận .avif
+
             String fileName = "thumbnail" + fileExtension; // Đổi tên file 
 
             // Đường dẫn lưu file
