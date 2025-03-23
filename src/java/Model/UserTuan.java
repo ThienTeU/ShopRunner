@@ -13,61 +13,21 @@ public class UserTuan {
     private String phoneNumber;
     private boolean status;
     private int genderId;
-    private String createdAt; // Thời gian tạo tài khoản
-    private String imgUser;   // Ảnh đại diện
-
+    private String createdAt;
     private List<AddressTuan> addresses;
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getImgUser() {
-        return imgUser;
-    }
-
-    public void setImgUser(String imgUser) {
-        this.imgUser = imgUser;
-    }
-
-public UserTuan(int userId, int roleId, String userName, String fullName, String email, String password,
-                String phoneNumber, boolean status, int genderId, String createdAt, String imgUser,
-                List<AddressTuan> addresses) {
-    this.userId = userId;
-    this.roleId = roleId;
-    this.userName = userName;
-    this.fullName = fullName;
-    this.email = email;
-    this.password = password;
-    this.phoneNumber = phoneNumber;
-    this.status = status;
-    this.genderId = genderId;
-    this.createdAt = createdAt;
-    this.imgUser = imgUser;
-    this.addresses = addresses;
-}
-
 
     public UserTuan() {
     }
-
-    public UserTuan(String userName, String fullName, String email, String phoneNumber) {
+    
+    //userName, fullName, email, encodedPassword, phoneNumber, status, gender
+    public UserTuan(String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId) {
         this.userName = userName;
         this.fullName = fullName;
         this.email = email;
+        this.password = password;
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+        this.status = status;
+        this.genderId = genderId;
     }
 
     public UserTuan(String userName, String email, String phoneNumber, boolean status, int genderId) {
@@ -76,6 +36,29 @@ public UserTuan(int userId, int roleId, String userName, String fullName, String
         this.phoneNumber = phoneNumber;
         this.status = status;
         this.genderId = genderId;
+    }
+
+    public UserTuan(String userName, String fullName, String email, String phoneNumber, boolean status, int genderId) {
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
+
+    public UserTuan(int userId, int roleId, String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId, String createdAt, List<AddressTuan> addresses) {
+        this.userId = userId;
+        this.roleId = roleId;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+        this.createdAt = createdAt;
+        this.addresses = addresses;
     }
 
     public UserTuan(int userId, int roleId, String userName, String email, String password, String phoneNumber, boolean status, int genderId, List<AddressTuan> addresses) {
@@ -90,19 +73,10 @@ public UserTuan(int userId, int roleId, String userName, String fullName, String
         this.addresses = addresses;
     }
 
-    public UserTuan(int roleId, String userName, String email, String password, String phoneNumber, boolean status, int genderId) {
-        this.roleId = roleId;
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-        this.genderId = genderId;
-    }
-
-    public UserTuan(int userId, String userName, String email, String phoneNumber, boolean status, int genderId) {
+    public UserTuan(int userId, String userName, String fullName, String email, String phoneNumber, boolean status, int genderId) {
         this.userId = userId;
         this.userName = userName;
+        this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.status = status;
@@ -179,6 +153,22 @@ public UserTuan(int userId, int roleId, String userName, String fullName, String
 
     public void setAddresses(List<AddressTuan> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override

@@ -25,14 +25,21 @@ public class ProductDAOTuan extends DBContext {
         UserTuan customer = new UserTuan(2, "tuan", "tuan@gma", "123", "0821441", true, 1);
         System.out.println(dao.addCustomer(customer));
     }
+    
+    public int countProduct(){
+        int count = 0;
+        String sql = "select count(*) from [product]";
+        
+        return count;
+    }
 
     public AddressTuan getCustomerAddressById(int id) {
         AddressTuan address = null;
-        String sql = "SELECT * FROM Address WHERE user_id = ?";
+        String sql = "SELECT * FROM Address WHERE address_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     address = new AddressTuan();
                     address.setAddressId(rs.getInt("address_id"));
                     address.setUserId(rs.getInt("user_id"));
@@ -48,6 +55,50 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
         return address;
+    }
+
+    public void updateCustomerAddress(AddressTuan address) {
+        String sql = "UPDATE [dbo].[Address] "
+                + "SET [name] = ?, [phone] = ?, [city] = ?, "
+                + "[district] = ?, [ward] = ?, [street] = ? "
+                + "WHERE [address_id] = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, address.getName());
+            ps.setString(2, address.getPhone());
+            ps.setString(3, address.getCity());
+            ps.setString(4, address.getDistrict());
+            ps.setString(5, address.getWard());
+            ps.setString(6, address.getStreet());
+            ps.setInt(7, address.getAddressId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<AddressTuan> getCustomerAddressesById(int id) {
+        List<AddressTuan> addressList = new ArrayList<>();
+        String sql = "SELECT * FROM Address WHERE user_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    AddressTuan address = new AddressTuan();
+                    address.setAddressId(rs.getInt("address_id"));
+                    address.setUserId(rs.getInt("user_id"));
+                    address.setName(rs.getString("name"));
+                    address.setPhone(rs.getString("phone"));
+                    address.setCity(rs.getString("city"));
+                    address.setDistrict(rs.getString("district"));
+                    address.setWard(rs.getString("ward"));
+                    address.setStreet(rs.getString("street"));
+                    addressList.add(address);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return addressList;
     }
 
     public void updateCustomerStatus(int id, boolean status) {
@@ -97,15 +148,17 @@ public class ProductDAOTuan extends DBContext {
 
     public int addCustomer(UserTuan customer) {
         int id = -1;
-        String sql = "INSERT INTO [RunnerShop].[dbo].[User] ([role_id], [user_name], [email], [password], [phone_number], [status], [gender_id])"
-                + " VALUES (2, ?, ?, '1', ?, ?, ?)";
+        String sql = "INSERT INTO [RunnerShop].[dbo].[User] "
+                + "([role_id], [user_name], [full_name], [email], [password], [phone_number], [status], [gender_id], [created_at]) "
+                + "VALUES (2, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, customer.getUserName());
-            ps.setString(2, customer.getEmail());
-            ps.setString(3, customer.getPhoneNumber());
-            ps.setBoolean(4, customer.isStatus());
-            ps.setInt(5, customer.getGenderId());
-
+            ps.setString(2, customer.getFullName());
+            ps.setString(3, customer.getEmail());
+            ps.setString(4, customer.getPassword());
+            ps.setString(5, customer.getPhoneNumber());
+            ps.setBoolean(6, customer.isStatus());
+            ps.setInt(7, customer.getGenderId());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -115,27 +168,31 @@ public class ProductDAOTuan extends DBContext {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return id;
     }
 
     public void updateCustomer(UserTuan customer) {
         String sql = "UPDATE [User]\n"
-                + "SET  user_name = ?,\n"
+                + "SET user_name = ?,\n"
+                + "    full_name = ?,\n"
                 + "    email = ?,\n"
                 + "    phone_number = ?,\n"
                 + "    status = ?,\n"
-                + "	gender_id=?\n"
+                + "    gender_id = ?\n"
                 + "WHERE user_id = ?;";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, customer.getUserName());
-            ps.setString(2, customer.getEmail());
-            ps.setString(3, customer.getPhoneNumber());
-            ps.setBoolean(4, customer.isStatus());
-            ps.setInt(5, customer.getUserId());
+            ps.setString(2, customer.getFullName());
+            ps.setString(3, customer.getEmail());
+            ps.setString(4, customer.getPhoneNumber());
+            ps.setBoolean(5, customer.isStatus());
             ps.setInt(6, customer.getGenderId());
+            ps.setInt(7, customer.getUserId());
             ps.executeUpdate();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -145,6 +202,7 @@ public class ProductDAOTuan extends DBContext {
                 + "    u.user_id, "
                 + "    u.role_id, "
                 + "    u.user_name, "
+                + "    u.full_name, "
                 + "    u.email, "
                 + "    u.phone_number, "
                 + "    u.status, "
@@ -167,6 +225,7 @@ public class ProductDAOTuan extends DBContext {
                     customer = new UserTuan();
                     customer.setUserId(rs.getInt("user_id"));
                     customer.setUserName(rs.getString("user_name"));
+                    customer.setFullName(rs.getString("full_name"));
                     customer.setRoleId(rs.getInt("role_id"));
                     customer.setEmail(rs.getString("email"));
                     customer.setPhoneNumber(rs.getString("phone_number"));
@@ -337,26 +396,32 @@ public class ProductDAOTuan extends DBContext {
     public List<UserTuan> getAllCustomer(int index, int size) {
         List<UserTuan> customers = new ArrayList<>();
         int offset = (index - 1) * size;
-        String sql = "SELECT \n"
-                + "    u.user_id, \n"
-                + "    u.role_id,\n"
-                + "    u.user_name, \n"
-                + "    u.email, \n"
-                + "    u.phone_number, \n"
-                + "    u.status, \n"
-                + "    u.gender_id,\n"
-                + "    a.address_id, \n"
-                + "    a.name AS address_name, \n"
-                + "    a.phone AS address_phone, \n"
-                + "    a.city, \n"
-                + "    a.district, \n"
-                + "    a.ward, \n"
-                + "    a.street\n"
-                + "FROM [User] u\n"
-                + "LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
-                + "WHERE u.role_id = 2\n"
-                + "ORDER BY u.user_id \n"
-                + "OFFSET ? ROWS \n"
+        String sql = "WITH UserDistinct AS (\n"
+                + "    SELECT \n"
+                + "        u.user_id,\n"
+                + "        u.role_id,\n"
+                + "        u.user_name,\n"
+                + "        u.email,\n"
+                + "        u.phone_number,\n"
+                + "        u.status,\n"
+                + "        u.gender_id,\n"
+                + "        a.address_id,\n"
+                + "        a.name AS address_name,\n"
+                + "        a.phone AS address_phone,\n"
+                + "        a.city,\n"
+                + "        a.district,\n"
+                + "        a.ward,\n"
+                + "        a.street,\n"
+                + "        ROW_NUMBER() OVER (PARTITION BY u.user_id ORDER BY a.address_id) AS rn\n"
+                + "    FROM [User] u\n"
+                + "    LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
+                + "    WHERE u.role_id = 2\n"
+                + ")\n"
+                + "SELECT *\n"
+                + "FROM UserDistinct\n"
+                + "WHERE rn = 1\n"
+                + "ORDER BY user_id\n"
+                + "OFFSET ? ROWS\n"
                 + "FETCH NEXT ? ROWS ONLY;";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, offset);
