@@ -99,15 +99,12 @@
                 <p class="message error">Đổi mật khẩu thất bại. Vui lòng thử lại!</p>
             </c:if>
 
-            <!-- Hiển thị thông báo thành công + redirect -->
             <c:if test="${status == 'changeSuccess'}">
                 <script>
                     alert('Đổi mật khẩu thành công!');
                     window.location.href = '${pageContext.request.contextPath}/home?uid=${uid}';
                 </script>
             </c:if>
-
-
         </div>
     </body>
 </html>
