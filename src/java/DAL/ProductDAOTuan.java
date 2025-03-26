@@ -518,7 +518,7 @@ public class ProductDAOTuan extends DBContext {
                     UserTuan customer = new UserTuan();
                     customer.setUserId(rs.getInt("user_id"));
                     customer.setUserName(rs.getString("user_name"));
-                    customer.setRoleId(rs.getInt("role_id"));
+                    customer.setRoleId(rs.getInt("role_id"));             
                     customer.setEmail(rs.getString("email"));
                     customer.setPhoneNumber(rs.getString("phone_number"));
                     customer.setStatus(rs.getBoolean("status"));

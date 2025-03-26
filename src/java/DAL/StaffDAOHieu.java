@@ -1,19 +1,159 @@
-package HieuPTM.DAO;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package DAL;
 
-import static DAL.DBContext.connection;
-import HieuPTM.DBContext.DBContext;
+import HieuPTM.model.UserHieu;
+import Model.StaffHieu;
+import jakarta.servlet.annotation.WebServlet;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import HieuPTM.model.UserHieu;
-import Model.StaffHieu;
-import Model.UserTuan;
-import jakarta.servlet.annotation.WebServlet;
 import java.util.List;
 
 @WebServlet(name = "UserDAO", urlPatterns = {"/UserDAO"})
-public class UserDAO extends DBContext {
+public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
+    
+    public List<StaffHieu> searchStaffPage(String userName, String email, String phone, Boolean status, int offset, int size) {
+        List<StaffHieu> staffList = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, u.gender_id "
+                   + "FROM [User] u "
+                   + "WHERE u.role_id IN (3,4) "
+                   + "AND (? IS NULL OR u.user_name LIKE ?) "
+                   + "AND (? IS NULL OR u.email LIKE ?) "
+                   + "AND (? IS NULL OR u.phone_number LIKE ?) "
+                   + (status != null ? "AND u.status = ? " : "")
+                   + "ORDER BY u.user_id "
+                   + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            ps.setObject(paramIndex++, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(paramIndex++, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(paramIndex++, email != null ? "%" + email + "%" : null);
+            ps.setObject(paramIndex++, email != null ? "%" + email + "%" : null);
+            ps.setObject(paramIndex++, phone != null ? "%" + phone + "%" : null);
+            ps.setObject(paramIndex++, phone != null ? "%" + phone + "%" : null);
+
+            if (status != null) {
+                ps.setBoolean(paramIndex++, status);
+            }
+
+            ps.setInt(paramIndex++, offset);
+            ps.setInt(paramIndex++, size);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    StaffHieu staff = new StaffHieu(
+                        rs.getInt("user_id"),
+                        rs.getInt("role_id"),
+                        rs.getString("user_name"),
+                        rs.getString("email"),
+                        rs.getString("phone_number"),
+                        rs.getBoolean("status")
+                    );
+
+                    staffList.add(staff);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
+    
+    public List<StaffHieu> searchStaff(String userName, String email, String phone, Boolean status) {
+        List<StaffHieu> staffList = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, u.gender_id "
+                   + "FROM [User] u "
+                   + "WHERE u.role_id IN (3,4) "
+                   + "AND (? IS NULL OR u.user_name LIKE ?) "
+                   + "AND (? IS NULL OR u.email LIKE ?) "
+                   + "AND (? IS NULL OR u.phone_number LIKE ?) "
+                   + (status != null ? "AND u.status = ? " : "")
+                   + "ORDER BY u.user_id ";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            ps.setObject(paramIndex++, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(paramIndex++, userName != null ? "%" + userName + "%" : null);
+            ps.setObject(paramIndex++, email != null ? "%" + email + "%" : null);
+            ps.setObject(paramIndex++, email != null ? "%" + email + "%" : null);
+            ps.setObject(paramIndex++, phone != null ? "%" + phone + "%" : null);
+            ps.setObject(paramIndex++, phone != null ? "%" + phone + "%" : null);
+            
+            if (status != null) {
+                ps.setBoolean(paramIndex++, status);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    StaffHieu staff = new StaffHieu(
+                        rs.getInt("user_id"),
+                        rs.getInt("role_id"),
+                        rs.getString("user_name"),
+                        rs.getString("email"),
+                        rs.getString("phone_number"),
+                        rs.getBoolean("status")
+                    );
+
+                    staffList.add(staff);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
+
+    public void updateStaffStatus(int id, boolean status) {
+        String sql = "  update [User]\n"
+                + "  set status = ?\n"
+                + "  where user_id =?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, status);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+        }
+    }
+
+    public StaffHieu getStaffById(int id) {
+        StaffHieu staff = null;
+        String sql = "SELECT "
+                + "    u.user_id, "
+                + "    u.role_id, "
+                + "    u.user_name, "
+                + "    u.full_name, "
+                + "    u.email, "
+                + "    u.phone_number, "
+                + "    u.status, "
+                + "    u.gender_id "
+                + "FROM [User] u "
+                + "LEFT JOIN [Address] a ON u.user_id = a.user_id "
+                + "WHERE u.role_id IN (3,4) AND u.user_id = ?"; // Sửa lại điều kiện role_id
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    staff = new StaffHieu(
+                            rs.getInt("user_id"),
+                            rs.getInt("role_id"),
+                            rs.getString("user_name"),
+                            rs.getString("email"),
+                            rs.getString("phone_number"),
+                            rs.getBoolean("status")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staff;
+    }
 
     public List<StaffHieu> getAllStaff() {
         List<StaffHieu> staffs = new ArrayList<>();
@@ -38,6 +178,7 @@ public class UserDAO extends DBContext {
         }
         return staffs;
     }
+
     public List<StaffHieu> getAllStaffPage(int index, int size) {
         List<StaffHieu> staffs = new ArrayList<>();
         int offset = (index - 1) * size;
@@ -334,11 +475,4 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        UserHieu user = new UserHieu("admin", "admin", "$2a$10$D1KlmGpruxif2dJyBHRz9ed.Y9UByop8SR.YZ9xLStV6iihzKcl1S", "0988738872", "duonghieu294@gmail.com", 1, 1);
-        UserDAO dao = new UserDAO();
-        dao.insert(user);
-    }
-
 }
