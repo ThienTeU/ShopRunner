@@ -42,32 +42,26 @@ public class AddProductPriceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        int product_id = Integer.parseInt(request.getParameter("product_id"));
+        int color_id = Integer.parseInt(request.getParameter("color_id"));
+        int price = Integer.parseInt(request.getParameter("price"));
         try {
             InsertProductDAO dao = new InsertProductDAO();
             ProductDAO dao2 = new ProductDAO();
-            int product_id = Integer.parseInt(request.getParameter("product_id"));
-            int color_id = Integer.parseInt(request.getParameter("color_id"));
-            int price = Integer.parseInt(request.getParameter("price"));
-            if (!dao.isExistedProductId(product_id)) {
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Product id không hợp lệ hoặc không tồn tại!'); window.location='AddProductPriceServlet';</script>");
-                return;
-            }
-            if(dao.isColorExistsForProduct(product_id, color_id)){
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Màu này đã tồn tại!'); window.location='AddProductPriceServlet';</script>");
-                return;
-            }
+
             int productprice_id = dao.addProductPrice(product_id, color_id, price);
-            List<Size> listSize = dao2.getAllSizes();
-
-            request.getSession().setAttribute("listSize", listSize);
+            request.setAttribute("color_id", color_id);
             request.setAttribute("productprice_id", productprice_id);
-            request.getRequestDispatcher("NgocHieu/AddProductQuantityJSP.jsp").forward(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(AddProductPriceServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace(); // In stack trace đầy đủ
+            // Hoặc log lỗi chi tiết
+            Logger.getLogger(AddProductPriceServlet.class.getName()).log(Level.SEVERE, "Chi tiết lỗi: ", e);
+            // Trả về response lỗi
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Lỗi: " + e.getMessage());
+        }
+        request.getRequestDispatcher("NgocHieu/AddProductQuantityJSP.jsp").forward(request, response);
     }
 
     @Override

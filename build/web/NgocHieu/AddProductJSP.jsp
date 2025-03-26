@@ -1,187 +1,155 @@
-<!DOCTYPE html>
-<html>
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>ADD PRODUCT</title>
-    <style>
-        #dropArea {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            align-items: center;
-            cursor: pointer;
-            width: 500px;
-            height: 300px;
-        }
-        .preview-container {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-        .preview-item {
-            position: relative;
-            display: inline-block;
-        }
-        .preview-item img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: red;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            font-size: 12px;
-            line-height: 18px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Add Product</h1>
-    <form action="${pageContext.request.contextPath}/AddProductServlet" method="POST" enctype="multipart/form-data">
-        <table>
-            <tbody>
-                
-                <tr>
-                    <td><label>Product Name:</label></td>
-                    <td><input type="text" name="product_name" required></td>
-                </tr>
-                <tr>
-                    <td><label>Thumbnail:</label></td>
-                    <td>
-                        <input type="file" name="thumbnail" id="fileInput" multiple>
-                        <div id="dropArea">
-                            <p>Tha anh vao & <span id="browse">Chon File</span></p>
-                        </div>
-                        <div class="preview-container" id="previewContainer"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Description:</label></td>
-                    <td><textarea name="description" rows="5" cols="20" required></textarea></td>
-                </tr>
-                <tr>
-                    <td><label>Category:</label></td>
-                    <td>
-                        <select name="category_id" required>
-                            <c:forEach items="${listCategory}" var="category">
-                                <c:set var="found" value="false"></c:set>
-                                <c:forEach items="${listCategory}" var="car2">
-                                    <c:if test="${category.category_id == car2.parent_id}">
-                                        <c:set var="found" value="true"></c:set>
-                                    </c:if>
-                                </c:forEach>
-                                <c:if test="${found == false}">
-                                    <option value="${category.category_id}">${category.name}</option>
-                                </c:if>                      
-                            </c:forEach>
-                        </select>
-                    </td>
-                </tr>     
-                <tr>
-                    <td><label>Discount:</label></td>
-                    <td><input type="text" name="discount" value="0" min="0" max="99" required></td>
-                </tr>
-                <tr>
-                    <input type="hidden" name="status" value="1">
-                </tr>
-                <tr>
-                    <td><button type="submit">Th�m Product</button></td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let dropArea = document.getElementById("dropArea");
-            let fileInput = document.getElementById("fileInput");
-            let browseButton = document.getElementById("browse");
-            let previewContainer = document.getElementById("previewContainer");
+<h1 style="text-align: center; font-size: 28px; color: #333;">Thêm Sản Phẩm</h1>
+<form  action="${pageContext.request.contextPath}/AddProductServlet" method="POST" enctype="multipart/form-data" 
+       style="width: 100%; padding: 20px; border-radius: 8px; background: #f8f9fa; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
 
-            function updatePreview(files) {
-                previewContainer.innerHTML = "";
-                Array.from(files).forEach((file, index) => {
-                    let reader = new FileReader();
-                    reader.onload = function (e) {
-                        let previewItem = document.createElement("div");
-                        previewItem.classList.add("preview-item");
+    <table style="width: 100%;">
+        <tbody>
+            <tr>
+                <td><label style="font-weight: bold;">Tên sản phẩm:</label></td>
+                <td><input type="text" name="product_name" required 
+                           style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></td>
+            </tr>
 
-                        let img = document.createElement("img");
-                        img.src = e.target.result;
-                        previewItem.appendChild(img);
+            <tr>
+                <td><label style="font-weight: bold;">Ảnh:</label></td>
+                <td>
+                    <input type="file" name="thumbnail" id="fileInput" required 
+                           style="display: none;">
+                    <div id="dropArea" 
+                         style="border: 2px dashed #007bff; padding: 20px; text-align: center; cursor: pointer; width: 100%; height: 250px;
+                         background: #e9f5ff; display: flex; align-items: center; justify-content: center; flex-direction: column;
+                         border-radius: 8px; font-weight: bold; color: #007bff;">
+                        <p>Kéo & Thả hoặc <span id="browse" style="color: red; text-decoration: underline; cursor: pointer;">Chọn file</span></p>
+                    </div>
+                    <div id="previewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
+                </td>
+            </tr>
 
-                        let deleteBtn = document.createElement("button");
-                        deleteBtn.innerText = "�";
-                        deleteBtn.classList.add("delete-btn");
-                        deleteBtn.onclick = function () {
-                            removeImage(index);
-                        };
-                        previewItem.appendChild(deleteBtn);
+            <tr>
+                <td><label style="font-weight: bold;">Mô tả:</label></td>
+                <td><textarea name="description" rows="4" required 
+                              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea></td>
+            </tr>
 
-                        previewContainer.appendChild(previewItem);
+            <tr>
+                <td><label style="font-weight: bold;">Danh mục:</label></td>
+                <td>
+                    <select id="category_id" name="category_id" required 
+                            style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <c:forEach items="${listCategory}" var="category">
+                            <option value="${category.category_id}">${category.name}</option>
+                        </c:forEach>
+                    </select>
+                </td>
+            </tr>     
+
+            <tr>
+                <td><label style="font-weight: bold;">Giảm giá:</label></td>
+                <td><input type="number" name="discount" min="0" max="99" required 
+                           style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></td>
+            </tr>
+
+            <tr>
+        <input type="hidden" name="status" value="1">
+        </tr>
+
+        <tr>
+            <td colspan="2" style="text-align: center; padding-top: 15px;">
+                <button onclick="showAddProductPrice(event)" type="submit" 
+                        style="background-color: #28a745; color: white; padding: 10px 20px; border: none;
+                        border-radius: 4px; cursor: pointer; font-size: 16px;">
+                    Thêm Product
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let dropArea = document.getElementById("dropArea");
+        let fileInput = document.getElementById("fileInput");
+        let browseButton = document.getElementById("browse");
+        let previewContainer = document.getElementById("previewContainer");
+
+        function updatePreview(files) {
+            previewContainer.innerHTML = "";
+            Array.from(files).forEach((file, index) => {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let previewItem = document.createElement("div");
+                    previewItem.classList.add("preview-item");
+
+                    let img = document.createElement("img");
+                    img.src = e.target.result;
+                    previewItem.appendChild(img);
+
+                    let deleteBtn = document.createElement("button");
+                    deleteBtn.innerText = "×";
+                    deleteBtn.classList.add("delete-btn");
+                    deleteBtn.onclick = function () {
+                        removeImage(index);
                     };
-                    reader.readAsDataURL(file);
-                });
-            }
+                    previewItem.appendChild(deleteBtn);
 
-            function removeImage(index) {
-                let dataTransfer = new DataTransfer();
-                let files = Array.from(fileInput.files);
-                files.splice(index, 1);
-
-                files.forEach(file => dataTransfer.items.add(file));
-                fileInput.files = dataTransfer.files;
-                updatePreview(fileInput.files);
-            }
-
-            dropArea.addEventListener("dragover", (event) => {
-                event.preventDefault();
-                dropArea.classList.add("dragover");
+                    previewContainer.appendChild(previewItem);
+                };
+                reader.readAsDataURL(file);
             });
+        }
 
-            dropArea.addEventListener("dragleave", () => {
-                dropArea.classList.remove("dragover");
-            });
+        function removeImage(index) {
+            let dataTransfer = new DataTransfer();
+            let files = Array.from(fileInput.files);
+            files.splice(index, 1);
 
-            dropArea.addEventListener("drop", (event) => {
-                event.preventDefault();
-                dropArea.classList.remove("dragover");
+            files.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+            updatePreview(fileInput.files);
+        }
 
-                let newFiles = event.dataTransfer.files;
-                let dataTransfer = new DataTransfer();
-                
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    dataTransfer.items.add(fileInput.files[i]);
-                }
-                for (let i = 0; i < newFiles.length; i++) {
-                    dataTransfer.items.add(newFiles[i]);
-                }
-
-                fileInput.files = dataTransfer.files;
-                updatePreview(fileInput.files);
-            });
-
-            browseButton.addEventListener("click", () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener("change", () => {
-                updatePreview(fileInput.files);
-            });
+        dropArea.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropArea.classList.add("dragover");
         });
-    </script>
-</body>
-</html>
+
+        dropArea.addEventListener("dragleave", () => {
+            dropArea.classList.remove("dragover");
+        });
+
+        dropArea.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dropArea.classList.remove("dragover");
+
+            let newFiles = event.dataTransfer.files;
+            let dataTransfer = new DataTransfer();
+
+            for (let i = 0; i < fileInput.files.length; i++) {
+                dataTransfer.items.add(fileInput.files[i]);
+            }
+            for (let i = 0; i < newFiles.length; i++) {
+                dataTransfer.items.add(newFiles[i]);
+            }
+
+            fileInput.files = dataTransfer.files;
+            updatePreview(fileInput.files);
+        });
+
+        browseButton.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", () => {
+            updatePreview(fileInput.files);
+        });
+    });
+</script>
+
+

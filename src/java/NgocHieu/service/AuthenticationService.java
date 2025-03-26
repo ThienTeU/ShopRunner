@@ -30,7 +30,18 @@ import java.util.stream.Collectors;
 public class AuthenticationService extends HttpServlet{
     
     private static String SIGN_KEY = EnvConfig.get("SIGN_KEY");
-    
+    public static void main(String[] args) throws ParseException, JOSEException {
+        AuthenticationService auth = new AuthenticationService();
+        String email = auth.getEmailFromToken("eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJOZ29jSGlldS5jb20iLCJzdWIiOiJkdW9uZ2hpZXUyOTRAZ21haWwuY29tIiwicm9sZSI6IkFkbWluIiwiZXhwIjoxNzQyOTczMTE0LCJpYXQiOjE3NDI5NjIzMTR9.yKmHHO1yJubt8aCfp6ln5UvkXofmpM9KqEQLoF9wYUOBrop-2-rl0YCVYmO_GIjBMhqUicFQuKHsSL9vfzOMqA");
+        System.out.println(email);
+    }
+    public static String getEmailFromToken(String token) throws ParseException, JOSEException{
+        if(introspect(token)){
+            SignedJWT signedJwt = SignedJWT.parse(token);
+            return (String) signedJwt.getJWTClaimsSet().getClaim("sub");
+        }
+        return null;
+    }
     public String getUserRoleFromToken(String token) throws ParseException, JOSEException{
         if(introspect(token)){
             SignedJWT signedJwt = SignedJWT.parse(token);
@@ -71,7 +82,7 @@ public class AuthenticationService extends HttpServlet{
     }
     
     
-    public boolean introspect(String token)
+    public static boolean introspect(String token)
             throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGN_KEY.getBytes());
 

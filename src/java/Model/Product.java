@@ -7,7 +7,9 @@ package Model;
 import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -150,8 +152,16 @@ public class Product {
     }
 
     public String getCreated_at() {
-        return created_at.substring(0,10);
+    try {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+        
+        Date date = inputFormat.parse(created_at);
+        return outputFormat.format(date);
+    } catch (ParseException e) {
+        return created_at; // Trả về giá trị gốc nếu có lỗi
     }
+}
 
     public void setCreated_at(String created_at) {
         this.created_at = created_at;

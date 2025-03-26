@@ -28,7 +28,8 @@
         <link rel="stylesheet" href="NgocHieu/ProductDetail.css">
     </head>
 
-    <body>       
+    <body>     
+        <%@ include file="/model/header.jsp" %>
         <div class="row">
             <div class="col-md-8">
                 <div class="product-images">

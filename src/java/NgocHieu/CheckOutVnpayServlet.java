@@ -40,7 +40,6 @@ public class CheckOutVnpayServlet extends HttpServlet {
     private final ProductDAO productDAO = new ProductDAO();
     private final OrderDAO orderDAO = new OrderDAO();
     private final GHTKApiService ghtkService = new GHTKApiService();
-    private final HttpServletRequest request = null;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -64,7 +63,7 @@ public class CheckOutVnpayServlet extends HttpServlet {
                 return;
             }
 
-            int orderId = saveOrder(order);
+            int orderId = saveOrder(request,order);
             if (orderId <= 0) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to save order");
                 return;
@@ -72,7 +71,7 @@ public class CheckOutVnpayServlet extends HttpServlet {
 
             List<ProductGhtk> productGhtkList = createProductGhtkList(cartItems);
             saveOrderDetails(orderId, cartItems);
-            sendOrderToGHTK(orderId, productGhtkList, order);
+            sendOrderToGHTK(request,orderId, productGhtkList, order);
 
             response.sendRedirect("SendOrderToEmailServlet");
         } catch (SQLException ex) {
@@ -107,7 +106,7 @@ public class CheckOutVnpayServlet extends HttpServlet {
         return order;
     }
 
-    private int saveOrder(Orders order) throws SQLException {
+    private int saveOrder(HttpServletRequest request, Orders order) throws SQLException {
         int orderId = orderDAO.insertOrder(order);
         if (orderId > 0) {
             order.setOrder_id(orderId);
@@ -138,7 +137,7 @@ public class CheckOutVnpayServlet extends HttpServlet {
         }
     }
 
-    private void sendOrderToGHTK(int orderId, List<ProductGhtk> productGhtkList, Orders order) throws JsonProcessingException, IOException {
+    private void sendOrderToGHTK(HttpServletRequest request,int orderId, List<ProductGhtk> productGhtkList, Orders order) throws JsonProcessingException, IOException {
         OrderGhtk orderGhtk = (OrderGhtk) request.getSession().getAttribute("orderGhtk");
         if (orderGhtk != null) {
             orderGhtk.setId(String.valueOf(orderId));

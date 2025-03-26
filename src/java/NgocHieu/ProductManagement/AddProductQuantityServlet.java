@@ -36,42 +36,69 @@ public class AddProductQuantityServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        InsertProductDAO dao = new InsertProductDAO();
-
-        int productprice_id = Integer.parseInt(request.getParameter("productprice_id"));
         try {
-            if(!dao.isExistedProductPriceId(productprice_id)){
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Product Price id không hợp lệ hoặc không tồn tại!'); window.location='AddProductQuantityServlet';</script>");
+            
+            InsertProductDAO dao = new InsertProductDAO();
+
+            // Lấy và kiểm tra các tham số
+            String productprice_idStr = request.getParameter("productprice_id");
+            String quantityStr = request.getParameter("quantity");
+            String sizeIdsString = request.getParameter("size_id");
+
+            if (productprice_idStr == null || quantityStr == null || sizeIdsString == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.println("Thiếu thông tin cần thiết");
                 return;
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(AddProductQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String[] listSizeString = request.getParameterValues("size_id");
-        if (listSizeString == null) {
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().println("<script>alert('Vui lòng chọn size!'); window.location='AddProductQuantityServlet';</script>");
-            return;
-        }
-        List<Integer> listSizeId = new ArrayList<>();
 
-        if (listSizeString != null) {
-            for (String id : listSizeString) {
-                listSizeId.add(Integer.parseInt(id));
-            }
-        }
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        for (Integer size_id : listSizeId) {
-            try {
-                dao.addProductQuantity(productprice_id, size_id, quantity);
-            } catch (SQLException ex) {
-                Logger.getLogger(AddProductQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+            int productprice_id = Integer.parseInt(productprice_idStr);
+            int quantity = Integer.parseInt(quantityStr);
 
-        request.setAttribute("productprice_id", productprice_id);
-        request.getRequestDispatcher("NgocHieu/UploadImgJSP.jsp").forward(request, response);
+            // Xử lý danh sách size
+            List<Integer> listSizeId = new ArrayList<>();
+            if (!sizeIdsString.isEmpty()) {
+                String[] listSizeString = sizeIdsString.split(",");
+                for (String id : listSizeString) {
+                    listSizeId.add(Integer.parseInt(id.trim()));
+                }
+            }
+
+            // Kiểm tra danh sách size
+            if (listSizeId.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.println("Vui lòng chọn ít nhất một kích thước");
+                return;
+            }
+
+            // Thêm số lượng cho từng size
+            boolean success = true;
+            for (Integer size_id : listSizeId) {
+                try {
+                    dao.addProductQuantity(productprice_id, size_id, quantity);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AddProductQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    success = false;
+                    break;
+                }
+            }
+
+            if (!success) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.println("Lỗi khi thêm số lượng sản phẩm");
+                return;
+            }
+
+            // Nếu thành công, forward đến trang upload ảnh
+            request.setAttribute("productprice_id", productprice_id);
+            request.getRequestDispatcher("NgocHieu/UploadImgJSP.jsp").forward(request, response);
+
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.println("Dữ liệu không hợp lệ");
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.println("Có lỗi xảy ra: " + e.getMessage());
+        }
     }
 
     @Override
