@@ -1,5 +1,7 @@
 package HieuPTM;
 
+import DAL.StaffDAOHieu;
+import Model.StaffHieu;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -7,72 +9,87 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-/**
- *
- * @author ASUS
- */
-@WebServlet(name="StaffAdd", urlPatterns={"/StaffAdd"})
+@WebServlet(name = "StaffAdd", urlPatterns = {"/StaffAdd"})
 public class StaffAdd extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet StaffAdd</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet StaffAdd at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String userName = request.getParameter("userName");
+        String fullName = request.getParameter("fullName");
+        String email = request.getParameter("email");
+        String phoneNumber = request.getParameter("phoneNumber");
+        boolean status = "1".equals(request.getParameter("status"));
+        int gender = Integer.parseInt(request.getParameter("gender"));
+        int roleId = Integer.parseInt(request.getParameter("role"));
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        String password = "12345678";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        StaffHieu staff = new StaffHieu(userName, fullName, email, encodedPassword, phoneNumber, status, gender);
+        StaffDAOHieu dao = new StaffDAOHieu();
+        List<StaffHieu> listStaff = dao.getAllStaff();
+        List<String> errors = new ArrayList<>();
+        request.setAttribute("staff", staff);
+
+        for (StaffHieu sta : listStaff) {
+            if (sta.getEmail().equals(email)) {
+                errors.add("Email đã tồn tại");
+            }
+            if (sta.getPhoneNumber().equals(phoneNumber)) {
+                errors.add("Số điện thoại đã tồn tại");
+            }
+            if (sta.getUserName().equals(userName)) {
+                errors.add("Tên tài khoản đã tồn tại");
+            }
+        }
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.setAttribute("staff", staff);
+            //request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+            return;
+        }
+
+        String result = dao.addStaff(staff);
+        if ("Thêm nhân viên thành công!".equals(result)) {
+            request.setAttribute("success", "Thêm thành công!");
+        } else {
+            request.setAttribute("error", result);
+        }
+
+        request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
+    
+    public static void main(String[] args) {
+        StaffDAOHieu dao = new StaffDAOHieu();
+        StaffHieu staff = new StaffHieu("sv", "sv", "sv@36.com", "1", "0931338288", true, 1);
+                //userName, fullName, email, encodedPassword, phoneNumber, status, gender
+        dao.addStaff(staff);
+        List<StaffHieu> listStaff = dao.getAllStaff();
+        for(StaffHieu a : listStaff){
+            System.out.println(a.toString());
+        }
+    }
 }

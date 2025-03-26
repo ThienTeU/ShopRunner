@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAL;
 
 import HieuPTM.model.UserHieu;
@@ -15,6 +11,73 @@ import java.util.List;
 
 @WebServlet(name = "UserDAO", urlPatterns = {"/UserDAO"})
 public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
+    
+    public static void main(String[] args) {
+        
+    }
+    
+    public String addStaff(StaffHieu staff) {
+    if (checkUserNameDuplicate(staff.getUserName())) {
+        return "Tên đăng nhập đã tồn tại!";
+    }
+    if (checkEmailDuplicate(staff.getEmail())) {
+        return "Email đã tồn tại!";
+    }
+    if (checkPhoneDuplicate(staff.getPhoneNumber())) {
+        return "Số điện thoại đã tồn tại!";
+    }
+
+    String sql = "INSERT INTO [User] (role_id, user_name, full_name, email, password, phone_number, status, gender_id) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, staff.getRoleId());
+        ps.setString(2, staff.getUserName());
+        ps.setString(3, staff.getFullName());
+        ps.setString(4, staff.getEmail());
+        ps.setString(5, staff.getPassword()); // Đảm bảo đã mã hóa trước khi truyền vào
+        ps.setString(6, staff.getPhoneNumber());
+        ps.setBoolean(7, staff.isStatus());
+        ps.setInt(8, staff.getGenderId());
+
+        int rows = ps.executeUpdate();
+        return rows > 0 ? "Thêm nhân viên thành công!" : "Thêm nhân viên thất bại!";
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return "Lỗi: " + e.getMessage();
+    }
+}
+
+    
+//    public String addStaff(StaffHieu staff) {
+//    if (checkUserNameDuplicate(staff.getUserName())) {
+//        return "Tên đăng nhập đã tồn tại!";
+//    }
+//    if (checkEmailDuplicate(staff.getEmail())) {
+//        return "Email đã tồn tại!";
+//    }
+//            if (checkPhoneDuplicate(staff.getPhoneNumber())) {
+//            return "Số điện thoại đã tồn tại!";
+//        }
+//
+//    String sql = "INSERT INTO [User] (role_id, user_name, email, phone_number, status, gender_id) "
+//               + "VALUES (?, ?, ?, ?, ?, ?)";
+//
+//    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+//        ps.setInt(1, staff.getRoleId());
+//        ps.setString(2, staff.getUserName());
+//        ps.setString(3, staff.getEmail());
+//        ps.setString(4, staff.getPhoneNumber());
+//        ps.setBoolean(5, staff.isStatus());
+//        ps.setInt(6, staff.getGenderId());
+//
+//        int rows = ps.executeUpdate();
+//        return rows > 0 ? "Thêm nhân viên thành công!" : "Thêm nhân viên thất bại!";
+//    } catch (SQLException e) {
+//        return "Lỗi: " + e.getMessage();
+//    }
+//}
+
     
     public List<StaffHieu> searchStaffPage(String userName, String email, String phone, Boolean status, int offset, int size) {
         List<StaffHieu> staffList = new ArrayList<>();
@@ -346,6 +409,19 @@ public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
         return false;
     }
 
+        public boolean checkPhoneDuplicate(String phone) {
+        String sql = "SELECT 1 FROM [User] WHERE phone_number = ? AND [status] = 1";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, phone);
+            try (ResultSet rs = st.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi kiểm tra số điện thoại: " + e);
+        }
+        return false;
+    }
+    
     // Kiểm tra email trùng
     public boolean checkEmailDuplicate(String email) {
         String sql = "SELECT 1 FROM [User] WHERE email = ? AND [status] = 1";

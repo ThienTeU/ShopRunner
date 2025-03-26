@@ -49,7 +49,7 @@
 
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Thêm khách hàng</button>
-                <a href="customerlist" class="btn btn-secondary">Hủy</a>
+                <a href="customerlist" class="btn btn-secondary"></a>
             </div>
         </form>
 
