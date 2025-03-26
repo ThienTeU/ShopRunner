@@ -65,6 +65,8 @@ public class CustomerSearch extends HttpServlet {
         }
         int offset = (index - 1) * size;
         List<UserTuan> customers = dao.searchUsers(userName, email, phone, status, offset, size);
+        List<UserTuan> orders = dao.getTotal();
+        request.setAttribute("orders", orders);
         request.setAttribute("check", "search");
         request.setAttribute("end", end);
         request.setAttribute("customers", customers);

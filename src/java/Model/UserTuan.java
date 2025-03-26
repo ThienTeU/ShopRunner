@@ -15,6 +15,30 @@ public class UserTuan {
     private int genderId;
     private String createdAt;
     private List<AddressTuan> addresses;
+    private int totalOrder;
+    private int totalPrice;
+
+    public UserTuan(int userId, int totalOrder, int totalPrice) {
+        this.userId = userId;
+        this.totalOrder = totalOrder;
+        this.totalPrice = totalPrice;
+    }
+
+    public int getTotalOrder() {
+        return totalOrder;
+    }
+
+    public void setTotalOrder(int totalOrder) {
+        this.totalOrder = totalOrder;
+    }
+
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
 
     public UserTuan() {
     }

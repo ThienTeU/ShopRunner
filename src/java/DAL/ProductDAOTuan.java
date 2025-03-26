@@ -15,22 +15,191 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
+import java.util.AbstractList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ProductDAOTuan extends DBContext {
 
     public static void main(String[] args) {
         ProductDAOTuan dao = new ProductDAOTuan();
-        UserTuan customer = new UserTuan(2, "tuan", "tuan@gma", "123", "0821441", true, 1);
-        System.out.println(dao.addCustomer(customer));
+//        UserTuan customer = new UserTuan(2, "tuan", "tuan@gma", "123", "0821441", true, 1);
+//        System.out.println(dao.addCustomer(customer));
+//        List<Orders> test = dao.getOrderByDate("2024-03-01", "2025-03-26");
+//        for (Orders o : test) {
+//            System.out.println(o.toString());
+//        }
+
+        Map<String, Integer> revenueMap = dao.getProductReviews("2024-03-01", "2025-03-26");
+        revenueMap.forEach((date, revenue) -> {
+            System.out.println("Date: " + date + ", Revenue: " + revenue);
+        });
+
     }
-    
-    public int countProduct(){
-        int count = 0;
-        String sql = "select count(*) from [product]";
-        
-        return count;
+
+    public List<Feedback> getAllFeedback() {
+        List<Feedback> list = new ArrayList<>();
+        String sql = "select fb.*, fr.reply_content, u.user_name, p.product_name\n"
+                + "from Feedback fb\n"
+                + "left join FeedbackReply fr on fb.feedback_id=fr.feedback_id\n"
+                + "join [User] u on u.email = fb.email\n"
+                + "join [Product] p on p.product_id = fb.product_id";
+        return list;
+    }
+
+    public Map<String, Integer> getProductReviews(String startDate, String endDate) {
+        Map<String, Integer> reviewStats = new LinkedHashMap<>();
+        String sql = "SELECT rating, COUNT(*) AS Total FROM Feedback "
+                + "WHERE created_at BETWEEN ? AND ? "
+                + "GROUP BY rating";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reviewStats.put(rs.getString("Rating") + " sao", rs.getInt("Total"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return reviewStats;
+    }
+
+    public Map<String, Integer> getProductViews(String startDate, String endDate) {
+        Map<String, Integer> customerStats = new LinkedHashMap<>();
+        String sql = "SELECT p.product_name, pv.[view]\n"
+                + "FROM Product p\n"
+                + "JOIN ProductView pv ON p.product_id = pv.product_id\n"
+                + "where pv.viewed_at BETWEEN ? AND ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    customerStats.put(rs.getString("role_name"), rs.getInt("Total"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customerStats;
+    }
+
+    public Map<String, Integer> getCustomerAnalysis(String startDate, String endDate) {
+        Map<String, Integer> customerStats = new LinkedHashMap<>();
+        String sql = "SELECT r.role_name, COUNT(*) AS Total\n"
+                + "FROM [User] u\n"
+                + "JOIN Role r ON u.role_id = r.role_id\n"
+                + "WHERE u.created_at BETWEEN ? AND ?\n"
+                + "GROUP BY r.role_name, u.role_id\n"
+                + "ORDER BY Total DESC;";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    customerStats.put(rs.getString("role_name"), rs.getInt("Total"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customerStats;
+    }
+
+    public Map<String, Integer> getTopProducts(String startDate, String endDate) {
+        Map<String, Integer> topProducts = new LinkedHashMap<>();
+        String sql = "SELECT TOP 5 p.product_name, SUM(od.quantity) AS TotalSold\n"
+                + "FROM OrderDetails od\n"
+                + "JOIN Product p ON od.Product_id = p.product_id\n"
+                + "JOIN Orders o ON od.order_id = o.order_id\n"
+                + "WHERE order_date BETWEEN ? AND ?\n"
+                + "GROUP BY p.product_name\n"
+                + "ORDER BY TotalSold DESC;";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    topProducts.put(rs.getString("product_name"), rs.getInt("TotalSold"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return topProducts;
+    }
+
+    public Map<String, Double> getRevenueByDate(String startDate, String endDate) {
+        Map<String, Double> revenueData = new LinkedHashMap<>();
+        String sql = "SELECT order_date, SUM(total_price) AS Revenue "
+                + "FROM Orders WHERE order_date BETWEEN ? AND ? "
+                + "GROUP BY order_date";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    revenueData.put(rs.getString("order_date"), rs.getDouble("Revenue"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return revenueData;
+    }
+
+    public List<Orders> getOrderByDate(String startDate, String endDate) {
+        List<Orders> orders = new ArrayList<Orders>();
+        String sql = "select * from Orders WHERE order_date BETWEEN ? AND ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    orders.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public List<Orders> getAllOrder() {
+        List<Orders> list = new ArrayList<Orders>();
+        String sql = "select*from [Orders]";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public AddressTuan getCustomerAddressById(int id) {
@@ -55,6 +224,32 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
         return address;
+    }
+
+    public List<UserTuan> getTotal() {
+        List<UserTuan> orders = new ArrayList<>();
+        String sql = "SELECT \n"
+                + "    u.user_id, \n"
+                + "    COUNT( o.order_id) AS TotalOrder, \n"
+                + "    SUM(o.total_price) AS TotalPrice\n"
+                + "FROM [User] u\n"
+                + "left JOIN [Orders] o ON u.email = o.email\n"
+                + "where role_id=2\n"
+                + "GROUP BY u.user_id;";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    UserTuan order = new UserTuan(
+                            rs.getInt("user_id"),
+                            rs.getInt("TotalOrder"),
+                            rs.getInt("TotalPrice"));
+                    orders.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
     }
 
     public void updateCustomerAddress(AddressTuan address) {
@@ -115,16 +310,9 @@ public class ProductDAOTuan extends DBContext {
 
     public int addCustomerAddress(AddressTuan address) {
         int id = -1;
-        String sql = "INSERT INTO [dbo].[Address]\n"
-                + "           ([user_id]\n"
-                + "           ,[name]\n"
-                + "           ,[phone]\n"
-                + "           ,[city]\n"
-                + "           ,[district]\n"
-                + "           ,[ward]\n"
-                + "           ,[street])\n"
-                + "     VALUES\n"
-                + "           (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO [dbo].[Address] "
+                + "([user_id], name, phone, city, district, ward, street) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, address.getUserId());
             ps.setString(2, address.getName());
@@ -133,8 +321,7 @@ public class ProductDAOTuan extends DBContext {
             ps.setString(5, address.getDistrict());
             ps.setString(6, address.getWard());
             ps.setString(7, address.getStreet());
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows > 0) {
+            if (ps.executeUpdate() > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         id = rs.getInt(1);
@@ -142,6 +329,7 @@ public class ProductDAOTuan extends DBContext {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return id;
     }
@@ -242,18 +430,26 @@ public class ProductDAOTuan extends DBContext {
 
     public List<UserTuan> searchUsers(String userName, String email, String phone, Boolean status, int offset, int size) {
         List<UserTuan> userList = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, "
-                + "u.gender_id, a.address_id, a.name AS address_name, a.phone AS address_phone, "
-                + "a.city, a.district, a.ward, a.street "
-                + "FROM [User] u "
-                + "LEFT JOIN [Address] a ON u.user_id = a.user_id "
-                + "WHERE u.role_id = 2 "
-                + "AND (? IS NULL OR u.user_name LIKE ?) "
-                + "AND (? IS NULL OR u.email LIKE ?) "
-                + "AND (? IS NULL OR u.phone_number LIKE ?) "
-                + "AND (? IS NULL OR u.status = ?) "
-                + "ORDER BY u.user_id "
-                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "WITH UserWithAddress AS (\n"
+                + "    SELECT \n"
+                + "        u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, u.gender_id,\n"
+                + "        a.address_id, a.name AS address_name, a.phone AS address_phone, \n"
+                + "        a.city, a.district, a.ward, a.street,\n"
+                + "        ROW_NUMBER() OVER (PARTITION BY u.user_id ORDER BY a.address_id) AS rn\n"
+                + "    FROM [User] u\n"
+                + "    LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
+                + "    WHERE u.role_id = 2\n"
+                + ")\n"
+                + "SELECT user_id, role_id, user_name, email, phone_number, status, gender_id,\n"
+                + "       address_id, address_name, address_phone, city, district, ward, street\n"
+                + "FROM UserWithAddress\n"
+                + "WHERE rn = 1\n"
+                + "AND (? IS NULL OR user_name LIKE ?)\n"
+                + "AND (? IS NULL OR email LIKE ?)\n"
+                + "AND (? IS NULL OR phone_number LIKE ?)\n"
+                + "AND (? IS NULL OR status = ?)\n"
+                + "ORDER BY user_id\n"
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setObject(1, userName != null ? "%" + userName + "%" : null);
@@ -288,17 +484,25 @@ public class ProductDAOTuan extends DBContext {
 
     public List<UserTuan> searchUsers(String userName, String email, String phone, Boolean status) {
         List<UserTuan> userList = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, "
-                + "u.gender_id, a.address_id, a.name AS address_name, a.phone AS address_phone, "
-                + "a.city, a.district, a.ward, a.street "
-                + "FROM [User] u "
-                + "LEFT JOIN [Address] a ON u.user_id = a.user_id "
-                + "WHERE u.role_id = 2 "
-                + "AND (? IS NULL OR u.user_name LIKE ?) "
-                + "AND (? IS NULL OR u.email LIKE ?) "
-                + "AND (? IS NULL OR u.phone_number LIKE ?) "
-                + "AND (? IS NULL OR u.status = ?) "
-                + "ORDER BY u.user_id ";
+        String sql = "WITH UserWithAddress AS (\n"
+                + "    SELECT \n"
+                + "        u.user_id, u.role_id, u.user_name, u.email, u.phone_number, u.status, u.gender_id,\n"
+                + "        a.address_id, a.name AS address_name, a.phone AS address_phone, \n"
+                + "        a.city, a.district, a.ward, a.street,\n"
+                + "        ROW_NUMBER() OVER (PARTITION BY u.user_id ORDER BY a.address_id) AS rn\n"
+                + "    FROM [User] u\n"
+                + "    LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
+                + "    WHERE u.role_id = 2\n"
+                + ")\n"
+                + "SELECT user_id, role_id, user_name, email, phone_number, status, gender_id,\n"
+                + "       address_id, address_name, address_phone, city, district, ward, street\n"
+                + "FROM UserWithAddress\n"
+                + "WHERE rn = 1\n"
+                + "AND (? IS NULL OR user_name LIKE ?)\n"
+                + "AND (? IS NULL OR email LIKE ?)\n"
+                + "AND (? IS NULL OR phone_number LIKE ?)\n"
+                + "AND (? IS NULL OR status = ?)\n"
+                + "ORDER BY user_id\n";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setObject(1, userName != null ? "%" + userName + "%" : null);
@@ -356,24 +560,31 @@ public class ProductDAOTuan extends DBContext {
 
     public List<UserTuan> getAllCustomer() {
         List<UserTuan> customers = new ArrayList<>();
-        String sql = "SELECT \n"
-                + "    u.user_id, \n"
-                + "	u.role_id,\n"
-                + "    u.user_name, \n"
-                + "    u.email, \n"
-                + "    u.phone_number, \n"
-                + "    u.status, \n"
-                + "	u.gender_id,\n"
-                + "    a.address_id, \n"
-                + "    a.name AS address_name, \n"
-                + "    a.phone AS address_phone, \n"
-                + "    a.city, \n"
-                + "    a.district, \n"
-                + "    a.ward, \n"
-                + "    a.street\n"
-                + "FROM [User] u\n"
-                + "LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
-                + "WHERE u.role_id = 2;";
+        String sql = "WITH UserDistinct AS (\n"
+                + "    SELECT \n"
+                + "        u.user_id,\n"
+                + "        u.role_id,\n"
+                + "        u.user_name,\n"
+                + "        u.email,\n"
+                + "        u.phone_number,\n"
+                + "        u.status,\n"
+                + "        u.gender_id,\n"
+                + "        a.address_id,\n"
+                + "        a.name AS address_name,\n"
+                + "        a.phone AS address_phone,\n"
+                + "        a.city,\n"
+                + "        a.district,\n"
+                + "        a.ward,\n"
+                + "        a.street,\n"
+                + "        ROW_NUMBER() OVER (PARTITION BY u.user_id ORDER BY a.address_id) AS rn\n"
+                + "    FROM [User] u\n"
+                + "    LEFT JOIN [Address] a ON u.user_id = a.user_id\n"
+                + "    WHERE u.role_id = 2\n"
+                + ")\n"
+                + "SELECT *\n"
+                + "FROM UserDistinct\n"
+                + "WHERE rn = 1\n"
+                + "ORDER BY user_id\n";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 UserTuan customer = new UserTuan();

@@ -31,11 +31,17 @@ public class AuthorizeFilter implements Filter {
 
     private static final List<String> publicUrls = Arrays.asList(
             "/",
+            "/ManhTuan/orderlist.jsp",
+            "/orderlist",
+            "/dashboard",
+            "/ManhTuan/marketingdashboard.jsp",
             "/home",
+            "/AddFeedbackServlet",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
             "/LoginControl",
             "/ManhTuan/customeraddressdetail.jsp",
+            "/ManhTuan/feedbackmanagement.jsp",
             "/customeradd.jsp",
             "/customeraddressedit",
             "/customeraddressadd",
