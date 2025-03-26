@@ -38,7 +38,7 @@ public class ProductDetailServlet extends HttpServlet {
         try {
             //UserDAO dao = new UserDAO();
             //User user = dao.getUserByEmail("admin@gmail.com");
-            User user = new User("duonghieu294@gmail.com","0923232332");
+            User user = new User("123@gmail.com","0923232332","0398874837");
             request.getSession().setAttribute("user", user);
             // Lấy product_id và color_id từ request (nếu có)
             int product_id = Integer.parseInt(request.getParameter("product_id"));
@@ -203,4 +203,7 @@ public class ProductDetailServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    public static void main(String[] args) {
+        
+    }
 }

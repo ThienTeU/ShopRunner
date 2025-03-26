@@ -5,148 +5,210 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Marketing Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
-    <body class="bg-light">
-        <div class="container mt-5">
-            <h2 class="mb-4">Marketing Dashboard</h2>
+    <body>
+        <div class="container-fluid">
+            <h1 class="my-4">Marketing Dashboard</h1>
 
-            <!-- Date Range & Filter -->
-            <div class="row mb-4">
+            <!-- Bộ lọc và tìm kiếm -->
+            <form action="dashboard" method="post" class="filter-section row mb-4">
                 <div class="col-md-3">
-                    <label for="startDate" class="form-label">Start Date:</label>
-                    <input type="date" id="startDate" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label for="endDate" class="form-label">End Date:</label>
-                    <input type="date" id="endDate" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label for="filterType" class="form-label">Filter:</label>
-                    <select id="filterType" class="form-select">
-                        <option value="day">Day</option>
-                        <option value="month">Month</option>
-                        <option value="year">Year</option>
+                    <label for="filter-type">Loại lọc:</label>
+                    <select id="filter-type" name="filter-type" class="form-select">
+                        <option value="day">Theo ngày</option>
+                        <option value="month">Theo tháng</option>
+                        <option value="year">Theo năm</option>
                     </select>
                 </div>
+                <div class="col-md-3">
+                    <label for="start-date">Ngày bắt đầu:</label>
+                    <input type="date" id="start-date" name="start-date" value="${start_date}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="end-date">Ngày kết thúc:</label>
+                    <input type="date" id="end-date" name="end-date" value="${end_date}" class="form-control">
+                </div>
                 <div class="col-md-3 d-flex align-items-end">
-                    <button class="btn btn-primary" onclick="updateData()">Apply</button>
+                    <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                </div>
+            </form>
+
+
+
+            <!-- Biểu đồ doanh thu, sản phẩm bán chạy, khách hàng, lượt xem, đánh giá -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>Doanh thu theo ngày</h5>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <div class="col-md-6">
+                    <h5>Sản phẩm bán chạy</h5>
+                    <canvas id="topProductsChart"></canvas>
                 </div>
             </div>
 
-            <!-- Summary Cards -->
-            <div class="row text-center">
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Products</h5>
-                            <p id="productCount" class="fs-3">120</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Customers</h5>
-                            <p id="customerCount" class="fs-3">230</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Feedbacks</h5>
-                            <p id="feedbackCount" class="fs-3">32</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Marketing Metrics -->
-            <div class="row text-center mt-4">
+            <div class="row mb-4">
                 <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Revenue</h5>
-                            <p id="revenue" class="fs-3">$7520.50</p>
-                        </div>
-                    </div>
+                    <h5>Phân tích khách hàng</h5>
+                    <canvas id="customerChart"></canvas>
                 </div>
+
                 <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Orders</h5>
-                            <p id="orderCount" class="fs-3">128</p>
-                        </div>
-                    </div>
+                    <h5>Lượt xem sản phẩm</h5>
+                    <canvas id="viewChart"></canvas>
                 </div>
+
                 <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Conversion Rate</h5>
-                            <p id="conversionRate" class="fs-3">5.83%</p>
-                        </div>
-                    </div>
+                    <h5>Đánh giá sản phẩm</h5>
+                    <canvas id="reviewChart"></canvas>
                 </div>
             </div>
 
-            <!-- Charts -->
-            <div class="mt-5">
-                <h4>New Customers Trend</h4>
-                <canvas id="customerTrendChart"></canvas>
-            </div>
-
-            <div class="mt-5">
-                <h4>Product Sales Trend</h4>
-                <canvas id="productSalesChart"></canvas>
-            </div>
-
-            <div class="mt-5">
-                <h4>Order Volume Trend</h4>
-                <canvas id="orderVolumeChart"></canvas>
-            </div>
+            <!-- Danh sách đơn hàng gần đây -->
+            <h3>Đơn hàng gần đây</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Email</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày đặt hàng</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    <c:forEach var="order" items="${orders}">
+                        <tr>
+                            <td>${order.order_id}</td>
+                            <td>${order.email}</td>
+                            <td>${order.total_price}</td>
+                            <td>${order.status}</td>
+                            <td>${order.order_date}</td>
+                            <td><a href="orderDetail?id=${order.order_id}" class="btn btn-info">Chi tiết</a></td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
         </div>
 
         <script>
-            const customerTrendChart = new Chart(document.getElementById('customerTrendChart'), {
+            const revenueLabels = [<c:forEach var="label" items="${revenueData.labels}">
+            '${label}'<c:if test="${not empty label}">,</c:if>
+            </c:forEach>
+];
+
+            const revenueData = [<c:forEach var="value" items="${revenueData.values}">
+                ${value}<c:if test="${not empty value}">,</c:if>
+            </c:forEach>
+];
+
+            const productNames = [<c:forEach var="name" items="${topProducts.names}">
+            '${name}'<c:if test="${not empty name}">,</c:if>
+            </c:forEach>
+];
+
+            const productCounts = [<c:forEach var="count" items="${topProducts.counts}">
+                ${count}<c:if test="${not empty count}">,</c:if>
+            </c:forEach>
+];
+
+            const customerTypes = [<c:forEach var="type" items="${customerStats.types}">
+            '${type}'<c:if test="${not empty type}">,</c:if>
+            </c:forEach>
+];
+
+            const customerCounts = [<c:forEach var="count" items="${customerStats.counts}">
+                ${count}<c:if test="${not empty count}">,</c:if>
+            </c:forEach>
+];
+
+            const viewLabels = [<c:forEach var="label" items="${viewStats.labels}">
+            '${label}'<c:if test="${not empty label}">,</c:if>
+            </c:forEach>
+];
+
+            const viewCounts = [<c:forEach var="count" items="${viewStats.counts}">
+                ${count}<c:if test="${not empty count}">,</c:if>
+            </c:forEach>
+];
+
+            const reviewLabels = [<c:forEach var="label" items="${reviewStats.labels}">
+            '${label}'<c:if test="${not empty label}">,</c:if>
+            </c:forEach>
+];
+
+            const reviewCounts = [<c:forEach var="count" items="${reviewStats.counts}">
+                ${count}<c:if test="${not empty count}">,</c:if>
+            </c:forEach>
+];
+
+            new Chart(document.getElementById('revenueChart'), {
                 type: 'line',
                 data: {
-                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    labels: revenueLabels,
                     datasets: [{
-                            label: 'New Customers',
-                            data: [12, 18, 9, 14, 20, 15, 22],
+                            label: 'Doanh thu (VND)',
+                            data: revenueData,
                             borderColor: 'rgb(75, 192, 192)',
-                            tension: 0.1
+                            tension: 0.3
                         }]
                 }
             });
 
-            const productSalesChart = new Chart(document.getElementById('productSalesChart'), {
+            new Chart(document.getElementById('topProductsChart'), {
                 type: 'bar',
                 data: {
-                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    labels: productNames,
                     datasets: [{
-                            label: 'Product Sales',
-                            data: [30, 25, 40, 50, 35, 45, 60],
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                            label: 'Số lượng bán',
+                            data: productCounts,
+                            backgroundColor: 'rgb(255, 99, 132)'
                         }]
                 }
             });
 
-            const orderVolumeChart = new Chart(document.getElementById('orderVolumeChart'), {
-                type: 'line',
+            new Chart(document.getElementById('customerChart'), {
+                type: 'pie',
                 data: {
-                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    labels: customerTypes,
                     datasets: [{
-                            label: 'Order Volume',
-                            data: [50, 60, 45, 70, 65, 75, 80],
-                            borderColor: 'rgb(255, 99, 132)',
-                            tension: 0.1
+                            label: 'Phân tích khách hàng',
+                            data: customerCounts,
+                            backgroundColor: ['#4caf50', '#2196f3', '#ff9800']
+                        }]
+                }
+            });
+
+            new Chart(document.getElementById('viewChart'), {
+                type: 'bar',
+                data: {
+                    labels: viewLabels,
+                    datasets: [{
+                            label: 'Lượt xem',
+                            data: viewCounts,
+                            backgroundColor: 'rgb(153, 102, 255)'
+                        }]
+                }
+            });
+
+            new Chart(document.getElementById('reviewChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: reviewLabels,
+                    datasets: [{
+                            label: 'Đánh giá sản phẩm',
+                            data: reviewCounts,
+                            backgroundColor: ['#4caf50', '#8bc34a', '#ffeb3b', '#ffc107', '#f44336']
                         }]
                 }
             });
         </script>
+
     </body>
 </html>

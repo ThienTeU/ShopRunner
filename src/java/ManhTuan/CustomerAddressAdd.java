@@ -6,6 +6,7 @@ package ManhTuan;
 
 import DAL.ProductDAOTuan;
 import Model.AddressTuan;
+import com.nimbusds.jose.crypto.impl.AAD;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -21,7 +22,6 @@ import java.util.List;
  */
 @WebServlet(name = "CustomerAddressAdd", urlPatterns = {"/customeraddressadd"})
 public class CustomerAddressAdd extends HttpServlet {
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -55,5 +55,15 @@ public class CustomerAddressAdd extends HttpServlet {
         return "Short description";
     }
 
-    
+    public static void main(String[] args) {
+        ProductDAOTuan dao = new ProductDAOTuan();
+        AddressTuan address = new AddressTuan(3, "tuan",
+                "0331338283", "Ha Noi", "Cau Giay", "Cau GIay", "Cau Giay");
+        dao.addCustomerAddress(address);
+                List<AddressTuan> addresses = dao.getCustomerAddressesById(3);
+                for(AddressTuan a : addresses){
+                    System.out.println(a.toString());
+                }
+    }
+
 }

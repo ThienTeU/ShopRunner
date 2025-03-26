@@ -16,8 +16,48 @@ public class Feedback {
     private int rating;
     private String create_at;
     private boolean status;
+    private String reply_content;
+    private String user_name;
+    private String product_name;
 
     public Feedback() {
+    }
+
+    public Feedback(int feedback_id, int product_id, String email, String feedback_content, int rating, String create_at, boolean status, String reply_content, String user_name, String product_name) {
+        this.feedback_id = feedback_id;
+        this.product_id = product_id;
+        this.email = email;
+        this.feedback_content = feedback_content;
+        this.rating = rating;
+        this.create_at = create_at;
+        this.status = status;
+        this.reply_content = reply_content;
+        this.user_name = user_name;
+        this.product_name = product_name;
+    }
+
+    public String getReply_content() {
+        return reply_content;
+    }
+
+    public void setReply_content(String reply_content) {
+        this.reply_content = reply_content;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String getProduct_name() {
+        return product_name;
+    }
+
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
     }
     
     public String getName(){

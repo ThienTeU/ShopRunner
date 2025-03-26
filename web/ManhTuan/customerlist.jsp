@@ -52,23 +52,57 @@
                 <th>Điện thoại</th>
                 <th>Giới tính</th>
                 <th>Trạng thái</th>
+                <th>Số đơn đã đặt</th>
+                <th>Tổng tiền</th>
                 <th>Lựa chọn</th>
             </tr>
+
             <c:forEach var="customer" items="${customers}">
                 <tr>
                     <td>${customer.userId}</td>
-                    <td><a href="customeraddressdetail?id=${customer.userId}" class="text-decoration-none">${customer.userName}</a></td>
+                    <td>
+                        <a href="customeraddressdetail?id=${customer.userId}" class="text-decoration-none">
+                            ${customer.userName}
+                        </a>
+                    </td>
                     <td>${customer.email}</td>
                     <td>${customer.phoneNumber}</td>
                     <td>
                         <c:choose>
                             <c:when test="${customer.genderId == 1}">Nam</c:when>
                             <c:when test="${customer.genderId == 2}">Nữ</c:when>
+                            <c:otherwise>Khác</c:otherwise>
                         </c:choose>
                     </td>
                     <td>${customer.status ? "Hoạt động" : "Bị khóa"}</td>
+
+                    <!-- Hiển thị số đơn hàng đã đặt -->
                     <td>
-                        <a href="customeredit?id=${customer.userId}">
+                        <c:set var="found" value="false" />
+                        <c:forEach var="order" items="${orders}">
+                            <c:if test="${order.userId == customer.userId}">
+                                ${order.totalOrder}
+                                <c:set var="found" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!found}">0</c:if>
+                        </td>
+
+                        <!-- Hiển thị tổng tiền -->
+                        <td>
+                        <c:set var="foundPrice" value="false" />
+                        <c:forEach var="order" items="${orders}">
+                            <c:if test="${order.userId == customer.userId}">
+                                ${order.totalPrice}
+                                <c:set var="foundPrice" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!foundPrice}">0</c:if>
+                        </td>
+
+                        <!-- Các lựa chọn: Sửa, Khóa/Mở khóa -->
+                        <td>
+                            <a href="customeredit?id=${customer.userId}">
                             <button class="edit-btn">Sửa</button>
                         </a>
                         <form action="changeStatus" method="post" style="display:inline;">
@@ -77,26 +111,13 @@
                                 ${customer.status ? "Khóa" : "Mở khóa"}
                             </button>
                         </form>
-                        <a href="url"></a>
                     </td>
                 </tr>
             </c:forEach>
         </table>
 
         <div class="pagination justify-content-center">
-            <!-- Nút Trước -->
-            <c:if test="${index > 1}">
-                <c:if test="${check eq 'list'}">
-                    <a class="page-link" href="customerlist?index=${index - 1}">Trước</a>
-                </c:if>
-                <c:if test="${check eq 'search'}">
-                    <a class="page-link" href="customersearch?index=${index - 1}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
-                        Trước
-                    </a>
-                </c:if>
-            </c:if>
 
-            <!-- Các số trang -->
             <c:forEach begin="1" end="${end}" var="i">
                 <c:if test="${check eq 'list'}">
                     <a class="page-link ${i eq index ? 'active' : ''}" href="customerlist?index=${i}">${i}</a>
@@ -108,17 +129,6 @@
                 </c:if>
             </c:forEach>
 
-            <!-- Nút Sau -->
-            <c:if test="${index < end}">
-                <c:if test="${check eq 'list'}">
-                    <a class="page-link" href="customerlist?index=${index + 1}">Sau</a>
-                </c:if>
-                <c:if test="${check eq 'search'}">
-                    <a class="page-link" href="customersearch?index=${index + 1}&userName=${param.userName}&email=${param.email}&phone=${param.phone}&status=${param.status}">
-                        Sau
-                    </a>
-                </c:if>
-            </c:if>
         </div>
 
 

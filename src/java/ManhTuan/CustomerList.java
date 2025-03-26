@@ -39,6 +39,8 @@ public class CustomerList extends HttpServlet {
             index = Integer.parseInt(request.getParameter("index"));
         }
         List<UserTuan> customers = dao.getAllCustomer(index, size);
+        List<UserTuan> orders = dao.getTotal();
+        request.setAttribute("orders", orders);
         request.setAttribute("check", "list");
         request.setAttribute("end", end);
         request.setAttribute("customers", customers);
