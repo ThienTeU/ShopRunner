@@ -56,7 +56,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="left-side">
-                                    <label class="form-label" style="color: #E57C23">Title</label>
+                                    <label class="form-label" style="color: #E57C23">Tiêu Đề</label>
                                     <textarea id="w3review" name="title" rows="4" cols="50" class="form-control col-3">${pdto.getTitle()}</textarea>
                                     <label class="form-label" style="color: #E57C23">Category</label>
                                     <select name="category" id="category" class="form-control col-4">
@@ -69,7 +69,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="right-side">
-                                    <label class="form-label" style="color: #E57C23">Banner</label>
+                                    <label class="form-label" style="color: #E57C23">Ảnh nền</label>
 
                                     <input type="file" value="" class="form-control col-3" name="banner" style="width: 80%; margin-bottom: .5rem; margin-top: .5rem">
                                     <img style="width: 12rem; margin: 0.2rem" src="images/Post/${pdto.getPostImg()}" alt="alt" id="img"/>
@@ -110,23 +110,23 @@
                                 var specialCharRegex = /[!@#$%^&*{}|<>]/;
 
                                 if (title === "" && description === "" ) {
-                                    alert("Please complete full informaton !!!");
+                                    alert("Vui lòng thêm thông tin bài viết !!!");
                                     return false;
                                 }
                                 if (specialCharRegex.test(title)) {
-                                    alert("Title cannot contain special characters!");
+                                    alert("Tiêu đề không được có kí tự đặc biệt!");
                                     return false;
                                 }
                                 if (title.trim().length === 0 || title.trim().length <= 6) {
-                                    alert("Title must not empty and longer than 6 characters!");
+                                    alert("Tiêu đề không được để trống hoặc dưới 6 kí tự!");
                                     return false;
                                 }
                                 if (banner === "") {
-                                    alert("Please choose image to add post !");
+                                    alert("Vui lòng thêm ảnh vào bài viết!");
                                     return false;
                                 }
                                 if (description.trim().length <= 20 || description.trim().length === 0 || description.trim().length === 0){
-                                    alert("Content must have more than 20 character and must not empty !!!");
+                                    alert("Bài viết không được dưới 20 kí tự !!!");
                                     return false;
                                 }
 

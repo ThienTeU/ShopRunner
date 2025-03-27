@@ -36,7 +36,8 @@ public class AuthorizeFilter implements Filter {
             //HieuPTM_STAFF
             "/LogOut",
             "/HieuPTM/StaffManage",
-
+            "/tableVoucher",
+            "/Charts",
             "/ManhTuan/orderlist.jsp",
             "/orderlist",
             "/dashboard",

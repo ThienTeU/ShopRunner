@@ -44,6 +44,31 @@ public class VoucherDAO extends DBcontext {
         }
         return lv;
     }
+    public String getVoucherCodeById(int voucherId) {
+    // SQL query to get VoucherCode by VoucherID
+    String sql = "SELECT VoucherCode " +
+                 "FROM [dbo].[Voucher] " +
+                 "WHERE VoucherID = ?";
+
+    try {
+        // Prepare the SQL statement
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, voucherId);
+        
+        // Execute the query and get the result
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getString("VoucherCode"); // Return the VoucherCode
+        }
+    } catch (Exception e) {
+        // Handle exceptions properly
+        e.printStackTrace();
+    }
+    
+    return null; // Return null if no VoucherCode found or any exception occurs
+}
+
+    
 
     public List<Voucher> getidVoucher(String id) {
         String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n"
@@ -92,6 +117,82 @@ public class VoucherDAO extends DBcontext {
         }
         return lv;
     }
+    public int getVoucherIdByCode(String voucherCode) {
+    // SQL query to get VoucherID by VoucherCode
+    String sql = "SELECT VoucherID " +
+                 "FROM [dbo].[Voucher] " +
+                 "WHERE VoucherCode = ?";
+
+    try {
+        // Prepare the SQL statement
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, voucherCode);
+        
+        // Execute the query and get the result
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("VoucherID"); // Return the VoucherID
+        }
+    } catch (Exception e) {
+        // Handle exceptions properly
+        e.printStackTrace();
+    }
+    
+    return -1; // Return -1 if no VoucherID found or any exception occurs
+}
+    
+public int getDiscountByVoucherCode(String voucherCode) {
+    // SQL query to get Discount by VoucherCode
+    String sql = "SELECT Discount " +
+                 "FROM [dbo].[Voucher] " +
+                 "WHERE VoucherCode = ?";
+
+    try {
+        // Prepare the SQL statement
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, voucherCode);
+        
+        // Execute the query and get the result
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("Discount"); // Return the Discount value
+        }
+    } catch (Exception e) {
+        // Handle exceptions properly
+        e.printStackTrace();
+    }
+    
+    return 1; // Return -1 if no Discount is found or any exception occurs
+}
+
+    
+    public boolean isVoucherValid(String voucherCode) {
+    // SQL query to check voucher validity
+    String sql = "SELECT COUNT(*) " +
+                 "FROM [dbo].[Voucher] " +
+                 "WHERE VoucherCode = ? " +
+                 "AND Quantity > 0 " +
+                 "AND GETDATE() BETWEEN DateStart AND DateEnd";
+
+    try {
+        // Prepare the SQL statement
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, voucherCode);
+        
+        // Execute the query and check if any valid rows exist
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            int count = rs.getInt(1);
+            return count > 0; // Return true if the voucher is valid, otherwise false
+        }
+    } catch (Exception e) {
+        // Handle exceptions properly
+        e.printStackTrace();
+    }
+    
+    return false; // Return false if any exception occurs or voucher is not valid
+}
+
     
     public List<Voucher> getDateVoucher(String name,String id) {
         String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n" +
@@ -238,6 +339,8 @@ public class VoucherDAO extends DBcontext {
     
     public static void main(String[] args) {
             VoucherDAO voucherDAO = new VoucherDAO();
-            voucherDAO.UpdateQuantityVoucher("BOGOCODE", "15");
+//            voucherDAO.UpdateQuantityVoucher("BOGOCODE", "15");
+System.out.println(voucherDAO.getDiscountByVoucherCode("1"));
+        System.out.println(voucherDAO.isVoucherValid("1"));
     }
 }
