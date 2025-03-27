@@ -97,7 +97,7 @@ public class AuthenticationService extends HttpServlet{
 
     public String loginAuthentication(User rawUser) throws SQLException{
         UserDAO dao = new UserDAO();
-        User user = dao.getUserByUsername(rawUser.getUsername());
+        User user = dao.getUserByUsername(rawUser.getUserName());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(rawUser.getPassword(), user.getPassword());

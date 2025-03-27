@@ -17,7 +17,7 @@ public class User {
     private String email;
     private String username;
 
-    public String getUsername() {
+    public String getUserName() {
         return username;
     }
 

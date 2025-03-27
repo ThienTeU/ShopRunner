@@ -34,6 +34,7 @@ public class AuthorizeFilter implements Filter {
 
             "/home",                        
             //HieuPTM_STAFF
+            "/LogOut",
             "/HieuPTM/StaffManage",
 
             "/ManhTuan/orderlist.jsp",

@@ -4,10 +4,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class UserHieu {
-    private String userName, fullName, password, phone, email, address;
-    private int genderID, roleID;
+    private String userName, fullName, password, phone, email, address, created_at;
+    private int genderID, roleID, userID;
     private Date birthDate;
+    private boolean status;
 
+    public UserHieu(String password, String phone, String email, String created_at, int genderID, int roleID, int userID, boolean status, String userName) {
+        this.password = password;
+        this.phone = phone;
+        this.email = email;
+        this.created_at = created_at;
+        this.genderID = genderID;
+        this.roleID = roleID;
+        this.userID = userID;
+        this.status = status;
+        this.userName = userName;
+    }
     public UserHieu() {}
 
     public UserHieu(String userName, String fullName, String password, String phone, String email, int genderID, int roleID) {
@@ -19,6 +31,8 @@ public class UserHieu {
         this.genderID = genderID;
         this.roleID = roleID;
     }
+    
+    
 
     // Constructor thêm đầy đủ thông tin
     public UserHieu(String userName, String fullName, String password, String phone, String email, int genderID, int roleID, String address, Date birthDate) {

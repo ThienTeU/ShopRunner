@@ -1,6 +1,8 @@
-package HieuPTM.controller;
+package HieuPTM.Controller;
 
 import HieuPTM.DBContext.DBContext;
+import HieuPTM.model.UserHieu;
+import NgocHieu.service.AuthenticationService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
@@ -25,12 +27,11 @@ public class ChangePassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String uid = request.getParameter("uid");
-        if (uid == null || uid.isEmpty()) {
+        UserHieu user = (UserHieu) request.getSession().getAttribute("user");
+        if (user == null) {
             response.sendRedirect(request.getContextPath() + "/LoginControl");
             return;
         }
-        request.setAttribute("uid", uid);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
         dispatcher.forward(request, response);
     }
@@ -38,12 +39,11 @@ public class ChangePassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String uid = request.getParameter("uid");
-        if (uid == null || uid.isEmpty()) {
+        UserHieu user = (UserHieu) request.getSession().getAttribute("user");
+        if (user == null) {
             response.sendRedirect(request.getContextPath() + "/LoginControl");
             return;
         }
-
         String oldPassword = request.getParameter("oldPassword");
         String newPassword = request.getParameter("newPassword");
         String confPassword = request.getParameter("confPassword");
@@ -52,7 +52,6 @@ public class ChangePassword extends HttpServlet {
         if (oldPassword == null || newPassword == null || confPassword == null ||
             oldPassword.isEmpty() || newPassword.isEmpty() || confPassword.isEmpty()) {
             request.setAttribute("status", "emptyField");
-            request.setAttribute("uid", uid);
             dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
             dispatcher.forward(request, response);
             return;
@@ -60,7 +59,6 @@ public class ChangePassword extends HttpServlet {
 
         if (!newPassword.equals(confPassword)) {
             request.setAttribute("status", "notMatch");
-            request.setAttribute("uid", uid);
             dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
             dispatcher.forward(request, response);
             return;
@@ -68,13 +66,13 @@ public class ChangePassword extends HttpServlet {
 
         if (!isValidPassword(newPassword)) {
             request.setAttribute("status", "invalidNewPassword");
-            request.setAttribute("uid", uid);
             dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
             dispatcher.forward(request, response);
             return;
         }
 
         try (Connection con = new DBContext().connection) {
+            String uid = user.getUserName();
             String sqlCheck = "SELECT password FROM [User] WHERE user_name = ?";
             try (PreparedStatement checkPst = con.prepareStatement(sqlCheck)) {
                 checkPst.setString(1, uid);
@@ -84,14 +82,12 @@ public class ChangePassword extends HttpServlet {
 
                         if (!encoder.matches(oldPassword, storedPassword)) {
                             request.setAttribute("status", "wrongOldPassword");
-                            request.setAttribute("uid", uid);
                             dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
                             dispatcher.forward(request, response);
                             return;
                         }
                     } else {
                         request.setAttribute("status", "userNotFound");
-                        request.setAttribute("uid", uid);
                         dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
                         dispatcher.forward(request, response);
                         return;
@@ -116,7 +112,6 @@ public class ChangePassword extends HttpServlet {
             request.setAttribute("status", "serverError");
         }
 
-        request.setAttribute("uid", uid);
         dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
         dispatcher.forward(request, response);
     }
