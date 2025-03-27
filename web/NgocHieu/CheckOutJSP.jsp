@@ -18,12 +18,14 @@
         <title>Checkout</title>
         <link rel="stylesheet" href="NgocHieu/CheckOutStyle.css">
     </head>
+    
     <body class="bg-light text-dark">
+            <%@ include file="/model/header.jsp" %>
         <c:if test="${cartItemsDTO.size() == 0 || cartItemsDTO == null }">
             <c:redirect url="CartDetailServlet"></c:redirect>
-        </c:if>
-        <%@ include file="/model/header.jsp" %>
-        <div class="container custom-container">
+        </c:if> 
+        
+        <div class="container custom-container" style="margin-top: 0; padding-top: 70px">
             <div class="text-center mb-4">
                 <Strong class="h2 font-weight-bold">THANH TOÁN</Strong>
                 <p class="text-muted"><a style="color: #6C757D; text-decoration: none" href="CartDetailServlet">(${sessionScope.cart.size()} các sản phẩm)</a> <span class="productPrice">${total}</span> </p>

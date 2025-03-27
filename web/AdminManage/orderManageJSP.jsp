@@ -66,8 +66,6 @@
                     <div class="bg-secondary text-center rounded p-4">
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <h6 class="mb-0">Orders </h6>
-
-                            <a href="AddProductServlet" class="btn btn-success">Add New Product <i class="bi bi-bag-plus-fill"></i></a>
                         </div>              
 
                         <div class="table-responsive">

@@ -47,13 +47,16 @@ public class ProductDAO extends DBContext {
     public List<Product> getProductsByPageSorted(int page, int pageSize, String sortType) throws SQLException {
         List<Product> productList = new ArrayList<>();
 
-        String orderBy = "created_at DESC";
+        String orderBy = "created_at ASC";
         if ("name".equals(sortType)) {
             orderBy = "product_name ASC";
         } else if ("status".equals(sortType)) {
             orderBy = "status DESC";
         } else if("view".equals(sortType)){
             orderBy = "pv.[view] DESC";
+        }
+        else if("date".equals(sortType)){
+            orderBy = "created_at DESC";
         }
 
         String query = "SELECT p.product_id, p.category_id, p.product_name, p.description, "
@@ -100,19 +103,16 @@ public class ProductDAO extends DBContext {
     public List<Product> searchProductsByNamePage(String keyword, int page, int pageSize, String sortType) throws SQLException {
         List<Product> productList = new ArrayList<>();
         // Xác định kiểu sắp xếp an toàn
-        String orderBy;
-        switch (sortType) {
-            case "name":
-                orderBy = "product_name ASC";
-                break;
-            case "status":
-                orderBy = "status DESC";
-                break;
-            case "view":
-                orderBy = "total_views DESC"; // Nếu sắp xếp theo view, đổi ORDER BY
-                break;
-            default:
-                orderBy = "created_at ASC"; // Mặc định sắp xếp theo ngày tạo
+        String orderBy = "created_at DESC";
+        if ("name".equals(sortType)) {
+            orderBy = "product_name ASC";
+        } else if ("status".equals(sortType)) {
+            orderBy = "status DESC";
+        } else if("view".equals(sortType)){
+            orderBy = "pv.[view] DESC";
+        }
+        else if("date".equals(sortType)){
+            orderBy = "created_at ASC";
         }
 
         // Tạo query chung
@@ -1030,5 +1030,47 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return products;
+    }
+
+    public boolean updateStatus(String productId, boolean status) throws SQLException {
+        String query = "UPDATE Product SET status = ? WHERE product_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setBoolean(1, !status); // Đảo ngược trạng thái hiện tại
+            ps.setString(2, productId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public boolean updatePrice(String productPriceId, double newPrice) throws SQLException {
+        String query = "UPDATE ProductPrice SET price = ? WHERE productprice_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setDouble(1, newPrice);
+            ps.setString(2, productPriceId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public boolean updateQuantity(String productQuantityId, int newQuantity) throws SQLException {
+        String query = "UPDATE ProductQuantity SET quantity = ? WHERE productquantity_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, newQuantity);
+            ps.setString(2, productQuantityId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

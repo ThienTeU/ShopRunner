@@ -96,7 +96,7 @@ body {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000; /* Đảm bảo nằm trên cùng */
+    z-index: 1000 !important; /* Đảm bảo nằm trên cùng */
     left: 0;
     top: 0;
     width: 100%;
@@ -109,6 +109,7 @@ body {
 
 /* Nội dung modal - cho phép cuộn khi có nhiều ảnh */
 .modal-content-wrapper {
+    z-index: 1000;
     max-width: 70%;
     max-height: 80%;
     background: white;
@@ -465,7 +466,6 @@ textarea:focus {
 }
 
 .thumbnail-slider {
-    z-index: -1 !important;
     width: 100%;
     max-width: 600px;
     margin-top: 10px;
@@ -476,18 +476,11 @@ textarea:focus {
 /* Ảnh thumbnail */
 .swiper-slide img {
     position: relative;
-    z-index: -1 !important;
     cursor: pointer;
     border-radius: 5px;
     transition: transform 0.3s ease;
     border: 2px solid transparent;
     object-fit: cover;
-}
-.swiper-slide{
-    z-index: -1 !important;
-}
-.swiper-wrapper{
-    z-index: -1 !important;
 }
 .swiper-slide img:hover {
     transform: scale(1.1);

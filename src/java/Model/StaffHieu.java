@@ -1,14 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
-/**
- *
- * @author tuan
- */
 public class StaffHieu {
+
     private int userId;
     private int roleId;
     private String userName;
@@ -19,6 +12,43 @@ public class StaffHieu {
     private boolean status;
     private int genderId;
     private String createdAt;
+
+    public StaffHieu() {
+    }
+
+    //role_id, user_name, email, phone_number, status, gender_id
+
+    public StaffHieu(int roleId, String userName, String email, String phoneNumber, boolean status, int genderId) {
+        this.roleId = roleId;
+        this.userName = userName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
+    
+    
+
+    public StaffHieu(String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId) {
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+    }
+    
+    public StaffHieu(String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId, int roleId) {
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+        this.roleId = roleId;
+    }
 
     public StaffHieu(int userId, int roleId, String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId, String createdAt) {
         this.userId = userId;
@@ -41,7 +71,7 @@ public class StaffHieu {
         this.phoneNumber = phoneNumber;
         this.status = status;
     }
-    
+
     public int getUserId() {
         return userId;
     }
@@ -93,7 +123,7 @@ public class StaffHieu {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-
+    
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -139,5 +169,4 @@ public class StaffHieu {
         sb.append('}');
         return sb.toString();
     }
-    
 }

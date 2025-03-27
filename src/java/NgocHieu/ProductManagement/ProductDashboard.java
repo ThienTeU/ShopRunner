@@ -28,8 +28,9 @@ public class ProductDashboard extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String searchKey = request.getParameter("searchKey"); // Lấy từ khóa tìm kiếm nếu có
-        String sortType = request.getParameter("sort"); // Lấy giá trị sắp xếp từ URL
+        String searchKey = request.getParameter("searchKey");
+        String sortType = request.getParameter("sort");
+        boolean isAjax = "true".equals(request.getParameter("ajax"));
         int page = 1;
         if (request.getParameter("page") != null) {
             page = Integer.parseInt(request.getParameter("page"));
@@ -41,11 +42,9 @@ public class ProductDashboard extends HttpServlet {
             int totalProducts;
             
             if (searchKey != null && !searchKey.trim().isEmpty()) {
-                // Nếu có từ khóa tìm kiếm
                 totalProducts = productDAO.getTotalProductsBySearch(searchKey);
                 paginatedList = productDAO.searchProductsByNamePage(searchKey, page, PAGE_SIZE, sortType);
             } else {
-                // Nếu không có từ khóa, lấy danh sách sản phẩm theo sắp xếp
                 totalProducts = productDAO.getTotalProducts();
                 paginatedList = productDAO.getProductsByPageSorted(page, PAGE_SIZE, sortType);
             }
@@ -58,11 +57,23 @@ public class ProductDashboard extends HttpServlet {
             request.setAttribute("sortType", sortType);
             request.setAttribute("searchKey", searchKey);
 
+            if (isAjax) {
+                // Nếu là request Ajax, chỉ trả về phần bảng sản phẩm
+                request.getRequestDispatcher("AdminManage/product-table-fragment.jsp").forward(request, response);
+            } else {
+                // Nếu không phải Ajax, trả về toàn bộ trang
+                request.getRequestDispatcher("AdminManage/productManageJSP.jsp").forward(request, response);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            if (isAjax) {
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+            } else {
+                throw new ServletException(e);
+            }
         }
-
-        request.getRequestDispatcher("AdminManage/productManageJSP.jsp").forward(request, response);
     }
 
     @Override

@@ -13,6 +13,8 @@ import Model.ProductQuantity;
 import Model.ProductView;
 import Model.Size;
 import Model.User;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -36,10 +38,7 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            //UserDAO dao = new UserDAO();
-            //User user = dao.getUserByEmail("admin@gmail.com");
-            User user = new User("123@gmail.com","0923232332","0398874837");
-            request.getSession().setAttribute("user", user);
+
             // Lấy product_id và color_id từ request (nếu có)
             int product_id = Integer.parseInt(request.getParameter("product_id"));
             String colorIdParam = request.getParameter("color_id");
@@ -57,28 +56,42 @@ public class ProductDetailServlet extends HttpServlet {
             //Thông tin feedback
             ProductDAO productDao = new ProductDAO();
             Product product = productDao.getProductById(product_id);
-            if(product.isStatus()){
+            if(product==null){
                 request.getRequestDispatcher("NgocHieu/handler/error.jsp").forward(request, response);
                 return;
             }
+            if (product.isStatus()) {
+                request.getRequestDispatcher("NgocHieu/handler/error.jsp").forward(request, response);
+                return;
+            }
+            UserDAO dao = new UserDAO();
             FeedbackDAO feedbackDao = new FeedbackDAO();
-            boolean checkFeedback = feedbackDao.checkFeedbackOrNot(user.getEmail(), product_id);
-            String orderDate = feedbackDao.checkOrderOrNot(user.getEmail(), product_id);
-            response.getWriter().print(orderDate);
-            if (orderDate != null && !checkFeedback) {
-                if (orderDate.matches(".+\\.\\d{1}")) {
-                    orderDate += "00";  // Nếu chỉ có 1 số mili-giây, thêm "00"
-                } else if (orderDate.matches(".+\\.\\d{2}")) {
-                    orderDate += "0";   // Nếu có 2 số mili-giây, thêm "0"
-                } else if (!orderDate.contains(".")) {
-                    orderDate += ".000"; // Nếu không có mili-giây, thêm ".000"
+            String token = (String) request.getSession().getAttribute("token");
+            String orderDate=null;
+            boolean checkFeedback = true;
+            if (token != null) {
+                String email = AuthenticationService.getEmailFromToken(token);
+                User user = dao.getUserByEmail(email);
+                request.getSession().setAttribute("user", user);
+                
+                checkFeedback = feedbackDao.checkFeedbackOrNot(user.getEmail(), product_id);
+                orderDate = feedbackDao.checkOrderOrNot(user.getEmail(), product_id);
+                response.getWriter().print(orderDate);
+                if (orderDate != null && !checkFeedback) {
+                    if (orderDate.matches(".+\\.\\d{1}")) {
+                        orderDate += "00";  // Nếu chỉ có 1 số mili-giây, thêm "00"
+                    } else if (orderDate.matches(".+\\.\\d{2}")) {
+                        orderDate += "0";   // Nếu có 2 số mili-giây, thêm "0"
+                    } else if (!orderDate.contains(".")) {
+                        orderDate += ".000"; // Nếu không có mili-giây, thêm ".000"
+                    }
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+                    LocalDateTime originDate = LocalDateTime.parse(orderDate, formatter);
+                    LocalDateTime endFeedbackDate = originDate.plusDays(10);
+                    boolean isExpired = (endFeedbackDate != null) && endFeedbackDate.isBefore(LocalDateTime.now());
+                    request.setAttribute("isExpired", isExpired);
+                    request.setAttribute("endFeedbackDate", endFeedbackDate);
                 }
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-                LocalDateTime originDate = LocalDateTime.parse(orderDate, formatter);
-                LocalDateTime endFeedbackDate = originDate.plusDays(10);
-                boolean isExpired = (endFeedbackDate != null) && endFeedbackDate.isBefore(LocalDateTime.now());
-                request.setAttribute("isExpired", isExpired);
-                request.setAttribute("endFeedbackDate", endFeedbackDate);
             }
 
             List<Feedback> listFeedback = feedbackDao.getAllFeedbackById(product_id);
@@ -98,7 +111,7 @@ public class ProductDetailServlet extends HttpServlet {
             List<Color> listColor = productDao.getAllColors();
             List<Size> listSize = productDao.getAllSizes();
             List<Category> listCategory = productDao.getAllCategories();
-            
+
             List<ProductPrice> listProductPrice = productDao.getProductPricesByProductId(product_id);
             List<ProductView> listProductView = productDao.getAllProductView();
             //Danh sách most view item
@@ -133,9 +146,7 @@ public class ProductDetailServlet extends HttpServlet {
             int countRelatedProduct = productDao.getProductCountByCategory(product.getCategory_id());
 
             String contextPath = request.getContextPath();
-            
-            
-            request.setAttribute("user", user);
+
             request.setAttribute("orderDate", orderDate);
             request.setAttribute("checkFeedback", checkFeedback);
             request.setAttribute("listFeedback", listFeedback);
@@ -165,6 +176,10 @@ public class ProductDetailServlet extends HttpServlet {
 
             request.getRequestDispatcher("NgocHieu/ProductDetailJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
+            Logger.getLogger(ProductDetailServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(ProductDetailServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JOSEException ex) {
             Logger.getLogger(ProductDetailServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -203,7 +218,4 @@ public class ProductDetailServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    public static void main(String[] args) {
-        
-    }
 }

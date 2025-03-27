@@ -5,7 +5,7 @@
 
 package NgocHieu.ProductManagement;
 
-import DAL.ManageProductDAO;
+import DAL.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -27,31 +27,42 @@ public class UpdatePriceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String productPriceId = request.getParameter("productPriceId");
-        String newPrice = request.getParameter("newPrice");
-        if (productPriceId == null || newPrice == null || !newPrice.matches("\\d+")) {
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().println("<script>alert('Giá tiền không hợp lệ!'); window.location='ProductDashboard';</script>");
-            return;
-        }
-        int _productPriceId = Integer.parseInt(productPriceId);
-        int _newPrice = Integer.parseInt(newPrice);
-        response.getWriter().print(productPriceId + " " + newPrice);
-        ManageProductDAO manageDao = new ManageProductDAO();
-
-        try {
-            if (manageDao.updateProductPrice(_newPrice, _productPriceId) > 0) {
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Cập nhật giá sản phẩm thành công'); window.location='ProductDashboard';</script>");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UpdateQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    } 
+        doPost(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        try {
+            String productPriceId = request.getParameter("productPriceId");
+            String newPrice = request.getParameter("newPrice");
+            
+            if (productPriceId == null || newPrice == null || newPrice.trim().isEmpty()) {
+                AjaxResponse.send(response, false, "Dữ liệu không hợp lệ!");
+                return;
+            }
+            
+            try {
+                double price = Double.parseDouble(newPrice);
+                if (price < 0) {
+                    AjaxResponse.send(response, false, "Giá không thể là số âm!");
+                    return;
+                }
+                
+                ProductDAO dao = new ProductDAO();
+                boolean result = dao.updatePrice(productPriceId, price);
+                
+                if (result) {
+                    AjaxResponse.send(response, true, "Cập nhật giá thành công!");
+                } else {
+                    AjaxResponse.send(response, false, "Không thể cập nhật giá!");
+                }
+            } catch (NumberFormatException e) {
+                AjaxResponse.send(response, false, "Giá không hợp lệ!");
+            }
+        } catch (Exception e) {
+            AjaxResponse.send(response, false, "Lỗi: " + e.getMessage());
+        }
     }
 
     @Override

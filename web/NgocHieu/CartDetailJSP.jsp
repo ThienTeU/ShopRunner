@@ -25,16 +25,23 @@
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="NgocHieu/CartDetail.css">
+        
     </head>
     
     <body>
-        <c:choose>
+        <%@ include file="/model/header.jsp" %> 
+        <div class="row">
+            <c:choose>
             <c:when test="${empty cartItemsDTO}">
-                <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a></div>
+                <%@ include file="/model/header.jsp" %> 
+                <div class="alert alert-warning text-center" style="margin-top:50px">
+                    
+                    Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a>
+                </div>
             </c:when>
             <c:otherwise>
-                <%@ include file="/model/header.jsp" %>
-                <div class="row mx-4 mt-4">
+                
+                <div class="row mx-4" style="margin-top: 70px">
                     <div class="col-md-8">
                         <h2 class="fw-bold">GIỎ HÀNG CỦA BẠN</h2>
                         <p>TỔNG CỘNG (${sessionScope.cart.size()} các sản phẩm) <span class="fw-bold"><span class="productPrice">${total}</span></span></p>
@@ -131,6 +138,7 @@
                 </div>
             </c:otherwise>
         </c:choose>
+        </div>
     </body>
 </html>
 

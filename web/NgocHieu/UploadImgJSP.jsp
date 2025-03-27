@@ -1,74 +1,45 @@
 <!DOCTYPE html>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Upload Image</title>
-        <style>
-            #dropArea {
-                border: 2px dashed #ccc;
-                padding: 20px;
-                text-align: center;
-                cursor: pointer;
-                margin-top: 10px;
-                width: 500px;
-                height: 300px;
-            }
-            .preview-container {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-                margin-top: 10px;
-            }
-            .preview-item {
-                position: relative;
-                display: inline-block;
-            }
-            .preview-item img {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                border-radius: 5px;
-            }
-            .delete-btn {
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                background: red;
-                color: white;
-                border: none;
-                cursor: pointer;
-                border-radius: 50%;
-                width: 20px;
-                height: 20px;
-                text-align: center;
-                font-size: 12px;
-                line-height: 18px;
-            }
-        </style>
     </head>
-    <body>
-        <h1>Upload Image</h1>
-        <form action="TestUploadFileServlet" method="POST" enctype="multipart/form-data">
-            <table>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f8f9fa;">
+        <h1 style="text-align: center; font-size: 28px; color: #333;">Thêm Hình Ảnh</h1>
+        <form action="TestUploadFileServlet" method="POST" enctype="multipart/form-data" 
+              style="width: 100%; padding: 20px; border-radius: 8px; background: #fff; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+            <table style="width: 100%;">
                 <tbody>
                     <tr>
-                        <td><label>Product Price ID:</label></td>
+                        <td><label style="font-weight: bold;">Mã Giá Sản Phẩm:</label></td>
+                        <td><input type="text" name="productprice_id" value="${requestScope.productprice_id}" readonly 
+                                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></td>
+                    </tr>
+                    <tr>
+                        <td><label style="font-weight: bold;">Tải Hình Ảnh:</label></td>
                         <td>
-                            <input type="text" name="productprice_id" value="${requestScope.productprice_id}" readonly>
+                            <input type="file" name="images" id="fileInput" multiple required 
+                                   style="display: none;">
+                            <div id="dropArea" 
+                                 style="border: 2px dashed #007bff; padding: 20px; text-align: center; cursor: pointer; width: 100%; height: 250px;
+                                        background: #e9f5ff; display: flex; align-items: center; justify-content: center; flex-direction: column;
+                                        border-radius: 8px; font-weight: bold; color: #007bff;">
+                                <p>Kéo & Thả hoặc <span id="browse" style="color: red; text-decoration: underline; cursor: pointer;">Chọn File</span></p>
+                            </div>
+                            <div id="previewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
                         </td>
                     </tr>
                     <tr>
-                        <td><label>Upload Image:</label></td>
-                        <td>
-                            <input type="file" name="images" id="fileInput" multiple>
-                            <div id="dropArea">Drop images here or <span id="browse">browse</span></div>
-                            <div class="preview-container" id="previewContainer"></div>
+                        <td colspan="2" style="text-align: center; padding-top: 15px;">
+                            <button type="submit" onclick="showAddProductSuccess(event)"
+                                    style="background-color: #28a745; color: white; padding: 10px 20px; border: none;
+                                           border-radius: 4px; cursor: pointer; font-size: 16px;">
+                                Upload
+                            </button>
                         </td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" value="Upload"></td>
                     </tr>
                 </tbody>
             </table>
@@ -91,11 +62,27 @@
 
                             let img = document.createElement("img");
                             img.src = e.target.result;
+                            img.style.width = "100px";
+                            img.style.height = "100px";
+                            img.style.objectFit = "cover";
+                            img.style.borderRadius = "5px";
                             previewItem.appendChild(img);
 
                             let deleteBtn = document.createElement("button");
-                            deleteBtn.innerText = "�";
-                            deleteBtn.classList.add("delete-btn");
+                            deleteBtn.innerText = "×";
+                            deleteBtn.style.position = "absolute";
+                            deleteBtn.style.top = "5px";
+                            deleteBtn.style.right = "5px";
+                            deleteBtn.style.background = "red";
+                            deleteBtn.style.color = "white";
+                            deleteBtn.style.border = "none";
+                            deleteBtn.style.cursor = "pointer";
+                            deleteBtn.style.borderRadius = "50%";
+                            deleteBtn.style.width = "20px";
+                            deleteBtn.style.height = "20px";
+                            deleteBtn.style.textAlign = "center";
+                            deleteBtn.style.fontSize = "12px";
+                            deleteBtn.style.lineHeight = "18px";
                             deleteBtn.onclick = function () {
                                 removeImage(index);
                             };

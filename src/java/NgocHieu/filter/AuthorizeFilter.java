@@ -31,6 +31,11 @@ public class AuthorizeFilter implements Filter {
 
     private static final List<String> publicUrls = Arrays.asList(
             "/",
+
+            "/home",                        
+            //HieuPTM_STAFF
+            "/HieuPTM/StaffManage",
+
             "/ManhTuan/orderlist.jsp",
             "/orderlist",
             "/dashboard",
@@ -39,12 +44,23 @@ public class AuthorizeFilter implements Filter {
             "/AddFeedbackServlet",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
+
             "/HieuPTM/StaffManage.jsp",
             "/HieuPTM.Controller.StaffManage",
             "/StaffManage",
+            "/StaffSearch",
+            "/StaffAdd",
             "/StaffChangeStatus",
-            "/HieuPTM/StaffManage",
+            //HieuPTM
             "/LoginControl",
+            "/RegisterControl",
+            "/ForgotPassword",
+            "/ValidateOTP",
+            "/ChangePassword",
+            "/NewPassword",
+            "/RunnerShop/ManhTuan/customeradd",
+            "/ManhTuan/customeradd",
+            
             "/ManhTuan/customeraddressdetail.jsp",
             "/ManhTuan/feedbackmanagement.jsp",
             "/customeradd.jsp",
@@ -53,17 +69,15 @@ public class AuthorizeFilter implements Filter {
             "/ManhTuan/marketingdashboard.jsp",
             "/ManhTuan/customeraddressadd.jsp",
             "/ManhTuan/customeraddressedit.jsp",
-            "/RegisterControl",
-            "/ForgotPassword",
-            "/ValidateOTP",
-            "/ChangePassword",
-            "/NewPassword",
+            
+
             "/RunnerShop",
             "/testlogin",
             "/productlist",
             "/ProductDetailServlet",
             "/CheckOutServlet",
             "/CheckOutVnpayServlet",
+
             "/customeraddressdetail",
             "/ManhTuan/customeraddressadd",
             "/ManhTuan/CheckOutJSP.jsp",
@@ -75,20 +89,7 @@ public class AuthorizeFilter implements Filter {
             "/customeredit",
             "/customersearch",
             "/customerlist",
-            "/",
-            "/home",
-            "/LoginControl",
-            "/RegisterControl",
-            "/ForgotPassword",
-            "/ValidateOTP",
-            "/ChangePassword",
-            "/NewPassword",
-            "/RunnerShop",
-            "/testlogin",
-            "/productlist",
-            "/ProductDetailServlet",
-            "/CheckOutServlet",
-            "/CheckOutVnpayServlet",
+
             "/CartDetailServlet",
             "/AddToCartServlet",
             "/UpdateCart",
@@ -100,6 +101,7 @@ public class AuthorizeFilter implements Filter {
             "/NgocHieu/CheckOutJSP.jsp",
             "/NgocHieu/OrderSuccessJSP.jsp",
             "/vnpayrefund/*",
+            "/AddFeedbackServlet",
             "/NgocHieu/vnpay/vnpay_pay.jsp",
             "https://sandbox.vnpayment.vn/paymentv2/Transaction/PaymentMethod.html?token=161cbbf8d2ed4c8baf99ae68ea32fd7d",
             "/NgocHieu/handler/access-denied.jsp",

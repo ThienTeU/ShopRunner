@@ -52,11 +52,11 @@ public class TestUploadFileServlet extends HttpServlet {
         }
 
         // Đường dẫn lưu file
-        String uploadPath = "C:\\Users\\admin\\ShopRunner\\web\\Image2\\productID_"
+        String uploadPath = "D:\\ShopRunner\\web\\Image2\\productID_"
                 + +productId + "\\colorID_" + pp.getColor_id();
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
-            uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
+            uploadDir.mkdirs(); //Tạo thư mục nếu chưa có
         }
 
         // Đếm số file hiện có để đặt tên tiếp theo
@@ -87,7 +87,7 @@ public class TestUploadFileServlet extends HttpServlet {
 
                 System.out.println("Luu file r " + filePath);
 
-                // Lưu vào database nếu cần
+                // Lưu vào database
                 String relativePath = "Image2/productID_" + productId + "/colorID_" + pp.getColor_id() + "/" + newFileName;
                 try {
                     dao.addProductImage(productId, relativePath, pp.getColor_id());

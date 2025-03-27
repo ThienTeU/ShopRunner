@@ -14,6 +14,20 @@ import java.util.List;
 
 @WebServlet(name = "UserDAO", urlPatterns = {"/UserDAO"})
 public class UserDAO extends DBContext {
+    
+    // Kiểm tra số điện thoại trùng
+    public boolean checkPhoneDuplicate(String phone) {
+        String sql = "SELECT 1 FROM [User] WHERE phone_number = ? AND [status] = 1";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, phone);
+            try (ResultSet rs = st.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi kiểm tra số điện thoại: " + e);
+        }
+        return false;
+    }
 
     public List<StaffHieu> getAllStaff() {
         List<StaffHieu> staffs = new ArrayList<>();
@@ -226,6 +240,9 @@ public class UserDAO extends DBContext {
         }
         if (checkEmailDuplicate(user.getEmail())) {
             return "Email đã tồn tại!";
+        }
+        if (checkPhoneDuplicate(user.getPhone())) {
+            return "Số điện thoại đã tồn tại!";
         }
 
         String sql = "INSERT INTO [User] (role_id, user_name, full_name, email, password, phone_number, gender_id, status) "

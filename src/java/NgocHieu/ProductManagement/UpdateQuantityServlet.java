@@ -4,16 +4,13 @@
  */
 package NgocHieu.ProductManagement;
 
-import DAL.ManageProductDAO;
+import DAL.ProductDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -23,33 +20,44 @@ import java.util.logging.Logger;
 public class UpdateQuantityServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productQuantityId = request.getParameter("productQuantityId");
-        String newQuantity = request.getParameter("newQuantity");
-        if (productQuantityId == null || newQuantity == null || !newQuantity.matches("\\d+")) {
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().println("<script>alert('Số lượng không hợp lệ!'); window.location='ProductDashboard';</script>");
-            return;
-        }
-        int _productQuantityId = Integer.parseInt(productQuantityId);
-        int _newQuantity = Integer.parseInt(newQuantity);
-        response.getWriter().print(productQuantityId + " " + newQuantity);
-        ManageProductDAO manageDao = new ManageProductDAO();
-
         try {
-            if (manageDao.updateProductQuantity(_newQuantity, _productQuantityId) > 0) {
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Cập nhật số lượng sản phẩm thành công'); window.location='ProductDashboard';</script>");
+            String productQuantityId = request.getParameter("productQuantityId");
+            String newQuantity = request.getParameter("newQuantity");
+            
+            if (productQuantityId == null || newQuantity == null || newQuantity.trim().isEmpty()) {
+                AjaxResponse.send(response, false, "Dữ liệu không hợp lệ!");
+                return;
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(UpdateQuantityServlet.class.getName()).log(Level.SEVERE, null, ex);
+            
+            try {
+                int quantity = Integer.parseInt(newQuantity);
+                if (quantity < 0) {
+                    AjaxResponse.send(response, false, "Số lượng không thể là số âm!");
+                    return;
+                }
+                
+                ProductDAO dao = new ProductDAO();
+                boolean result = dao.updateQuantity(productQuantityId, quantity);
+                
+                if (result) {
+                    AjaxResponse.send(response, true, "Cập nhật số lượng thành công!");
+                } else {
+                    AjaxResponse.send(response, false, "Không thể cập nhật số lượng!");
+                }
+            } catch (NumberFormatException e) {
+                AjaxResponse.send(response, false, "Số lượng không hợp lệ!");
+            }
+        } catch (Exception e) {
+            AjaxResponse.send(response, false, "Lỗi: " + e.getMessage());
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        doPost(request, response);
     }
 
     @Override

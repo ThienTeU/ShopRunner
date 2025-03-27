@@ -4,6 +4,7 @@ import DAL.InsertProductDAO;
 import DAL.ProductDAO;
 import Model.Category;
 import Model.Color;
+import Model.Size;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -35,9 +36,11 @@ public class AddProductServlet extends HttpServlet {
             ProductDAO dao = new ProductDAO();
 
             List<Category> listCategory = dao.getAllCategories();
-
+            List<Color> listColor = dao.getAllColors();
+            List<Size> listSize = dao.getAllSizes();
+            request.getSession().setAttribute("listColor", listColor);
+            request.getSession().setAttribute("listSize", listSize);
             request.setAttribute("listCategory", listCategory);
-
             request.getRequestDispatcher("NgocHieu/AddProductJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -52,77 +55,54 @@ public class AddProductServlet extends HttpServlet {
             InsertProductDAO dao = new InsertProductDAO();
             ProductDAO dao2 = new ProductDAO();
             
-            Part filePart = request.getPart("thumbnail");
-            //
+            Part filePart = request.getPart("thumbnail");           
             String thumbnail = getThumbnailUrl(filePart);
-            
             String product_name = request.getParameter("product_name");
-            if(!product_name.matches("^.{1,255}")){
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Tên sản phẩm không vượt quá 255 kí tự!'); window.location='AddProductServlet';</script>");
-                return;
-            }
-            if(thumbnail == null || filePart == null || product_name == null){
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Thiếu thông tin!'); window.location='AddProductServlet';</script>");
-                return;
-            }
-            if(dao.isProductNameExists(product_name.trim())){
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Tên sản phẩm này đã tồn tại!'); window.location='AddProductServlet';</script>");
-                return;
-            }
             String description = request.getParameter("description");
-            int discount = Integer.parseInt(request.getParameter("discount"));
-            if(discount < 0 ){
-                response.setContentType("text/html;charset=UTF-8");
-                response.getWriter().println("<script>alert('Discount không hợp lệ!'); window.location='AddProductServlet';</script>");
-            }
+            int discount = Integer.parseInt(request.getParameter("discount"));            
             int category_id = Integer.parseInt(request.getParameter("category_id"));
             
-            List<Color> listColor = dao2.getAllColors();
             int product_id = dao.addProduct(category_id, product_name.trim(), description.trim(), discount, 0, thumbnail);
             
-            request.getSession().setAttribute("listColor", listColor);
             request.setAttribute("product_id", product_id);
-            request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+        request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
     }
-    
-    public String getThumbnailUrl(Part filePart) throws IOException, SQLException{
+
+    public String getThumbnailUrl(Part filePart) throws IOException, SQLException {
         InsertProductDAO dao = new InsertProductDAO();
-            int maxId = dao.getMaxProductId();
-            
-            // Xử lý file upload
-            String fileExtension = ".avif"; // Chỉ chấp nhận .avif
+        int maxId = dao.getMaxProductId();
 
-            String fileName = "thumbnail" + fileExtension; // Đổi tên file 
+        // Xử lý file upload
+        String fileExtension = ".avif"; // Chỉ chấp nhận .avif
 
-            // Đường dẫn lưu file
-            int productId = maxId+1;
-            String uploadPath = "C:\\Users\\admin\\ShopRunner\\web\\Image2\\productID_"+ productId;
-            File uploadDir = new File(uploadPath);
-            
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
+        String fileName = "thumbnail" + fileExtension; // Đổi tên file 
+
+        // Đường dẫn lưu file
+        int productId = maxId + 1;
+        String uploadPath = "D:\\ShopRunner\\web\\Image2\\productID_" + productId;
+        File uploadDir = new File(uploadPath);
+
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
+        }
+
+        // Ghi file vào thư mục
+        File file = new File(uploadPath, fileName);
+        try (InputStream fileContent = filePart.getInputStream(); FileOutputStream outputStream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fileContent.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
+        }
 
-            // Ghi file vào thư mục
-            File file = new File(uploadPath, fileName);
-            try (InputStream fileContent = filePart.getInputStream(); FileOutputStream outputStream = new FileOutputStream(file)) {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = fileContent.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            }
+        // Lưu thông tin sản phẩm vào DB với đường dẫn ảnh
+        String thumbnailPath = "Image2/productID_" + productId + "/" + fileName; // Đường dẫn tương đối
 
-            // Lưu thông tin sản phẩm vào DB với đường dẫn ảnh
-            String thumbnailPath = "Image2/productID_" + productId + "/"+fileName; // Đường dẫn tương đối
-            
-            return thumbnailPath;
+        return thumbnailPath;
     }
 
     @Override
