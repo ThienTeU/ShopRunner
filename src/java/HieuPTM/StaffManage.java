@@ -4,7 +4,6 @@
  */
 package HieuPTM;
 
-import HieuPTM.Controller.*;
 import HieuPTM.DAO.UserDAO;
 import Model.StaffHieu;
 import java.io.IOException;

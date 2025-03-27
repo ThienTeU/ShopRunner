@@ -1,4 +1,4 @@
-package HieuPTM.controller;
+package HieuPTM.Controller;
 
 import HieuPTM.DAO.UserDAO;
 import java.io.IOException;
@@ -8,7 +8,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import HieuPTM.model.UserHieu;
+import Model.User;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.annotation.WebServlet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -18,6 +25,37 @@ public class LoginControl extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Cookie[] cookies = request.getCookies();
+        boolean rememberMe = false;
+        String token = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals("re") && c.getValue().equals("on")) {
+                    rememberMe = true;
+                }
+                if (c.getName().equals("tokenC")) {
+                    token = c.getValue();
+                }
+            }
+        }else{
+            response.sendRedirect("/RunnerShop/home");
+            return;
+        }
+        response.getWriter().println(token);
+        response.getWriter().print(rememberMe);
+        if (rememberMe) {
+            try {
+                String email = AuthenticationService.getEmailFromToken(token);
+                if (email != null) {
+                    UserDAO dao = new UserDAO();
+                    UserHieu user = dao.getUserByEmail(email);
+                    request.getSession().setAttribute("user", user);
+                    response.sendRedirect("/RunnerShop/home");
+                    return;
+                }
+            } catch (ParseException | JOSEException ex) {
+            }
+        }
         // Chuyển hướng đến trang Login.jsp khi vào bằng GET
         request.getRequestDispatcher("/HieuPTM/Login.jsp").forward(request, response);
     }
@@ -32,42 +70,55 @@ public class LoginControl extends HttpServlet {
 
         UserDAO ad = new UserDAO();
         UserHieu u = new UserHieu(); // Kiểm tra tài khoản
-        
+
         UserHieu userDB = ad.getUser(username);
-        
+
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        if(passwordEncoder.matches(password, userDB.getPassword())){
+        String token = null;
+        if (passwordEncoder.matches(password, userDB.getPassword())) {
             u = userDB;
+            AuthenticationService auth = new AuthenticationService();
+            User userRaw = new User(userDB.getUserName(), password);
+            try {
+                token = auth.loginAuthentication(userRaw);
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            request.getSession().setAttribute("token", token);
         }
         // Xử lý Cookie Remember Me
-        Cookie cname = new Cookie("name", username);
-        Cookie cpass = new Cookie("pass", password);
+        Cookie tokenC = new Cookie("tokenC", token);
         Cookie cre = new Cookie("re", re != null ? "on" : "off");
 
         if (re != null) { // Nếu chọn ghi nhớ
-            cname.setMaxAge(60 * 60 * 24 * 1); // 1 ngày
-            cpass.setMaxAge(60 * 60 * 24 * 1);
+            tokenC.setMaxAge(60 * 60 * 24 * 1); // 1 ngày
             cre.setMaxAge(60 * 60 * 24 * 1);
         } else { // Nếu không chọn
-            cname.setMaxAge(0); // Xóa cookie
-            cpass.setMaxAge(0);
             cre.setMaxAge(0);
         }
 
         // Thêm cookie vào response
-        response.addCookie(cname);
-        response.addCookie(cpass);
+        response.addCookie(tokenC);
         response.addCookie(cre);
 
         // Xử lý đăng nhập
-        if (u == null) { // Nếu tài khoản không đúng
+        if (u.getUserName() == null) { // Nếu tài khoản không đúng
             request.setAttribute("mess", "Sai tài khoản hoặc mật khẩu!");
             request.setAttribute("user", username); // Giữ lại tên tài khoản khi load lại form
             request.setAttribute("pass", password);
             request.getRequestDispatcher("/HieuPTM/Login.jsp").forward(request, response);
         } else {
             // Nếu đăng nhập thành công, redirect về Home và truyền uid qua URL
-            response.sendRedirect(request.getContextPath() + "/home?uid=" + u.getUserName());
+            String email = "";
+            try {
+                email = AuthenticationService.getEmailFromToken(token);
+            } catch (ParseException | JOSEException ex) {
+                Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            UserDAO dao = new UserDAO();
+            UserHieu user = dao.getUserByEmail(email);
+            request.getSession().setAttribute("user", user);
+            response.sendRedirect(request.getContextPath() + "/home");
         }
     }
 

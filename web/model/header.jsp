@@ -107,17 +107,17 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <c:choose>
-                            <c:when test="${empty param.uid}">
+                            <c:when test="${sessionScope.user == null}">
                                 <li><a class="dropdown-item" href="/RunnerShop/LoginControl">Đăng nhập</a></li>
                                 <li><a class="dropdown-item" href="/RunnerShop/RegisterControl">Đăng ký</a></li>
                                 </c:when>
                                 <c:otherwise>
-                                <li><a class="dropdown-item" href="#">Xin chào, ${param.uid}</a></li>
+                                <li><a class="dropdown-item" href="#">Xin chào, ${sessionScope.user.userName}</a></li>
                                 <a class="dropdown-item" href="/RunnerShop/profile">Thông Tin Cá Nhân</a>
-                                <li><a class="dropdown-item" href="/RunnerShop/ChangePassword?uid=${param.uid}">Đổi mật khẩu</a></li>
+                                <li><a class="dropdown-item" href="/RunnerShop/ChangePassword">Đổi mật khẩu</a></li>
                                 <li><a class="dropdown-item" href="/RunnerShop/orders?uid=${param.uid}">Đơn hàng</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/RunnerShop/LoginControl">Đăng xuất</a></li>
+                                <li><a class="dropdown-item" href="/RunnerShop/LogOut">Đăng xuất</a></li>
                                 </c:otherwise>
                             </c:choose>
                     </ul>

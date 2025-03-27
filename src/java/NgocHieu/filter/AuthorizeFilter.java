@@ -34,11 +34,16 @@ public class AuthorizeFilter implements Filter {
             "/Charts",
             "/home",                        
             //HieuPTM_STAFF
+            "/LogOut",
             "/HieuPTM/StaffManage",
+
             "/feedbacklist",
             "/feedbacksearch",
             "/feedbackreply",
             "/feedbackreplydelete",
+
+            "/tableVoucher",
+            "/Charts",
             "/ManhTuan/orderlist.jsp",
             "/ManhTuan/test.jsp",
             "/tableVoucher",

@@ -2,26 +2,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+package Controller.VoucherDucAnh;
 
-package Controller.DucAnh;
 
-import DAO.DucAnh.PostCategoryDAO;
+import DAO.DucAnh.VoucherDAO;
+import DTO.DucAnh.Voucher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
-/**
- *
- * @author Acer
- */
-@WebServlet(name="DeleteCategoryPostServlet", urlPatterns={"/DeleteCategory"})
-public class DeleteCategoryPostServlet extends HttpServlet {
- 
+
+@WebServlet(name = "listVoucherCart", urlPatterns = {"/listVoucherCart"})
+public class listVoucherCart extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,10 +38,10 @@ public class DeleteCategoryPostServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteCategoryPostServlet</title>");
+            out.println("<title>Servlet listVoucherCart</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteCategoryPostServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet listVoucherCart at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,22 +59,45 @@ public class DeleteCategoryPostServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String postCategoryID_raw = request.getParameter("id");
-        PostCategoryDAO pcdao = new PostCategoryDAO();
-        try {
-            int postCategoryID = Integer.parseInt(postCategoryID_raw);
-            System.out.println(postCategoryID);
-            int checkDelete = pcdao.deletePostCategoryById(postCategoryID);
-            if (checkDelete != 0) {
-                session.setAttribute("msg", "Xóa danh mục thành công");
-            } else {
-                session.setAttribute("msg", "Xóa danh mục không thành công");
+//        ProductDAO d = new ProductDAO();
+//        List<ProductDTO> list = d.getAllProduct();
+        Cookie[] arr = request.getCookies();
+        String txt = "";
+        if (arr != null) {
+            for (Cookie o : arr) {
+                if (o.getName().equals("cart")) {
+                    txt += o.getValue();
+                }
             }
-            response.sendRedirect("postDashboard");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+//        Cart cart = new Cart(txt, list);
+//        request.setAttribute("cart", cart);
+
+        //voucher
+        String vouchercode = request.getParameter("vouchercode");
+        String date = request.getParameter("date");
+
+        VoucherDAO aO = new VoucherDAO();
+
+        List<Voucher> vouchers = aO.getidVoucher(vouchercode);
+        List<Voucher> voucherQuantity = aO.getQuantityVoucher(vouchercode);
+        List<Voucher> voucherDate = aO.getDateVoucher(vouchercode,date);
+        List<Voucher> voucherStartDate = aO.getDateStartVoucher(vouchercode,date);
+        System.out.println(vouchers);
+        if (vouchers == null || vouchers.isEmpty()) {
+            request.setAttribute("used", "Voucher does not exist");
+        } else if (voucherStartDate.isEmpty()) {
+            request.setAttribute("used", "Voucher has expired ");
+        }else if (voucherDate.isEmpty()) {
+            request.setAttribute("used", "Voucher has expired ");
+        } else if (!voucherQuantity.isEmpty()) {
+            request.setAttribute("used", "Voucher has expired ");
+        }  else {
+            request.setAttribute("used1", aO.getidVoucher(vouchercode));
+        }
+        System.out.println(voucherStartDate);
+         System.out.println(voucherDate);
+        request.getRequestDispatcher("cart.jsp").forward(request, response);
     }
 
     /**

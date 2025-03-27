@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import HieuPTM.model.UserHieu;
 import Model.StaffHieu;
 import Model.UserTuan;
+import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.annotation.WebServlet;
+import java.text.ParseException;
 import java.util.List;
 
 @WebServlet(name = "UserDAO", urlPatterns = {"/UserDAO"})
@@ -158,6 +161,32 @@ public class UserDAO extends DBContext {
                         rs.getString("email"),
                         rs.getInt("gender_id"),
                         rs.getInt("role_id")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+    
+    // Lấy user theo username
+    public UserHieu getUserByEmail(String email) {
+        String sql = "SELECT * FROM [User] WHERE email = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new UserHieu(
+                        rs.getString("password"),
+                        rs.getString("phone_number"),
+                        rs.getString("email"),
+                        rs.getString("created_at"),
+                        rs.getInt("gender_id"),
+                        rs.getInt("role_id"),
+                        rs.getInt("user_id"),
+                        rs.getBoolean("status"),
+                        rs.getString("user_name")
                 );
             }
         } catch (SQLException e) {
@@ -352,10 +381,13 @@ public class UserDAO extends DBContext {
         }
     }
 
-    public static void main(String[] args) {
-        UserHieu user = new UserHieu("admin", "admin", "$2a$10$D1KlmGpruxif2dJyBHRz9ed.Y9UByop8SR.YZ9xLStV6iihzKcl1S", "0988738872", "duonghieu294@gmail.com", 1, 1);
+    
+    public static void main(String[] args) throws ParseException, JOSEException {
         UserDAO dao = new UserDAO();
-        dao.insert(user);
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJOZ29jSGlldS5jb20iLCJzdWIiOiJkdW9uZ2hpZXUyOTRAZ21haWwuY29tIiwicm9sZSI6IkFkbWluIiwiZXhwIjoxNzQzMDUzMTUzLCJpYXQiOjE3NDMwNDIzNTN9.-FVxmDcEIdppdrUZU5ziCIuPHRx5lkhCn6VR1UnmIq6zqC0OtF8KmcaNdw8nkolpdDldTTPCc1gV89zr24npbQ";
+        String email = AuthenticationService.getEmailFromToken(token);
+        System.out.println(email);
+        System.out.println(dao.getUserByEmail(email));
     }
 
 }

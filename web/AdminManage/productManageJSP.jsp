@@ -165,6 +165,10 @@
     </body>
 
     <script>
+                                $(document).on('click', 'a', function (e) {
+                                    // Đảm bảo không ngăn chặn hành vi mặc định của liên kết
+                                    window.location.href = $(this).attr('href');
+                                });
                                 $(document).ready(function () {
                                     let currentPage = 1; // Mặc định là trang 1
                                     // Lấy trang hiện tại từ URL khi load trang
@@ -800,9 +804,9 @@
                                                 console.log("Response từ server:", response);
                                                 $('#addImageContainer').html(response);
                                                 console.log("Đã load nội dung form upload ảnh");
-                                                
+
                                                 // Đợi DOM được cập nhật hoàn toàn
-                                                setTimeout(function() {
+                                                setTimeout(function () {
                                                     console.log("Bắt đầu khởi tạo drag & drop...");
                                                     initDragAndDropForUpload();
                                                 }, 500);
@@ -859,7 +863,7 @@
                                         fileInput.addEventListener("change", handleFileChange);
 
                                         // Click vào dropArea cũng mở hộp thoại chọn file
-                                        dropArea.addEventListener("click", function(event) {
+                                        dropArea.addEventListener("click", function (event) {
                                             if (event.target !== browseButton) {
                                                 fileInput.click();
                                             }
@@ -901,17 +905,17 @@
 
                                             if (typeof DataTransfer !== 'undefined') {
                                                 let dataTransfer = new DataTransfer();
-                                                
+
                                                 // Thêm các file đã có
                                                 for (let i = 0; i < fileInput.files.length; i++) {
                                                     dataTransfer.items.add(fileInput.files[i]);
                                                 }
-                                                
+
                                                 // Thêm các file mới
                                                 for (let i = 0; i < newFiles.length; i++) {
                                                     dataTransfer.items.add(newFiles[i]);
                                                 }
-                                                
+
                                                 fileInput.files = dataTransfer.files;
                                                 updatePreview(fileInput.files);
                                                 console.log(`✅ Đã thêm ${newFiles.length} file mới`);

@@ -36,15 +36,15 @@ public class DeletePostServlet extends HttpServlet {
 
             int checkDelete = postListDAO.deletePostByID(postID);
             if (checkDelete != 0) {
-                session.setAttribute("msg", "Delete Post Success");
+                session.setAttribute("msg", "Xóa bài viết thành công");
             } else {
-                session.setAttribute("msg", "Delete Post Not Success");
+                session.setAttribute("msg", "Xóa bài viết không thành công");
             }
         } catch (NumberFormatException e) {
-            session.setAttribute("msg", "Invalid Post ID");
+            session.setAttribute("msg", "Không tìm thấy ID bài viết");
             e.printStackTrace();
         } catch (Exception e) {
-            session.setAttribute("msg", "Error while deleting post");
+            session.setAttribute("msg", "Lỗi trong quá trình xóa bài viết");
             e.printStackTrace();
         }
 

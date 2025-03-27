@@ -34,7 +34,7 @@ public class testlogin extends HttpServlet {
             String token = auth.loginAuthentication(rawUser);
             response.getWriter().println("Token: " + token);
             if(token!=null){
-                User user = dao.getUserByUsername(rawUser.getUsername());
+                User user = dao.getUserByUsername(rawUser.getUserName());
                 response.getWriter().println("Role: " + user.getRoleById());
                 request.getSession().setAttribute("token", token);
             }

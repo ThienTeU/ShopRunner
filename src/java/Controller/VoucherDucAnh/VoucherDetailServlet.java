@@ -3,9 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package Controller.DucAnh;
+package Controller.VoucherDucAnh;
 
-import DAO.DucAnh.PostCategoryDAO;
+import DAO.DucAnh.VoucherDAO;
+import DTO.DucAnh.Voucher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,15 +14,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author Acer
  */
-@WebServlet(name="DeleteCategoryPostServlet", urlPatterns={"/DeleteCategory"})
-public class DeleteCategoryPostServlet extends HttpServlet {
- 
+@WebServlet(name="VoucherDetailServlet", urlPatterns={"/VoucherDetail"})
+public class VoucherDetailServlet extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,10 +39,10 @@ public class DeleteCategoryPostServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteCategoryPostServlet</title>");
+            out.println("<title>Servlet VoucherDetailServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteCategoryPostServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet VoucherDetailServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,22 +60,12 @@ public class DeleteCategoryPostServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String postCategoryID_raw = request.getParameter("id");
-        PostCategoryDAO pcdao = new PostCategoryDAO();
-        try {
-            int postCategoryID = Integer.parseInt(postCategoryID_raw);
-            System.out.println(postCategoryID);
-            int checkDelete = pcdao.deletePostCategoryById(postCategoryID);
-            if (checkDelete != 0) {
-                session.setAttribute("msg", "Xóa danh mục thành công");
-            } else {
-                session.setAttribute("msg", "Xóa danh mục không thành công");
-            }
-            response.sendRedirect("postDashboard");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        processRequest(request, response);
+        String vcName = request.getParameter("voucherName");
+        VoucherDAO voucherDAO = new VoucherDAO();
+        Voucher v = voucherDAO.getDataByName(vcName);
+        request.setAttribute("voucher", v);
+        request.getRequestDispatcher("VoucherDetail.jsp").forward(request, response);
     }
 
     /**
@@ -89,7 +79,24 @@ public class DeleteCategoryPostServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+//        processRequest(request, response);
+        String vcName = request.getParameter("name");
+        String vcStart = request.getParameter("start");
+        String vcEnd = request.getParameter("end");
+
+        String vcDiscount_raw = request.getParameter("discount");
+        String vcQuantity_raw = request.getParameter("quantity");
+        String vcCode = request.getParameter("code");
+        try {
+            int vcDiscount = Integer.parseInt(vcDiscount_raw);
+            int vcQuantity = Integer.parseInt(vcQuantity_raw);
+            VoucherDAO voucherDAO = new VoucherDAO();
+            voucherDAO.UpdateVoucher(vcName, vcCode, vcStart, vcEnd, vcDiscount, vcQuantity);
+            response.sendRedirect("tableVoucher");
+        } catch (Exception e) {
+            System.out.println(e);
+
+        }
     }
 
     /**

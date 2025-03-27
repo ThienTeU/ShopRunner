@@ -37,12 +37,12 @@
                         <!-- Email input -->
                         <div class="mb-3">
                             <label for="username" class="form-label">Tên đăng nhập ${mess != null ? '<i class="bi bi-exclamation-circle" style="color: red; font-size: 12px"></i>' : ''}</label>
-                            <input type="text" class="form-control" id="username" name="username" value="${cookie.name.value}" />
+                            <input type="text" class="form-control" id="username" name="username" value="${username != null ? username : ""}" required/>
                         </div>
                         <!-- Password input -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật khẩu ${mess != null ? '<i class="bi bi-exclamation-circle" style="color: red; font-size: 12px"></i>' : ''}</label>
-                            <input type="password" class="form-control" id="password" name="password" value="${cookie.pass.value}" />
+                            <input type="password" class="form-control" id="password" name="password" value="${password != null ? password : ""}" required/>
                         </div>
                         <!-- Checkbox và Forgot password -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
