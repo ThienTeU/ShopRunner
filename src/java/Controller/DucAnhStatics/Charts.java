@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author tuan
  */
-@WebServlet(name = "DashboardMarketing", urlPatterns = {"/Charts"})
+@WebServlet(name = "DashboardMarketing1", urlPatterns = {"/Charts"})
 public class Charts extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
