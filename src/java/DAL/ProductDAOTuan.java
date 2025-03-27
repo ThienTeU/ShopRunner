@@ -38,6 +38,183 @@ public class ProductDAOTuan extends DBContext {
 
     }
 
+    public void updateFeedbackStatus(int feedbackId, boolean status) {
+        String sql = "UPDATE Feedback SET status = ? WHERE feedback_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, status);
+            ps.setInt(2, feedbackId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void deleteReply(int feedbackId) {
+        String sql = "delete from FeedbackReply where feedback_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, feedbackId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void editReply(int feedbackId, String replyContent) {
+        String sql = "UPDATE FeedbackReply SET reply_content = ? WHERE feedback_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, replyContent);
+            ps.setInt(2, feedbackId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void addReply(int feedbackId, String replyContent) {
+        String sql = "INSERT INTO FeedbackReply (feedback_id, reply_content)\n"
+                + "VALUES (?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(2, replyContent);
+            ps.setInt(1, feedbackId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public int countFilteredFeedbacks(String searchName, String searchProduct, String ratingFilter) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM Feedback fb "
+                + "JOIN [User] u ON u.email = fb.email "
+                + "JOIN [Product] p ON p.product_id = fb.product_id "
+                + "WHERE 1=1 ";
+
+        if (searchName != null && !searchName.isEmpty()) {
+            sql += "AND u.user_name LIKE ? ";
+        }
+        if (searchProduct != null && !searchProduct.isEmpty()) {
+            sql += "AND p.product_name LIKE ? ";
+        }
+        if (ratingFilter != null && !ratingFilter.isEmpty()) {
+            sql += "AND fb.rating = ? ";
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+
+            if (searchName != null && !searchName.isEmpty()) {
+                ps.setString(paramIndex++, "%" + searchName + "%");
+            }
+            if (searchProduct != null && !searchProduct.isEmpty()) {
+                ps.setString(paramIndex++, "%" + searchProduct + "%");
+            }
+            if (ratingFilter != null && !ratingFilter.isEmpty()) {
+                ps.setInt(paramIndex++, Integer.parseInt(ratingFilter));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    count = rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public List<Feedback> searchFeedback(String searchName, String searchProduct, String ratingFilter, String sortOrder, int page, int pageSize) {
+        List<Feedback> list = new ArrayList<>();
+        String sql = "SELECT fb.*, fr.reply_content, u.user_name, p.product_name "
+                + "FROM Feedback fb "
+                + "LEFT JOIN FeedbackReply fr ON fb.feedback_id = fr.feedback_id "
+                + "JOIN [User] u ON u.email = fb.email "
+                + "JOIN [Product] p ON p.product_id = fb.product_id "
+                + "WHERE (u.user_name LIKE ? OR ? IS NULL) "
+                + "AND (p.product_name LIKE ? OR ? IS NULL) "
+                + "AND (fb.rating = ? OR ? IS NULL) ";
+
+        // Thêm điều kiện sắp xếp
+        if ("desc".equals(sortOrder)) {
+            sql += "ORDER BY fb.rating DESC ";
+        } else if ("asc".equals(sortOrder)) {
+            sql += "ORDER BY fb.rating ASC ";
+        } else if ("newest".equals(sortOrder)) {
+            sql += "ORDER BY fb.created_at DESC ";
+        } else if ("oldest".equals(sortOrder)) {
+            sql += "ORDER BY fb.created_at ASC ";
+        } else {
+            sql += "ORDER BY fb.feedback_id "; // Mặc định
+        }
+
+        sql += "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"; // Phân trang
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, searchName != null && !searchName.isEmpty() ? "%" + searchName + "%" : null);
+            ps.setString(2, searchName != null && !searchName.isEmpty() ? searchName : null);
+            ps.setString(3, searchProduct != null && !searchProduct.isEmpty() ? "%" + searchProduct + "%" : null);
+            ps.setString(4, searchProduct != null && !searchProduct.isEmpty() ? searchProduct : null);
+            ps.setString(5, ratingFilter != null && !ratingFilter.isEmpty() ? ratingFilter : null);
+            ps.setString(6, ratingFilter != null && !ratingFilter.isEmpty() ? ratingFilter : null);
+            ps.setInt(7, (page - 1) * pageSize);
+            ps.setInt(8, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Feedback feedback = new Feedback();
+                    feedback.setFeedback_id(rs.getInt("feedback_id"));
+                    feedback.setProduct_id(rs.getInt("product_id"));
+                    feedback.setEmail(rs.getString("email"));
+                    feedback.setFeedback_content(rs.getString("feedback_content"));
+                    feedback.setRating(rs.getInt("rating"));
+                    feedback.setCreate_at(rs.getString("created_at"));
+                    feedback.setStatus(rs.getBoolean("status"));
+                    feedback.setReply_content(rs.getString("reply_content"));
+                    feedback.setUser_name(rs.getString("user_name"));
+                    feedback.setProduct_name(rs.getString("product_name"));
+                    list.add(feedback);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Feedback> getAllFeedbackByPage(int page, int pageSize) {
+        List<Feedback> list = new ArrayList<>();
+        String sql = "SELECT fb.*, fr.reply_content, u.user_name, p.product_name "
+                + "FROM Feedback fb "
+                + "LEFT JOIN FeedbackReply fr ON fb.feedback_id = fr.feedback_id "
+                + "JOIN [User] u ON u.email = fb.email "
+                + "JOIN [Product] p ON p.product_id = fb.product_id "
+                + "ORDER BY fb.feedback_id "
+                + // Sắp xếp để OFFSET hoạt động đúng
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"; // Phân trang
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, (page - 1) * pageSize); // Bỏ qua số lượng record phù hợp
+            ps.setInt(2, pageSize); // Số lượng record cần lấy
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Feedback feedback = new Feedback();
+                    feedback.setFeedback_id(rs.getInt("feedback_id"));
+                    feedback.setProduct_id(rs.getInt("product_id"));
+                    feedback.setEmail(rs.getString("email"));
+                    feedback.setFeedback_content(rs.getString("feedback_content"));
+                    feedback.setRating(rs.getInt("rating"));
+                    feedback.setCreate_at(rs.getString("created_at"));
+                    feedback.setStatus(rs.getBoolean("status"));
+                    feedback.setReply_content(rs.getString("reply_content"));
+                    feedback.setUser_name(rs.getString("user_name"));
+                    feedback.setProduct_name(rs.getString("product_name"));
+                    list.add(feedback);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public List<Feedback> getAllFeedback() {
         List<Feedback> list = new ArrayList<>();
         String sql = "select fb.*, fr.reply_content, u.user_name, p.product_name\n"
@@ -45,6 +222,26 @@ public class ProductDAOTuan extends DBContext {
                 + "left join FeedbackReply fr on fb.feedback_id=fr.feedback_id\n"
                 + "join [User] u on u.email = fb.email\n"
                 + "join [Product] p on p.product_id = fb.product_id";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Feedback feedback = new Feedback();
+                    feedback.setFeedback_id(rs.getInt("feedback_id"));
+                    feedback.setProduct_id(rs.getInt("product_id"));
+                    feedback.setEmail(rs.getString("email"));
+                    feedback.setFeedback_content(rs.getString("feedback_content"));
+                    feedback.setRating(rs.getInt("rating"));
+                    feedback.setCreate_at(rs.getString("created_at"));
+                    feedback.setStatus(rs.getBoolean("status"));
+                    feedback.setReply_content(rs.getString("reply_content"));
+                    feedback.setUser_name(rs.getString("user_name"));
+                    feedback.setProduct_name(rs.getString("product_name"));
+                    list.add(feedback);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return list;
     }
 
@@ -79,7 +276,7 @@ public class ProductDAOTuan extends DBContext {
             ps.setDate(2, Date.valueOf(endDate));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    customerStats.put(rs.getString("role_name"), rs.getInt("Total"));
+                    customerStats.put(rs.getString("product_name"), rs.getInt("view"));
                 }
             }
         } catch (Exception e) {
@@ -518,7 +715,7 @@ public class ProductDAOTuan extends DBContext {
                     UserTuan customer = new UserTuan();
                     customer.setUserId(rs.getInt("user_id"));
                     customer.setUserName(rs.getString("user_name"));
-                    customer.setRoleId(rs.getInt("role_id"));             
+                    customer.setRoleId(rs.getInt("role_id"));
                     customer.setEmail(rs.getString("email"));
                     customer.setPhoneNumber(rs.getString("phone_number"));
                     customer.setStatus(rs.getBoolean("status"));
