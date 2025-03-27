@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 @WebServlet(name="DBContext", urlPatterns={"/DBContext"})
 public class DBContext {
-    protected Connection connection;
+    public Connection connection;
     public DBContext()
     {
         try {

@@ -41,6 +41,15 @@ public class AddressTuan {
         this.ward = ward;
         this.street = street;
     }
+//    public AddressTuan( int addressId, String name, String phone, String city, String district, String ward, String street) {
+//        this.addressId = addressId;
+//        this.name = name;
+//        this.phone = phone;
+//        this.city = city;
+//        this.district = district;
+//        this.ward = ward;
+//        this.street = street;
+//    }
 
     public int getAddressId() {
         return addressId;

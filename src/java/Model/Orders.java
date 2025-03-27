@@ -102,6 +102,10 @@ public class Orders {
         this.shipping_address = shipping_address;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

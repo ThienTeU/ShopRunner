@@ -3,12 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package ManhTuan;
+package HieuPTM;
 
-import DAL.ProductDAOTuan;
-import Model.UserTuan;
+import DAL.StaffDAOHieu;
+import Model.StaffHieu;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,14 +15,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
-/**
- *
- * @author tuan
- */
-@WebServlet(name="CustomerSearch", urlPatterns={"/customersearch"})
-public class CustomerSearch extends HttpServlet {
-   
-    
+@WebServlet(name="StaffSearch", urlPatterns={"/StaffSearch"})
+public class StaffSearch extends HttpServlet {
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         String userName = request.getParameter("userName");
@@ -31,7 +25,7 @@ public class CustomerSearch extends HttpServlet {
         String phone = request.getParameter("phone");
         String strStatus = request.getParameter("status");
         Boolean status = null;
-        if (strStatus.isEmpty()) {
+                if (strStatus.isEmpty()) {
             status = null;
         } else {
             status = "1".equals(request.getParameter("status"));
@@ -45,16 +39,16 @@ public class CustomerSearch extends HttpServlet {
         if (phone.isEmpty()) {
             phone = null;
         }
-
-        ProductDAOTuan dao = new ProductDAOTuan();
-        List<UserTuan> customer = dao.searchUsers(userName, email, phone, status);
+        
+        StaffDAOHieu dao = new StaffDAOHieu();
+        List<StaffHieu> staff = dao.searchStaff(userName, email, phone, status);
         int count = 0;
-        for (UserTuan cus : customer) {
+        for (StaffHieu sta : staff){
             count++;
         }
         int size = 10;
         int end = 0;
-        if (count % size == 0) {
+        if (count % size == 0){
             end = count / size;
         } else {
             end = (count / size) + 1;
@@ -64,16 +58,13 @@ public class CustomerSearch extends HttpServlet {
             index = Integer.parseInt(request.getParameter("index"));
         }
         int offset = (index - 1) * size;
-        List<UserTuan> customers = dao.searchUsers(userName, email, phone, status, offset, size);
-        List<UserTuan> orders = dao.getTotal();
-        request.setAttribute("orders", orders);
+        List<StaffHieu> staffs = dao.searchStaffPage(userName, email, phone, status, offset, size);
         request.setAttribute("check", "search");
         request.setAttribute("end", end);
-        request.setAttribute("customers", customers);
-        request.getRequestDispatcher("/ManhTuan/customerlist.jsp").forward(request, response);
+        request.setAttribute("staffs", staffs);
+        request.getRequestDispatcher("/HieuPTM/StaffManage.jsp").forward(request, response);
     } 
 
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -90,5 +81,4 @@ public class CustomerSearch extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }
-
 }

@@ -31,19 +31,65 @@ public class AuthorizeFilter implements Filter {
 
     private static final List<String> publicUrls = Arrays.asList(
             "/",
+
+            "/home",                        
+            //HieuPTM_STAFF
+            "/HieuPTM/StaffManage",
+
+            "/ManhTuan/orderlist.jsp",
+            "/orderlist",
+            "/dashboard",
+            "/ManhTuan/marketingdashboard.jsp",
             "/home",
+            "/AddFeedbackServlet",
+            "/RunnerShop/ManhTuan/customeradd",
+            "/ManhTuan/customeradd",
+
+            "/HieuPTM/StaffManage.jsp",
+            "/HieuPTM.Controller.StaffManage",
+            "/StaffManage",
+            "/StaffSearch",
+            "/StaffAdd",
+            "/StaffChangeStatus",
+            //HieuPTM
             "/LoginControl",
             "/RegisterControl",
             "/ForgotPassword",
             "/ValidateOTP",
             "/ChangePassword",
             "/NewPassword",
+            "/RunnerShop/ManhTuan/customeradd",
+            "/ManhTuan/customeradd",
+            
+            "/ManhTuan/customeraddressdetail.jsp",
+            "/ManhTuan/feedbackmanagement.jsp",
+            "/customeradd.jsp",
+            "/customeraddressedit",
+            "/customeraddressadd",
+            "/ManhTuan/marketingdashboard.jsp",
+            "/ManhTuan/customeraddressadd.jsp",
+            "/ManhTuan/customeraddressedit.jsp",
+            
+
             "/RunnerShop",
             "/testlogin",
             "/productlist",
             "/ProductDetailServlet",
             "/CheckOutServlet",
             "/CheckOutVnpayServlet",
+
+            "/customeraddressdetail",
+            "/ManhTuan/customeraddressadd",
+            "/ManhTuan/CheckOutJSP.jsp",
+            "/ManhTuan/customeradd.jsp",
+            "/customeradd",
+            "/RunnerShop/customeradd",
+            "/customeraddressadd",
+            "/changeStatus",
+            "/customeredit",
+            "/customersearch",
+            "/customerlist",
+
             "/CartDetailServlet",
             "/AddToCartServlet",
             "/UpdateCart",
