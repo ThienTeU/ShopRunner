@@ -38,6 +38,51 @@ public class ProductDAOTuan extends DBContext {
 
     }
 
+    public List<OrderDetails> getOrderDetailsByOrderId(int orderId) {
+        List<OrderDetails> orderDetails = new ArrayList<>();
+        String sql = "SELECT \n"
+                + "    od.order_detail_id,\n"
+                + "    p.product_name,\n"
+                + "    pp.price,\n"
+                + "    od.quantity,\n"
+                + "    (od.quantity * pp.price) AS total_price_per_item,\n"
+                + "    o.total_price AS total_order_price,\n"
+                + "    o.VoucherID,\n"
+                + "    o.shipping_address\n"
+                + "FROM Orders o\n"
+                + "JOIN OrderDetails od ON o.order_id = od.order_id\n"
+                + "JOIN Product p ON p.product_id = od.Product_id\n"
+                + "JOIN ProductPrice pp ON pp.ProductPrice_id = od.ProductPrice_id\n"
+                + "WHERE o.order_id = ?;";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String voucherId = rs.getString("VoucherID");
+                    if (rs.wasNull()) {
+                        voucherId = "Không có";
+                    }
+
+                    OrderDetails detail = new OrderDetails(
+                            rs.getInt("order_detail_id"),
+                            rs.getString("product_name"),
+                            rs.getInt("price"),
+                            rs.getInt("quantity"),
+                            voucherId,
+                            rs.getInt("total_order_price"),
+                            rs.getString("shipping_address")
+                    );
+                    orderDetails.add(detail);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orderDetails;
+    }
+
     public void updateFeedbackStatus(int feedbackId, boolean status) {
         String sql = "UPDATE Feedback SET status = ? WHERE feedback_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -48,6 +93,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
+
     public void deleteReply(int feedbackId) {
         String sql = "delete from FeedbackReply where feedback_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -57,7 +103,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
-    
+
     public void editReply(int feedbackId, String replyContent) {
         String sql = "UPDATE FeedbackReply SET reply_content = ? WHERE feedback_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -68,6 +114,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
+
     public void addReply(int feedbackId, String replyContent) {
         String sql = "INSERT INTO FeedbackReply (feedback_id, reply_content)\n"
                 + "VALUES (?, ?)";
@@ -79,6 +126,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
+
     public int countFilteredFeedbacks(String searchName, String searchProduct, String ratingFilter) {
         int count = 0;
         String sql = "SELECT COUNT(*) FROM Feedback fb "
@@ -351,7 +399,10 @@ public class ProductDAOTuan extends DBContext {
 
     public List<Orders> getOrderByDate(String startDate, String endDate) {
         List<Orders> orders = new ArrayList<Orders>();
-        String sql = "select * from Orders WHERE order_date BETWEEN ? AND ?";
+        String sql = "SELECT TOP 5 * \n"
+                + "FROM Orders \n"
+                + "WHERE order_date BETWEEN ? AND ? \n"
+                + "ORDER BY order_date DESC;";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(startDate));
             ps.setDate(2, Date.valueOf(endDate));
@@ -373,6 +424,145 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
         return orders;
+    }
+
+    public List<Orders> searchOrders(String email, String orderDate, String status, String paymentMethod) {
+        List<Orders> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM [Orders] WHERE 1=1");
+
+        if (email != null && !email.isEmpty()) {
+            sql.append(" AND email LIKE ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+        if (paymentMethod != null && !paymentMethod.isEmpty()) {
+            sql.append(" AND payment_method = ?");
+        }
+
+        // Xử lý sắp xếp theo order_date
+        if ("asc".equalsIgnoreCase(orderDate)) {
+            sql.append(" ORDER BY order_date ASC");
+        } else {
+            sql.append(" ORDER BY order_date DESC"); // Mặc định mới nhất
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (email != null && !email.isEmpty()) {
+                ps.setString(index++, "%" + email + "%");
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (paymentMethod != null && !paymentMethod.isEmpty()) {
+                ps.setString(index++, paymentMethod);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Orders> searchOrdersByPage(String email, String orderDate, String status, String paymentMethod, int page, int pageSize) {
+        List<Orders> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM [Orders] WHERE 1=1");
+
+        if (email != null && !email.isEmpty()) {
+            sql.append(" AND email LIKE ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+        if (paymentMethod != null && !paymentMethod.isEmpty()) {
+            sql.append(" AND payment_method = ?");
+        }
+
+        // Xử lý sắp xếp theo order_date
+        if ("asc".equalsIgnoreCase(orderDate)) {
+            sql.append(" ORDER BY order_date ASC");
+        } else {
+            sql.append(" ORDER BY order_date DESC"); // Mặc định là mới nhất
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (email != null && !email.isEmpty()) {
+                ps.setString(index++, "%" + email + "%");
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (paymentMethod != null && !paymentMethod.isEmpty()) {
+                ps.setString(index++, paymentMethod);
+            }
+
+            ps.setInt(index++, (page - 1) * pageSize);
+            ps.setInt(index++, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Orders> getAllOrderByPage(int page, int pageSize) {
+        List<Orders> list = new ArrayList<>();
+        String sql = "SELECT * FROM [Orders] ORDER BY order_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public List<Orders> getAllOrder() {
@@ -859,7 +1049,6 @@ public class ProductDAOTuan extends DBContext {
         if (colors == null || colors.isEmpty() || sizes == null || sizes.isEmpty()) {
             return products;
         }
-
         String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating "
                 + "FROM Product p "
                 + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
@@ -875,7 +1064,6 @@ public class ProductDAOTuan extends DBContext {
                 sql += ",";
             }
         }
-
         sql += ") AND s.size IN (";
         for (int i = 0; i < sizes.size(); i++) {
             sql += "'" + sizes.get(i) + "'";
@@ -883,7 +1071,6 @@ public class ProductDAOTuan extends DBContext {
                 sql += ",";
             }
         }
-
         sql += ") GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
                 + "p.discount, p.status, p.thumbnail, p.created_at "
                 + "ORDER BY p.created_at DESC";

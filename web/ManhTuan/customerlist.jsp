@@ -17,6 +17,7 @@
         <link rel="stylesheet" href="ManhTuan/customerlist.css"/>
     </head>
     <body>
+        <%@ include file="/model/header.jsp" %>
         <form action= "customersearch" method="post" class="row g-3" id="userSearchForm">
             <div class="col-md-3">
                 <label for="userName" class="form-label">Tên</label>
@@ -131,6 +132,7 @@
 
         </div>
 
+        <%@ include file="/model/footer.jsp" %>
 
     </body>
 </html>

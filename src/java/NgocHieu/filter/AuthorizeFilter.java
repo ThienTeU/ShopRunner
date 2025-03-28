@@ -35,6 +35,8 @@ public class AuthorizeFilter implements Filter {
             "/home",    
             //HieuPTM_Guest
             "/RegisterControl",
+            "/ordersearch",
+            "/orderdetail",
             "/ForgotPassword",
             "/ValidateOTP",
             "/NewPassword",

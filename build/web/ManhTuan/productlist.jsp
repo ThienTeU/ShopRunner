@@ -52,12 +52,10 @@
                 });
             });
         </script>
-        <!-- Bootstrap 5 CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+        
     </head>
     <body>
-
         <div class="product-category">                    
             <a href="home" style="text-decoration: none; color: black">Trang chủ</a> - 
             <a href="productlist" style="text-decoration: none; color: black">Danh sách sản phẩm</a>  
@@ -74,7 +72,6 @@
             </c:forEach>
         </div>
         <hr>
-
         <div class="slider-container">
             <h2>Chọn khoảng giá</h2>
             <form action="productfilter" method="get">
@@ -88,7 +85,6 @@
                 <button type="submit">Lọc</button>
             </form>
         </div>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
         <script>
             const slider = document.getElementById('slider');
