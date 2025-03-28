@@ -2,7 +2,6 @@ package Controller;
 
 import DAL.AddressDAO;
 import DAL.FeedbacAnhkDAO;
-import DAL.FeedbackDAO;
 import DAL.OrderDAO;
 import DAL.UserDAO;
 import Model.AddressAnh;
@@ -52,12 +51,12 @@ public class ProfileController extends HttpServlet {
         List<Orders> orders = orderDAO.getOrdersByUserId(userId);
 
         // lấy tổng số đơn hàng feedback
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
-        int totalFeedbacks = feedbackDAO.getTotalFeedbacksByUser(userId);
+        FeedbacAnhkDAO feedbackDAO = new FeedbacAnhkDAO();
+        int totalFeedbacks = feedbackDAO.getTotalFeedbackByEmail(email);
 
         FeedbacAnhkDAO feedbackanhDAO = new FeedbacAnhkDAO();
 
-        List<FeedbackAnh> feedbackHistory = feedbackanhDAO.getFeedbackByUserId(userId); // Lấy danh sách phản hồi
+        List<FeedbackAnh> feedbackHistory = feedbackanhDAO.getFeedbackByEmail(email); // Lấy danh sách phản hồi
 
         AddressDAO addressDAO = new AddressDAO();
         List<AddressAnh> addresses = addressDAO.getAddressesByUserId(userId);

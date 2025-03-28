@@ -32,34 +32,33 @@ public class AuthorizeFilter implements Filter {
     private static final List<String> publicUrls = Arrays.asList(
             "/",
             "/Charts",
-            "/home",                        
+            "/home",
             //HieuPTM_STAFF
             "/LogOut",
             "/HieuPTM/StaffManage",
             "/profile",
             "/Profile.jsp",
+            "/About.jsp",
             "/feedbacklist",
             "/feedbacksearch",
             "/feedbackreply",
             "/feedbackreplydelete",
-
             "/tableVoucher",
             "/Charts",
             "/ManhTuan/orderlist.jsp",
             "/ManhTuan/test.jsp",
             "/tableVoucher",
             "/orderlist",
+            "/ordersprofile",
             "/dashboard",
             "/ManhTuan/marketingdashboard.jsp",
             "/home",
             "/ManagerSeller.jsp",
-
             "/AddFeedbackServlet",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
             "/feedbackstatus",
             "/export",
-            
             "/HieuPTM/StaffManage.jsp",
             "/HieuPTM.Controller.StaffManage",
             "/StaffManage",
@@ -75,7 +74,6 @@ public class AuthorizeFilter implements Filter {
             "/NewPassword",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
-            
             "/ManhTuan/customeraddressdetail.jsp",
             "/ManhTuan/feedbackmanagement.jsp",
             "/customeradd.jsp",
@@ -84,15 +82,12 @@ public class AuthorizeFilter implements Filter {
             "/ManhTuan/marketingdashboard.jsp",
             "/ManhTuan/customeraddressadd.jsp",
             "/ManhTuan/customeraddressedit.jsp",
-            
-
             "/RunnerShop",
             "/testlogin",
             "/productlist",
             "/ProductDetailServlet",
             "/CheckOutServlet",
             "/CheckOutVnpayServlet",
-
             "/customeraddressdetail",
             "/ManhTuan/customeraddressadd",
             "/ManhTuan/CheckOutJSP.jsp",
@@ -104,7 +99,6 @@ public class AuthorizeFilter implements Filter {
             "/customeredit",
             "/customersearch",
             "/customerlist",
-
             "/CartDetailServlet",
             "/AddToCartServlet",
             "/UpdateCart",
@@ -142,7 +136,7 @@ public class AuthorizeFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        
+
         // Bỏ qua file tĩnh
         if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".avif") || path.contains("sandbox") || path.contains("vnpay")) {
             chain.doFilter(request, response);
