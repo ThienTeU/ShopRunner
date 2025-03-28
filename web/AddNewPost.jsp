@@ -55,9 +55,9 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="left-side">
-                                    <label class="form-label" style="color: #E57C23">Title</label>
+                                    <label class="form-label" style="color: #E57C23">Tiêu đề</label>
                                     <textarea id="w3review" name="title" rows="4" cols="50" class="form-control col-3" ></textarea>
-                                    <label class="form-label" style="color: #E57C23">Category</label>
+                                    <label class="form-label" style="color: #E57C23">Danh mục</label>
                                     <select name="category" id="category" class="form-control col-4">
                                         <c:forEach items="${requestScope.postCategoryDTOs}" var="c">
                                             <option value="${c.getName()}">${c.getName()}</option>
@@ -67,19 +67,19 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="right-side">
-                                    <label class="form-label" style="color: #E57C23">Banner</label>
+                                    <label class="form-label" style="color: #E57C23">Ảnh Nền</label>
 
                                     <input type="file" value="" id="img" class="form-control col-3" name="banner" style="width: 80%; margin-bottom: .5rem; margin-top: .5rem">
                                 </div>
                             </div>
                         </div>
-                        <label class="form-label" style="color: #E57C23">Content</label>
+                        <label class="form-label" style="color: #E57C23">Nội dung</label>
 
                         <textarea id="content" name="content" rows="5" cols="80" ></textarea>
                         <script>
                             CKEDITOR.replace('content');
                         </script>
-                        <button type="submit"   class="btn btn-primary" style="margin-top: 30px" value="imageAdd" name="update">Add  Post</button> 
+                        <button type="submit"   class="btn btn-primary" style="margin-top: 30px" value="imageAdd" name="update">Thêm bài viết</button> 
                     </div>
 
                 </form>
