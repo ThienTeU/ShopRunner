@@ -30,25 +30,29 @@
                             <a href="tableAccount" class="dropdown-item">Account</a>
                             <a href="tableCategory" class="dropdown-item">Category</a>
                             <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Product</a>
-                            <a href="home" class="dropdown-item">Order</a>
                             <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Voucher</a>
+                            <a href="${pageContext.request.contextPath}/dashboard" class="dropdown-item">Marketing Dashboard</a>
+                            <a href="${pageContext.request.contextPath}/managerbanner" class="dropdown-item">Manager Banner</a>
+                            <a href="${pageContext.request.contextPath}/contactList" class="dropdown-item">Manager Contact</a>
+                            <a href="${pageContext.request.contextPath}/manageproductfavorite" class="dropdown-item">Manager Favorite</a>
+
                             <a href="tableFeedback" class="dropdown-item">Feedback</a>
                             <a href="postDashboard" class="dropdown-item">Post</a>
                         </div>
                     </div>
-<!--                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
-                    <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>-->
+                    <!--                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
+                                        <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
+                                        <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>-->
                     <a href="Charts" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
-<!--                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="signin.html" class="dropdown-item">Sign In</a>
-                            <a href="signup.html" class="dropdown-item">Sign Up</a>
-                            <a href="404.html" class="dropdown-item">404 Error</a>
-                            <a href="blank.html" class="dropdown-item">Blank Page</a>
-                        </div>
-                    </div>-->
+                    <!--                    <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                                            <div class="dropdown-menu bg-transparent border-0">
+                                                <a href="signin.html" class="dropdown-item">Sign In</a>
+                                                <a href="signup.html" class="dropdown-item">Sign Up</a>
+                                                <a href="404.html" class="dropdown-item">404 Error</a>
+                                                <a href="blank.html" class="dropdown-item">Blank Page</a>
+                                            </div>
+                                        </div>-->
                 </div>
             </nav>
         </div>

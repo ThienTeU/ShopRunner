@@ -49,27 +49,23 @@ public class DashboardMarketing extends HttpServlet {
         Map<String, Integer> viewStats = dao.getProductViews(startDate, endDate);
         List<String> viewLabels = new ArrayList<>(viewStats.keySet());
         List<Integer> viewCounts = new ArrayList<>(viewStats.values());
-        
 
         Map<String, Integer> reviewStats = dao.getProductReviews(startDate, endDate);
         List<String> reviewLabels = new ArrayList<>(reviewStats.keySet());
         List<Integer> reviewCounts = new ArrayList<>(reviewStats.values());
-        
 
         Map<String, Integer> customerStats = dao.getCustomerAnalysis(startDate, endDate);
         List<String> customerTypes = new ArrayList<>(customerStats.keySet());
         List<Integer> customerCounts = new ArrayList<>(customerStats.values());
-        
 
         Map<String, Integer> topProducts = dao.getTopProducts(startDate, endDate);
         List<String> productNames = new ArrayList<>(topProducts.keySet());
         List<Integer> productCounts = new ArrayList<>(topProducts.values());
-        
 
         Map<String, Double> revenueData = dao.getRevenueByDate(startDate, endDate);
         List<String> labels = new ArrayList<>(revenueData.keySet());
         List<Double> values = new ArrayList<>(revenueData.values());
-        
+
         request.setAttribute("viewStats", Map.of("labels", viewLabels, "counts", viewCounts));
         request.setAttribute("reviewStats", Map.of("labels", reviewLabels, "counts", reviewCounts));
         request.setAttribute("customerStats", Map.of("types", customerTypes, "counts", customerCounts));
@@ -97,4 +93,16 @@ public class DashboardMarketing extends HttpServlet {
         return "Short description";
     }
 
+    public static void main(String[] args) {
+        ProductDAOTuan dao = new ProductDAOTuan();
+
+        Map<String, Integer> viewStats = dao.getProductViews("2024-03-01", "2025-12-12");
+        List<String> viewLabels = new ArrayList<>(viewStats.keySet());
+        List<Integer> viewCounts = new ArrayList<>(viewStats.values());
+        System.out.println("View Stats:");
+        for (int i = 0; i < viewLabels.size(); i++) {
+            System.out.println(viewLabels.get(i) + ": " + viewCounts.get(i));
+        }
+
+    }
 }

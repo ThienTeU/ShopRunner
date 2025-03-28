@@ -118,6 +118,7 @@ public class LoginControl extends HttpServlet {
             UserDAO dao = new UserDAO();
             UserHieu user = dao.getUserByEmail(email);
             request.getSession().setAttribute("user", user);
+            request.getSession().setAttribute("user_id",user.getUserID());
             response.sendRedirect(request.getContextPath() + "/home");
         }
     }
