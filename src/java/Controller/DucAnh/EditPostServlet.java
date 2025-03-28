@@ -90,7 +90,7 @@ public class EditPostServlet extends HttpServlet {
                     File file = new File(path);
                     banner.write(path + File.separator + fileBanner);
                 }
-                session.setAttribute("msg", "Update Post Success!");
+                session.setAttribute("msg", "Cập nhật bài viết thành công!");
                 response.sendRedirect("postDashboard");
             } else {
                 response.sendRedirect("error.jsp");
