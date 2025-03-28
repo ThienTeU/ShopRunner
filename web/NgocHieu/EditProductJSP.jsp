@@ -49,7 +49,7 @@
     </style>
 </head>
 <body>
-    <h1>Add Product</h1>
+    <h1>Edit Product</h1>
     <form action="EditProductServlet" method="POST" enctype="multipart/form-data">
         <table>
             <tbody>
@@ -98,10 +98,6 @@
                 <tr>
                     <td><label>Discount:</label></td>
                     <td><input type="number" name="discount" value="${product.discount}" required></td>
-                </tr>
-                <tr>
-                    <td><label>Create at:</label></td>
-                    <td><input type="date" name="created_at" value="${product.created_at}" required></td>
                 </tr>
                 <tr>
                     <input type="hidden" name="status" value="1">

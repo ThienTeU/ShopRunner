@@ -44,8 +44,9 @@
                                                         height: 30px; width: 30px; border: solid 1px gray; cursor: pointer;">
                                                 </button>
                                                 <div class="productPrice" style="color: red; font-weight: bold; font-size: 14px;">
-                                                    ${pp.price} VND
+                                                    ${pp.price - pp.price*product.discount/100} VND
                                                 </div>
+                                                
                                             </a>
                                         </div>
                                     </c:if>

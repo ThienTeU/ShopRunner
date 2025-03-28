@@ -36,12 +36,32 @@
                 font-size: 18px;
                 margin-bottom: 30px;
             }
+
+            /* CSS cho thẻ a */
+            a {
+                display: inline-block;
+                font-size: 16px;
+                color: #007bff;
+                text-decoration: none;
+                font-weight: bold;
+                padding: 10px 20px;
+                border: 1px solid #007bff;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            a:hover {
+                background-color: #007bff;
+                color: #fff;
+            }
         </style>
+
     </head>
     <body>
         <div class="container">
             <h1>Thêm Sản Phẩm Thành Công!</h1>
             <p>Sản phẩm của bạn đã được thêm vào hệ thống thành công.</p>
+            <a href="/RunnerShop/ProductDashboard">Quay lại danh sách sản phẩm</a>
         </div>
     </body>
 </html>

@@ -4,11 +4,15 @@
  */
 package Model;
 
+import DAL.FeedbackDAO;
+import java.sql.SQLException;
+
 /**
  *
  * @author admin
  */
 public class Feedback {
+
     private int feedback_id;
     private int product_id;
     private String email;
@@ -30,6 +34,16 @@ public class Feedback {
 
     public void setReply_id(int reply_id) {
         this.reply_id = reply_id;
+    }
+
+    public FeedbackReply getFeedbackReply() throws SQLException {
+        FeedbackDAO dao = new FeedbackDAO();
+        try {
+            return dao.getFeedbackReplyByFeedbackId(feedback_id);
+        } catch (SQLException e) {
+            e.printStackTrace();  // In ra lỗi nếu có
+            return null;  // Trả về null nếu xảy ra lỗi
+        }
     }
 
     public Feedback(int feedback_id, int product_id, String email, String feedback_content, int rating, String create_at, boolean status, String reply_content, String user_name, String product_name, int reply_id) {
@@ -82,8 +96,8 @@ public class Feedback {
     public void setProduct_name(String product_name) {
         this.product_name = product_name;
     }
-    
-    public String getName(){
+
+    public String getName() {
         String name = "Bổ sung tên người dùng vào bảng user";
         return name;
     }
@@ -96,6 +110,17 @@ public class Feedback {
         this.rating = rating;
         this.create_at = create_at;
         this.status = status;
+    }
+
+    public Feedback(int feedback_id, int product_id, String email, String feedback_content, int rating, String create_at, boolean status, int reply_id) {
+        this.feedback_id = feedback_id;
+        this.product_id = product_id;
+        this.email = email;
+        this.feedback_content = feedback_content;
+        this.rating = rating;
+        this.create_at = create_at;
+        this.status = status;
+        this.reply_id = reply_id;
     }
 
     public int getFeedback_id() {
@@ -168,5 +193,5 @@ public class Feedback {
         sb.append('}');
         return sb.toString();
     }
-    
+
 }

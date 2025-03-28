@@ -48,7 +48,17 @@ public class AddProductPriceServlet extends HttpServlet {
         try {
             InsertProductDAO dao = new InsertProductDAO();
             ProductDAO dao2 = new ProductDAO();
-
+            if(dao.isExistedProductId(price)){
+                 response.setContentType("text/html;charset=UTF-8");
+                 response.getWriter().println("<script>alert('Mã sản phẩm không tồn tại!'); window.location='ProductDashboard';</script>");
+                 return;
+            }
+            if(dao.isColorExistsForProduct(product_id, color_id)){
+                 response.setContentType("text/html;charset=UTF-8");
+                 response.getWriter().println("<script>alert('Màu này đã tồn tại!'); window.location='AddProductPriceServlet';</script>");
+                 return;
+            }
+            
             int productprice_id = dao.addProductPrice(product_id, color_id, price);
             request.setAttribute("color_id", color_id);
             request.setAttribute("productprice_id", productprice_id);

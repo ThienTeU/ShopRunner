@@ -57,5 +57,11 @@
                 </div>
             </nav>
         </div>
+                        <script>
+                            $(document).on('click', 'a', function (e) {
+                                    // Đảm bảo không ngăn chặn hành vi mặc định của liên kết
+                                    window.location.href = $(this).attr('href');
+                                });
+                        </script>
     </body>
 </html>
