@@ -172,7 +172,114 @@
 
                 <!-- blog container -->
 
-
+ <!-- CHAT ICON -->
+         <div id="chat-icon" onclick="toggleChat()">
+             💬 Chat với Admin
+         </div>
+ 
+         <!-- CỬA SỔ CHAT -->
+         <div id="chat-window">
+             <div id="chat-header" onclick="toggleChat()">
+                 Chat Support <span onclick="closeChat(event)">✖</span>
+             </div>
+ 
+ 
+             <div id="chat-input">
+                 <input type="email" id="email" placeholder="Nhập email">
+                 <button onclick="connectWebSocket()">Bắt đầu chat</button>
+ 
+                 <div id="chat-messages"></div>
+ 
+                 <input type="text" id="message" placeholder="Nhập tin nhắn...">
+                 <button onclick="sendMessage()">Gửi</button>
+                 <button onclick="clearChatHistory()">Xóa lịch sử</button>
+             </div>
+         </div>
+         <script>
+             function toggleChat() {
+                 let chatWindow = document.getElementById("chat-window");
+                 chatWindow.style.display = (chatWindow.style.display === "none" || chatWindow.style.display === "") ? "block" : "none";
+             }
+             let ws;
+             let currentEmail;
+ 
+             function connectWebSocket() {
+                 let emailInput = document.getElementById("email");
+                 let email = emailInput.value.trim();
+ 
+                 if (!email) {
+                     alert("Vui lòng nhập email trước khi bắt đầu chat!");
+                     return;
+                 }
+ 
+                 currentEmail = email;
+ 
+                 if (ws) {
+                     ws.close();
+                 }
+ 
+                 ws = new WebSocket("ws://" + window.location.host + "/RunnerShop/chat/" + email);
+ 
+                 ws.onopen = function () {
+                     console.log("WebSocket connected for " + email);
+                     loadChatHistory(email);
+                 };
+ 
+                 ws.onmessage = function (event) {
+                     displayMessage(event.data);
+                     saveMessage(email, event.data);
+                 };
+ 
+                 ws.onclose = function () {
+                     console.log("WebSocket closed");
+                 };
+             }
+ 
+             function displayMessage(message) {
+                 let chatMessages = document.getElementById("chat-messages");
+                 let messageElement = document.createElement("p");
+                 messageElement.textContent = message;
+                 chatMessages.appendChild(messageElement);
+                 chatMessages.scrollTop = chatMessages.scrollHeight;
+             }
+ 
+             function sendMessage() {
+                 let messageInput = document.getElementById("message");
+                 let message = messageInput.value.trim();
+                 if (message !== "" && ws) {
+                     let formattedMessage = currentEmail + ": " + message;
+                     ws.send(message);
+                     displayMessage(formattedMessage);
+                     saveMessage(currentEmail, formattedMessage);
+                     messageInput.value = "";
+                 }
+             }
+ 
+             function saveMessage(email, message) {
+                 let chatHistoryKey = "chat_history_" + email;
+                 let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+                 chatHistory.push(message);
+                 localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+             }
+ 
+             function loadChatHistory(email) {
+                 let chatHistoryKey = "chat_history_" + email;
+                 let chatMessages = document.getElementById("chat-messages");
+                 chatMessages.innerHTML = "";
+                 let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+                 chatHistory.forEach(message => {
+                     displayMessage(message);
+                 });
+             }
+ 
+             function clearChatHistory() {
+                 if (!currentEmail)
+                     return;
+                 let chatHistoryKey = "chat_history_" + currentEmail;
+                 localStorage.removeItem(chatHistoryKey);
+                 document.getElementById("chat-messages").innerHTML = "";
+             }
+         </script>
 
             </section>
             <%@include file="component/footer.jsp" %>
