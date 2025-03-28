@@ -30,14 +30,15 @@
                             <a href="tableAccount" class="dropdown-item">Account</a>
                             <a href="tableCategory" class="dropdown-item">Category</a>
                             <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Product</a>
-                            <a href="tableOrder" class="dropdown-item">Order</a>
+                            <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Voucher</a>
+                            <a href="${pageContext.request.contextPath}/dashboard" class="dropdown-item">Marketing Dashboard</a>
                             <a href="${pageContext.request.contextPath}/managerbanner" class="dropdown-item">Manager Banner</a>
                             <a href="${pageContext.request.contextPath}/contactList" class="dropdown-item">Manager Contact</a>
                             <a href="${pageContext.request.contextPath}/manageproductfavorite" class="dropdown-item">Manager Favorite</a>
+                            <a href="${pageContext.request.contextPath}/customerlist" class="dropdown-item">Manager Customer</a>
 
-                            <a href="tableVoucher" class="dropdown-item">Voucher</a>
-                            <a href="tableFeedback" class="dropdown-item">Feedback</a>
-                            <a href="postDashboard" class="dropdown-item">Post</a>
+                            <a href="${pageContext.request.contextPath}/feedbacklist" class="dropdown-item">Manage Feedback</a>
+                            <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Manage Post</a>
                         </div>
                     </div>
                     <!--                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
@@ -56,5 +57,11 @@
                 </div>
             </nav>
         </div>
+                        <script>
+                            $(document).on('click', 'a', function (e) {
+                                    // Đảm bảo không ngăn chặn hành vi mặc định của liên kết
+                                    window.location.href = $(this).attr('href');
+                                });
+                        </script>
     </body>
 </html>

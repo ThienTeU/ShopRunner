@@ -72,7 +72,6 @@ public class ProductDetailServlet extends HttpServlet {
             if (token != null) {
                 String email = AuthenticationService.getEmailFromToken(token);
                 User user = dao.getUserByEmail(email);
-                request.getSession().setAttribute("user", user);
                 
                 checkFeedback = feedbackDao.checkFeedbackOrNot(user.getEmail(), product_id);
                 orderDate = feedbackDao.checkOrderOrNot(user.getEmail(), product_id);

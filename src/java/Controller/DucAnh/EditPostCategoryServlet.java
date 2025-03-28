@@ -96,10 +96,10 @@ public class EditPostCategoryServlet extends HttpServlet {
             PostCategoryDAO pcdao = new PostCategoryDAO();
             int checkUpdatePostCategory = pcdao.updatePostCategory(pcdto);
             if (checkUpdatePostCategory != 0) {
-                session.setAttribute("msg", "Update PostCategory Success!");
+                session.setAttribute("msg", "Cập nhật danh mục thành công!");
                 response.sendRedirect("postDashboard");
             } else {
-               session.setAttribute("msg", "Update PostCategory NOT Success!");
+               session.setAttribute("msg", "Cập nhật danh mục không thành công!");
                 response.sendRedirect("postDashboard");
             }
 

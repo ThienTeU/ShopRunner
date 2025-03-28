@@ -23,10 +23,11 @@ public class FeedbackDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         FeedbackDAO dao = new FeedbackDAO();
-        List<Feedback> list = dao.getAllFeedbackById(1);
-        for (Feedback f : list) {
-            System.out.println(f.toString());
-        }
+//        List<Feedback> list = dao.getAllFeedbackById(1);
+//        for (Feedback f : list) {
+//            System.out.println(f.toString());
+//        }
+System.out.println(dao.getFeedbackReplyByFeedbackId(1));
         //System.out.println(dao.checkOrderOrNot("duonghieu294@gmail.com", 1));
         //System.out.println(dao.checkFeedbackOrNot("duonghieu294@gmail.com", 1));
     }
@@ -87,7 +88,7 @@ public class FeedbackDAO extends DBContext {
 
     public List<Feedback> getAllFeedbackById(int product_id) throws SQLException {
         List<Feedback> list = new ArrayList<>();
-        String sql = "SELECT * FROM Feedback WHERE product_id = ?";
+        String sql = "SELECT * FROM Feedback WHERE product_id = ? and status = 1";
         ps = connection.prepareStatement(sql);
         ps.setInt(1, product_id);
         try (ResultSet rs = ps.executeQuery()) {
@@ -106,6 +107,26 @@ public class FeedbackDAO extends DBContext {
             }
         }
         return list;
+    }
+    
+    public FeedbackReply getFeedbackReplyByFeedbackId(int feedbackId) throws SQLException {
+        String query = "SELECT * FROM dbo.FeedbackReply WHERE feedback_id = ?";
+        FeedbackReply feedbackReply = null;
+        
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, feedbackId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    feedbackReply = new FeedbackReply();
+                    feedbackReply.setReply_id(rs.getInt("reply_id"));
+                    feedbackReply.setFeedback_id(rs.getInt("feedback_id"));
+                    feedbackReply.setReply_content(rs.getString("reply_content"));
+                }
+            }
+        }
+        
+        return feedbackReply;
     }
 
     public List<Feedback> getAllFeedback() throws SQLException {

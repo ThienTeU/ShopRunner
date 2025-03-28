@@ -30,7 +30,7 @@
 
     <body>     
         <%@ include file="/model/header.jsp" %>
-        <div class="row">
+        <div class="row" style="margin-top: 20px;">
             <div class="col-md-8">
                 <div class="product-images">
                     <img alt="Main product image showing the product in detail" height="600" id="mainImage"
@@ -134,6 +134,11 @@
                                     </div>
                                     <p class="review-content">${fb.feedback_content}</p>
                                     <span class="review-date">${fb.create_at}</span>
+                                    <c:if test="${fb.getFeedbackReply() != null}">
+                                        <div style="color: green; font-size: 14px; font-style: italic;">Phản hồi: <span>${fb.getFeedbackReply().reply_content}</span></div>
+                                    </c:if>
+
+
                                 </div>
                             </c:forEach>
                         </div>

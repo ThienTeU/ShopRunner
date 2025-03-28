@@ -31,6 +31,8 @@ public class InsertProductDAO extends DBContext {
         System.out.println(dao.isExistedProductQuantityId(186));
         //int productprice_id = dao.addProductPrice(product_id, 1, 0);
         //int productquantity_id = dao.addProductQuantity(productprice_id, 1, 1);
+        Product product = new Product(1,4,"Giày","Description",10,false,"Image2/productID_1/thumbnail.avif","2025-03-19");
+        dao.updateProduct(product);
     }
 
     public boolean isProductNameExists(String productName) {
@@ -96,26 +98,26 @@ public class InsertProductDAO extends DBContext {
     }
 
     public void updateProduct(Product product) throws SQLException {
-        String query = "UPDATE [Product]\n"
-                + "SET \n"
-                + "    [product_name] = ?,\n"
-                + "    [category_id] = ?,\n"
-                + "    [description] = ?,\n"
-                + "    [discount] = ?,\n"
-                + "    [thumbnail] = ?,\n"
-                + "    [created_at] = ?\n"
-                + "WHERE \n"
-                + "    [product_id] = ?;";
-        ps = connection.prepareStatement(query);
-        ps.setString(1, product.getProduct_name());
-        ps.setInt(2, product.getCategory_id());
-        ps.setString(3, product.getDescription());
-        ps.setInt(4, product.getDiscount());
-        ps.setString(5, product.getThumbnail());
-        ps.setString(6, product.getCreated_at());
-        ps.setInt(7, product.getProduct_id());
-        ps.executeUpdate();
-    }
+    String query = "UPDATE [Product]\n"
+            + "SET \n"
+            + "    [product_name] = ?,\n"
+            + "    [category_id] = ?,\n"
+            + "    [description] = ?,\n"
+            + "    [discount] = ?,\n"
+            + "    [thumbnail] = ?\n"  // Loại bỏ dấu phẩy ở đây
+            + "WHERE \n"
+            + "    [product_id] = ?;";
+
+    ps = connection.prepareStatement(query);
+    ps.setString(1, product.getProduct_name());
+    ps.setInt(2, product.getCategory_id());
+    ps.setString(3, product.getDescription());
+    ps.setInt(4, product.getDiscount());
+    ps.setString(5, product.getThumbnail());
+    ps.setInt(6, product.getProduct_id());
+    ps.executeUpdate();
+}
+
 
     //Insert Data
     public ProductPrice getProductPrice(int productPrice_id) throws SQLException {
