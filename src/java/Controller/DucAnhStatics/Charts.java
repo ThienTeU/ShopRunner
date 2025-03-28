@@ -2,13 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package Controller.DucAnhStatics;
 
-import DAO.DucAnh.CategoryDAO;
-import DAO.DucAnh.ProductDAO;
-import DAO.DucAnh.StatisticDAO;
-import DTO.DucAnh.ProductDTO;
+import DAL.ProductDAOTuan;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,131 +13,88 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  *
- * @author Acer
+ * @author tuan
  */
-@WebServlet(name="Charts", urlPatterns={"/Charts"})
+@WebServlet(name = "DashboardMarketing1", urlPatterns = {"/Charts"})
 public class Charts extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Charts</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Charts at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        String filterType = request.getParameter("filter-type");
+        if (filterType == null || filterType.isEmpty()) {
+            filterType = "month"; // Mặc định lọc theo tháng
         }
+        String startDate = request.getParameter("start-date");
+        if (startDate == null || startDate.isEmpty()) {
+            startDate = "2025-01-01"; // Mặc định từ đầu năm
+        }
+        String endDate = request.getParameter("end-date");
+        if (endDate == null || endDate.isEmpty()) {
+            endDate = LocalDate.now().toString(); // Mặc định đến hiện tại
+        }
+
+        request.setAttribute("start_date", startDate);
+        request.setAttribute("end_date", endDate);
+
+        ProductDAOTuan dao = new ProductDAOTuan();
+
+        request.setAttribute("orders", dao.getOrderByDate(startDate, endDate));
+
+        Map<String, Integer> viewStats = dao.getProductViews(startDate, endDate);
+        List<String> viewLabels = new ArrayList<>(viewStats.keySet());
+        List<Integer> viewCounts = new ArrayList<>(viewStats.values());
+        
+
+        Map<String, Integer> reviewStats = dao.getProductReviews(startDate, endDate);
+        List<String> reviewLabels = new ArrayList<>(reviewStats.keySet());
+        List<Integer> reviewCounts = new ArrayList<>(reviewStats.values());
+        
+
+        Map<String, Integer> customerStats = dao.getCustomerAnalysis(startDate, endDate);
+        List<String> customerTypes = new ArrayList<>(customerStats.keySet());
+        List<Integer> customerCounts = new ArrayList<>(customerStats.values());
+        
+
+        Map<String, Integer> topProducts = dao.getTopProducts(startDate, endDate);
+        List<String> productNames = new ArrayList<>(topProducts.keySet());
+        List<Integer> productCounts = new ArrayList<>(topProducts.values());
+        
+
+        Map<String, Double> revenueData = dao.getRevenueByDate(startDate, endDate);
+        List<String> labels = new ArrayList<>(revenueData.keySet());
+        List<Double> values = new ArrayList<>(revenueData.values());
+        
+        request.setAttribute("viewStats", Map.of("labels", viewLabels, "counts", viewCounts));
+        request.setAttribute("reviewStats", Map.of("labels", reviewLabels, "counts", reviewCounts));
+        request.setAttribute("customerStats", Map.of("types", customerTypes, "counts", customerCounts));
+        request.setAttribute("topProducts", Map.of("names", productNames, "counts", productCounts));
+        request.setAttribute("revenueData", Map.of("labels", labels, "values", values));
+
+        request.getRequestDispatcher("/Chart.jsp").forward(request, response);
+
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        StatisticDAO statisticData = new StatisticDAO();
-        String revenueChartRange = request.getParameter("range");
-        revenueChartRange = (revenueChartRange == null) ? "" : revenueChartRange;
-        
-        Map<LocalDate, Double> revenue;
-        
-        if (revenueChartRange.equals("1M")) {
-            revenue = statisticData.getRevenueOf30Days();
-        } else if (revenueChartRange.equals("1Y")) {
-            revenue = statisticData.getRevenueOf12Months();
-        } else {
-            revenue = statisticData.getRevenueOf7Days();
-        }
-        
-        request.setAttribute("revenueDateSet", revenue.keySet().stream()
-                    .map(k -> '\"' + k.toString() + '\"')
-                    .collect(Collectors.joining(","))
-        );
-        request.setAttribute("revenueSumSet", revenue.values().stream()
-                .map(v -> v.toString())
-                .collect(Collectors.joining(","))
-        );
-        
-        Map<String, Integer> bestSellers = statisticData.getTop10BestSellerProducts();
-        
-        request.setAttribute("bestSellersNameSet", bestSellers.keySet().stream()
-                    .map(k -> '\"' + k + '\"')
-                    .collect(Collectors.joining(","))
-        );
-        request.setAttribute("bestSellersQuantitySet", bestSellers.values().stream()
-                    .map(v -> v.toString())
-                    .collect(Collectors.joining(","))
-        );
-        
-        Map<String, Double> bestRatings = statisticData.getTop10HighestRatingProducts();
-        
-        request.setAttribute("bestRatingNameSet", bestRatings.keySet().stream()
-                    .map(k -> '\"' + k + '\"')
-                    .collect(Collectors.joining(","))
-        );
-        request.setAttribute("bestRatingAvgSet", bestRatings.values().stream()
-                    .map(v -> v.toString())
-                    .collect(Collectors.joining(","))
-        );
-        
-        
-        
-        request.getRequestDispatcher("Chart.jsp").forward(request, response);
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

@@ -106,23 +106,23 @@
                                 var specialCharRegex = /[!@#$%^&*{}|<>]/;
 
                                 if (title === ""|| description === "") {
-                                    alert("Please complete full informaton !!!");
+                                    alert("Vui lòng điền thông tin bài viết !!!");
                                     return false;
                                 }
                                 if (specialCharRegex.test(title)) {
-                                    alert("Title cannot contain special characters!");
+                                    alert("Tiêu đề không được chưa kí tự đặc biệt!");
                                     return false;
                                 }
                                 if (title.trim().length === 0 || title.trim().length <=6) {
-                                    alert("Title must not empty and longer than 6 characters!");
+                                    alert("Tiêu đề phải dài hơn 6 kí tự!");
                                     return false;
                                 }
                                 if (banner === "") {
-                                    alert("Please choose image to add post !");
+                                    alert("Vui lòng thêm ảnh bài viết !");
                                     return false;
                                 }
                                 if (description.trim().length <20) {
-                                    alert("Content must have more than 20 character !!!");
+                                    alert("Nội dung phải dài hơn 20 kí tự !!!");
                                     return false;
                                 }
 

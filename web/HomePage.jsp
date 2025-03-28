@@ -32,6 +32,8 @@
     </head>
 
     <body>
+
+
         <!-- Header -->
         <%@ include file="/model/styles.jsp" %>
         <%@ include file="/model/header.jsp" %>
@@ -50,7 +52,7 @@
                 <div class="carousel-inner">
                     <c:forEach items="${cbanners}" var="cbanner" varStatus="i">
                         <div class="carousel-item ${i.index == 0 ? 'active' : ''}">
-                            <img src="${pageContext.request.contextPath}/resources/img/banner/${cbanner.image_url}" 
+                            <img src="${cbanner.image_url}" 
                                  class="d-block w-100" alt="Banner ${cbanner.banner_id}" />
                         </div>
                     </c:forEach>
@@ -380,11 +382,25 @@
                                                                               type="currency" 
                                                                               currencySymbol="₫"/>
                                                         </span>
+<c:if test="${not empty sessionScope.userId}">
+    <button class="btn favorite-btn ${product.isFavorite ? 'btn-danger' : 'btn-outline-danger'}" 
+            data-product-id="${product.product_id}" 
+            data-action="${product.isFavorite ? 'remove' : 'add'}">
+        <i class="${product.isFavorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
+    </button>
+</c:if>
+<c:if test="${empty sessionScope.userId}">
+    <p><a href="LoginControl">Đăng nhập</a> để yêu thích sản phẩm.</p>
+</c:if>
+
+
                                                     </div>
                                                     <a href="ProductDetailServlet?product_id=${product.product_id}" 
                                                        class="btn btn-primary w-100">
                                                         <i class="fas fa-shopping-cart me-2"></i>Xem chi tiết
                                                     </a>
+                                                       
+                                                       
                                                 </div>
                                             </div>
                                         </div>
@@ -447,6 +463,18 @@
                                                                               type="currency" 
                                                                               currencySymbol="₫"/>
                                                         </span>
+<c:if test="${not empty sessionScope.userId}">
+    <button class="btn favorite-btn ${product.isFavorite ? 'btn-danger' : 'btn-outline-danger'}" 
+            data-product-id="${product.product_id}" 
+            data-action="${product.isFavorite ? 'remove' : 'add'}">
+        <i class="${product.isFavorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
+    </button>
+</c:if>
+<c:if test="${empty sessionScope.userId}">
+    <p><a href="LoginControl">Đăng nhập</a> để yêu thích sản phẩm.</p>
+</c:if>
+
+
                                                     </div>
                                                     <a href="ProductDetailServlet?product_id=${product.product_id}" 
                                                        class="btn btn-primary w-100">
@@ -556,6 +584,39 @@
         <!-- Footer -->
         <%@ include file="/model/footer.jsp" %>
 
+        <script>
+            document.addEventListener('click', function (event) {
+    if (event.target.closest('.favorite-btn')) {
+        const button = event.target.closest('.favorite-btn');
+        const productId = button.dataset.productId;
+        const action = button.dataset.action;
+
+        fetch(`/favorite?action=${action}&productId=${productId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cập nhật trạng thái nút
+                if (action === 'add') {
+                    button.classList.remove('btn-outline-danger');
+                    button.classList.add('btn-danger');
+                    button.dataset.action = 'remove';
+                    button.innerHTML = '<i class="fas fa-heart"></i>';
+                } else {
+                    button.classList.remove('btn-danger');
+                    button.classList.add('btn-outline-danger');
+                    button.dataset.action = 'add';
+                    button.innerHTML = '<i class="far fa-heart"></i>';
+                }
+            } else {
+                alert('Có lỗi xảy ra. Vui lòng thử lại!');
+            }
+        });
+    }
+});
+
+        </script>
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://web.nvnstatic.net/js/lazyLoad/lazysizes.min.js" async></script>

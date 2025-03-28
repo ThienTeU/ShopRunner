@@ -93,7 +93,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#footer">Liên hệ</a>
+                    <a class="nav-link" href="Contact.jsp">Liên hệ</a>
                 </li>
             </ul>
 

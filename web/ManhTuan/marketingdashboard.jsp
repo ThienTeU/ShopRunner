@@ -15,6 +15,7 @@
             <h1 class="my-4">Marketing Dashboard</h1>
 
             <!-- Bộ lọc và tìm kiếm -->
+
             <form action="dashboard" method="post" class="filter-section row mb-4">
                 <div class="col-md-3">
                     <label for="filter-type">Loại lọc:</label>
@@ -36,6 +37,7 @@
                     <button type="submit" class="btn btn-primary w-100">Lọc</button>
                 </div>
             </form>
+
 
 
 
@@ -90,7 +92,7 @@
                             <td>${order.total_price}</td>
                             <td>${order.status}</td>
                             <td>${order.order_date}</td>
-                            <td><a href="orderDetail?id=${order.order_id}" class="btn btn-info">Chi tiết</a></td>
+                            <td><a href="OrderManageServlet" class="btn btn-info">Chi tiết</a></td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -101,52 +103,52 @@
             const revenueLabels = [<c:forEach var="label" items="${revenueData.labels}">
             '${label}'<c:if test="${not empty label}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const revenueData = [<c:forEach var="value" items="${revenueData.values}">
                 ${value}<c:if test="${not empty value}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const productNames = [<c:forEach var="name" items="${topProducts.names}">
             '${name}'<c:if test="${not empty name}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const productCounts = [<c:forEach var="count" items="${topProducts.counts}">
                 ${count}<c:if test="${not empty count}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const customerTypes = [<c:forEach var="type" items="${customerStats.types}">
             '${type}'<c:if test="${not empty type}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const customerCounts = [<c:forEach var="count" items="${customerStats.counts}">
                 ${count}<c:if test="${not empty count}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const viewLabels = [<c:forEach var="label" items="${viewStats.labels}">
             '${label}'<c:if test="${not empty label}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const viewCounts = [<c:forEach var="count" items="${viewStats.counts}">
                 ${count}<c:if test="${not empty count}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const reviewLabels = [<c:forEach var="label" items="${reviewStats.labels}">
             '${label}'<c:if test="${not empty label}">,</c:if>
             </c:forEach>
-];
+            ];
 
             const reviewCounts = [<c:forEach var="count" items="${reviewStats.counts}">
                 ${count}<c:if test="${not empty count}">,</c:if>
             </c:forEach>
-];
+            ];
 
             new Chart(document.getElementById('revenueChart'), {
                 type: 'line',

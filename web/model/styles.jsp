@@ -11,6 +11,10 @@
         padding: 60px 0;
         color: white;
     }
+.carousel-item img {
+    object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+    height: 500px; /* Đặt chiều cao cố định cho banner */
+}
 
     .newsletter-title {
         font-size: 2rem;

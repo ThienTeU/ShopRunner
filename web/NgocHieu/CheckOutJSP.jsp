@@ -18,13 +18,13 @@
         <title>Checkout</title>
         <link rel="stylesheet" href="NgocHieu/CheckOutStyle.css">
     </head>
-    
+
     <body class="bg-light text-dark">
-            <%@ include file="/model/header.jsp" %>
+        <%@ include file="/model/header.jsp" %>
         <c:if test="${cartItemsDTO.size() == 0 || cartItemsDTO == null }">
             <c:redirect url="CartDetailServlet"></c:redirect>
         </c:if> 
-        
+
         <div class="container custom-container" style="margin-top: 0; padding-top: 70px">
             <div class="text-center mb-4">
                 <Strong class="h2 font-weight-bold">THANH TOÁN</Strong>
@@ -112,6 +112,10 @@
                                 <p>08:00 - 20:00</p>
                             </div>
                         </div>
+                        <div style="color: black; text-decoration: underline !important; cursor: pointer" onclick="showVoucher()">
+                            Sử dụng mã giảm giá
+                            <div id="voucherInput" style="margin-top: 10px; display: none"><input class="form-control" type="text" name="voucher"></div>
+                        </div>
                         <hr><!-- comment -->
                         <div class="mb-4">
                             <strong class="h4 section-title">PHƯƠNG THỨC THANH TOÁN</strong>
@@ -150,6 +154,7 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <input type="hidden" name="total" id="total" value="${total}">
                         <input type="hidden" id="shippingFee1" name="shippingFee1" value="">
                         <input type="hidden" id="totalPrice1" name="totalPrice1" value="">
@@ -176,10 +181,7 @@
                     </div>
 
                     <p class="text-muted small mb-4">[Bao gồm thuế 79,259₫]</p>
-                    <div style="color: black; text-decoration: underline !important; cursor: pointer" onclick="showVoucher()">
-                        Sử dụng mã giảm giá
-                        <div id="voucherInput" style="margin-top: 10px; display: none"><input class="form-control" type="text" name="voucher"></div>
-                    </div>
+
                     <hr>
                     <c:forEach items="${cartItemsDTO}" var="item">
                         <div class="item-container d-flex mb-4">
@@ -293,7 +295,7 @@
             let contactEmail = document.getElementById("contactEmail");
             let emailValid = document.getElementById("emailValid");
             let invalidEmail = document.getElementById("invalidEmail");
-            
+
             let fullNameInput = document.getElementById("fullName");
             let nameValid = document.getElementById("nameValid");
             let invalidName = document.getElementById("invalidName");
@@ -305,7 +307,7 @@
             let streetInput = document.getElementById("streetAddress");
             let streetValid = document.getElementById("streetValid");
             let invalidStreet = document.getElementById("invalidStreet");
-            
+
             function validateEmail() {
                 let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (regex.test(contactEmail.value.trim())) {
@@ -350,7 +352,7 @@
                     return false;
                 }
             }
-            
+
             function validateStreet() {
                 let regex = /^[A-Za-zÀ-Ỹà-ỹ\s0-9,]+$/;
                 if (regex.test(streetInput.value.trim())) {
@@ -370,7 +372,7 @@
             contactEmail.addEventListener("input", validateEmail);
             fullNameInput.addEventListener("input", validateFullName);
             phoneInput.addEventListener("input", validatePhoneNumber);
-            streetInput.addEventListener("input",validateStreet);
+            streetInput.addEventListener("input", validateStreet);
 
             // Ngăn submit form nếu có lỗi
             form.addEventListener("submit", function (event) {

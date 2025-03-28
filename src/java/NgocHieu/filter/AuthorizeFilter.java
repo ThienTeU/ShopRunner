@@ -40,6 +40,9 @@ public class AuthorizeFilter implements Filter {
             "/NewPassword",
             //HieuPTM_User
             "/LoginControl",
+            "/Charts",
+            "/home",                        
+            //HieuPTM_STAFF
             "/LogOut",
             "/ChangePassword",
             //HieuPTM_Admin
@@ -52,16 +55,45 @@ public class AuthorizeFilter implements Filter {
             "/StaffAdd",
             "/StaffChangeStatus",
             "/HieuPTM/StaffManage",
+            "/profile",
+            "/Profile.jsp",
+            "/feedbacklist",
+            "/feedbacksearch",
+            "/feedbackreply",
+            "/feedbackreplydelete",
 
+            "/tableVoucher",
+            "/Charts",
             "/ManhTuan/orderlist.jsp",
+            "/ManhTuan/test.jsp",
+            "/tableVoucher",
             "/orderlist",
             "/dashboard",
             "/ManhTuan/marketingdashboard.jsp",
             "/home",
+            "/ManagerSeller.jsp",
+
             "/AddFeedbackServlet",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
 
+
+            "/feedbackstatus",
+            "/export",
+            
+            "/HieuPTM/StaffManage.jsp",
+            "/HieuPTM.Controller.StaffManage",
+            "/StaffManage",
+            "/StaffSearch",
+            "/StaffAdd",
+            "/StaffChangeStatus",
+            //HieuPTM
+            "/LoginControl",
+            "/RegisterControl",
+            "/ForgotPassword",
+            "/ValidateOTP",
+            "/ChangePassword",
+            "/NewPassword",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
             
@@ -114,7 +146,7 @@ public class AuthorizeFilter implements Filter {
 
     private static final List<String> userAllowedUrls = Arrays.asList(
             "/user/dashboard.jsp",
-            "/user/profile.jsp",
+            "/user/Profile.jsp",
             "/user/settings.jsp",
             "/api/user/data"
     );

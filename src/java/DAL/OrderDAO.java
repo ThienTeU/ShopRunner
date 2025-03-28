@@ -5,6 +5,7 @@
 package DAL;
 
 import Model.CartItem;
+import Model.OrderDetailAnh;
 import Model.OrderDetails;
 import Model.Orders;
 import Model.ProductPrice;
@@ -27,7 +28,9 @@ public class OrderDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         OrderDAO dao = new OrderDAO();
-//        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+        order.setStatus("Pending");
+        System.out.println(dao.insertOrder(order));;
 //        order.setPayment_method("vnpay");
 //        order.setStatus("paid");
 //        int order_id = dao.insertOrder(order);
@@ -35,7 +38,7 @@ public class OrderDAO extends DBContext {
 //        for (OrderResponse o : list) {
 //            System.out.println(o.getOrder().getLabel());
 //        }
-    dao.restoreProductQuantity(2116);
+  //  dao.restoreProductQuantity(2116);
 
     }
     
@@ -236,9 +239,9 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-
+    
     public Integer insertOrder(Orders order) throws SQLException {
-        String sql = "INSERT INTO Orders (email, total_price, order_date, status, voucher_id, phone, payment_method, shipping_address) "
+        String sql = "INSERT INTO Orders (email, total_price, order_date, status, VoucherID, phone, payment_method, shipping_address) "
                 + "VALUES (?, ?, DEFAULT, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -277,7 +280,7 @@ public class OrderDAO extends DBContext {
                 Orders order = new Orders(
                         rs.getString("email"),
                         rs.getInt("total_price"),
-                        rs.getInt("voucher_id"),
+                        rs.getInt("VoucherID"),
                         rs.getString("shipping_address"),
                         rs.getString("phone")
                 );
@@ -326,5 +329,67 @@ public class OrderDAO extends DBContext {
         }
         return totalOrders; // Trả về tổng số đơn hàng
     }
+// Method to retrieve orders by user ID
+    public List<Orders> getOrdersByUserId(int userId) {
+        List<Orders> ordersList = new ArrayList<>();
+        String sql = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, o.phone, o.payment_method, o.shipping_address "
+                   + "FROM Orders o "
+                   + "WHERE o.email = (SELECT email FROM [User] WHERE user_id = ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setVoucher_id(rs.getInt("voucher_id"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    ordersList.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ordersList;
+    }
+    
+    
+ public List<OrderDetailAnh> getProductsByOrderId(int orderId) throws SQLException {
+        List<OrderDetailAnh> products = new ArrayList<>();
+        String query = "SELECT " +
+                "o.order_id, " +
+                "p.product_id, " +
+                "p.product_name, " +
+                "MIN(pi.image_url) AS image_url, " +
+                "od.quantity, " +
+                "od.unit_price " +
+                "FROM Orders o " +
+                "INNER JOIN OrderDetails od ON o.order_id = od.order_id " +
+                "INNER JOIN Product p ON od.Product_id = p.product_id " +
+                "LEFT JOIN ProductImage pi ON p.product_id = pi.product_id " +
+                "WHERE o.order_id = ? " +
+                "GROUP BY o.order_id, p.product_id, p.product_name, od.quantity, od.unit_price";
 
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    OrderDetailAnh product = new OrderDetailAnh();
+                    product.setOrderId(rs.getInt("order_id"));
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setProductName(rs.getString("product_name"));
+                    product.setImageUrl(rs.getString("image_url"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setUnitPrice(rs.getDouble("unit_price"));
+                    products.add(product);
+                }
+            }
+        }
+
+        return products;
+    }
 }

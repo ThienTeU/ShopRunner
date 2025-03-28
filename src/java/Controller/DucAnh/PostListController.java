@@ -42,30 +42,49 @@ public class PostListController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        String num_raw = request.getParameter("num");
-        ArrayList<PostDTO> postDTOs = new ArrayList<>();
-        PostCategoryDAO postCategoryDAO = new PostCategoryDAO();
-        ArrayList<PostCategoryDTO> postCategoryDTOs = postCategoryDAO.getAllPostCategory();
-        PostListDAO pldao = new PostListDAO();
-        
-        try {
-            if (num_raw != null) {
-                int num = Integer.parseInt(num_raw);
-                postDTOs = pldao.getAllPostWithCondition(num);
-            } else {
-                postDTOs = pldao.getAllPost();
-            }
-            request.setAttribute("postCategoryDTOs", postCategoryDTOs);
-            request.setAttribute("postDTOs", postDTOs);
-            request.setAttribute("size", postDTOs.size());
-            request.getRequestDispatcher("PostList.jsp").forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    PrintWriter out = response.getWriter();
+    String num_raw = request.getParameter("num");
+    ArrayList<PostDTO> postDTOs = new ArrayList<>();
+    PostCategoryDAO postCategoryDAO = new PostCategoryDAO();
+    ArrayList<PostCategoryDTO> postCategoryDTOs = postCategoryDAO.getAllPostCategory();
+    PostListDAO pldao = new PostListDAO();
+    int pageInt = 1;
+    String page = request.getParameter("page");
+    if(page != null){
+        pageInt = Integer.parseInt(page);
     }
+    
+    try {
+        // Tính toán tổng số bài viết
+        int totalPosts = pldao.getTotalPosts();  // Cần viết phương thức getTotalPosts trong DAO
+
+        // Tính tổng số trang (totalPages)
+        int totalPages = (int) Math.ceil((double) totalPosts / 3);  // Giả sử mỗi trang có 3 bài viết
+
+        // Xử lý phân trang và lấy danh sách bài viết
+        if (num_raw != null) {
+            int num = Integer.parseInt(num_raw);
+            postDTOs = pldao.getAllPostWithCondition(num);
+        } else {
+            postDTOs = pldao.getAllPost();
+        }
+        
+        postDTOs = pldao.pagingPostWithSearch(pageInt, 3);  // Truyền vào số trang và số bài trên mỗi trang
+
+        // Truyền dữ liệu cho JSP
+        request.setAttribute("postCategoryDTOs", postCategoryDTOs);
+        request.setAttribute("postDTOs", postDTOs);
+        request.setAttribute("size", postDTOs.size());
+        request.setAttribute("totalPages", totalPages);  // Truyền số trang vào request
+        request.setAttribute("currentPage", pageInt);    // Truyền trang hiện tại vào request
+        request.getRequestDispatcher("PostList.jsp").forward(request, response);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
