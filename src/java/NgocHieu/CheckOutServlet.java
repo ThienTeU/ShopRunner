@@ -178,7 +178,7 @@ public class CheckOutServlet extends HttpServlet {
         String voucher = sanitizeInput(request.getParameter("voucher"));
         int voucher_id = -1; 
         boolean isValidVoucher = false;
-        int discount = 1;
+        int discount = 0;
         VoucherDAO voucherDao = new VoucherDAO();
         if(voucher!=null){
             isValidVoucher = voucherDao.isVoucherValid(voucher);
