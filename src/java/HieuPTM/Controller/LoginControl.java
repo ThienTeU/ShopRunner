@@ -28,13 +28,18 @@ public class LoginControl extends HttpServlet {
         Cookie[] cookies = request.getCookies();
         boolean rememberMe = false;
         String token = null;
-        for (Cookie c : cookies) {
-            if (c.getName().equals("re") && c.getValue().equals("on")) {
-                rememberMe = true;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals("re") && c.getValue().equals("on")) {
+                    rememberMe = true;
+                }
+                if (c.getName().equals("tokenC")) {
+                    token = c.getValue();
+                }
             }
-            if (c.getName().equals("tokenC")) {
-                token = c.getValue();
-            }
+        } else {
+            response.sendRedirect("/RunnerShop/home");
+            return;
         }
         response.getWriter().println(token);
         response.getWriter().print(rememberMe);
@@ -113,6 +118,7 @@ public class LoginControl extends HttpServlet {
             UserDAO dao = new UserDAO();
             UserHieu user = dao.getUserByEmail(email);
             request.getSession().setAttribute("user", user);
+            request.getSession().setAttribute("user_id",user.getUserID());
             response.sendRedirect(request.getContextPath() + "/home");
         }
     }

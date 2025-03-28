@@ -36,12 +36,15 @@ public class AuthorizeFilter implements Filter {
             //HieuPTM_STAFF
             "/LogOut",
             "/HieuPTM/StaffManage",
-
+            "/profile",
+            "/Profile.jsp",
             "/ManhTuan/orderlist.jsp",
             "/orderlist",
             "/dashboard",
             "/ManhTuan/marketingdashboard.jsp",
             "/home",
+            "/ManagerSeller.jsp",
+
             "/AddFeedbackServlet",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
@@ -111,7 +114,7 @@ public class AuthorizeFilter implements Filter {
 
     private static final List<String> userAllowedUrls = Arrays.asList(
             "/user/dashboard.jsp",
-            "/user/profile.jsp",
+            "/user/Profile.jsp",
             "/user/settings.jsp",
             "/api/user/data"
     );

@@ -31,6 +31,18 @@ public class UserHieu {
         this.genderID = genderID;
         this.roleID = roleID;
     }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
     
     
 

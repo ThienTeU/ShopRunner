@@ -5,6 +5,7 @@
 package DAL;
 
 import Model.CartItem;
+import Model.OrderDetailAnh;
 import Model.OrderDetails;
 import Model.Orders;
 import Model.ProductPrice;
@@ -326,5 +327,67 @@ public class OrderDAO extends DBContext {
         }
         return totalOrders; // Trả về tổng số đơn hàng
     }
+// Method to retrieve orders by user ID
+    public List<Orders> getOrdersByUserId(int userId) {
+        List<Orders> ordersList = new ArrayList<>();
+        String sql = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, o.phone, o.payment_method, o.shipping_address "
+                   + "FROM Orders o "
+                   + "WHERE o.email = (SELECT email FROM [User] WHERE user_id = ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setVoucher_id(rs.getInt("voucher_id"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    ordersList.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ordersList;
+    }
+    
+    
+ public List<OrderDetailAnh> getProductsByOrderId(int orderId) throws SQLException {
+        List<OrderDetailAnh> products = new ArrayList<>();
+        String query = "SELECT " +
+                "o.order_id, " +
+                "p.product_id, " +
+                "p.product_name, " +
+                "MIN(pi.image_url) AS image_url, " +
+                "od.quantity, " +
+                "od.unit_price " +
+                "FROM Orders o " +
+                "INNER JOIN OrderDetails od ON o.order_id = od.order_id " +
+                "INNER JOIN Product p ON od.Product_id = p.product_id " +
+                "LEFT JOIN ProductImage pi ON p.product_id = pi.product_id " +
+                "WHERE o.order_id = ? " +
+                "GROUP BY o.order_id, p.product_id, p.product_name, od.quantity, od.unit_price";
 
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    OrderDetailAnh product = new OrderDetailAnh();
+                    product.setOrderId(rs.getInt("order_id"));
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setProductName(rs.getString("product_name"));
+                    product.setImageUrl(rs.getString("image_url"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setUnitPrice(rs.getDouble("unit_price"));
+                    products.add(product);
+                }
+            }
+        }
+
+        return products;
+    }
 }
