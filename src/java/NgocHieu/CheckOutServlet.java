@@ -2,6 +2,7 @@ package NgocHieu;
 
 import DAL.OrderDAO;
 import DAL.ProductDAO;
+import DAO.DucAnh.VoucherDAO;
 import Model.CartItem;
 import Model.CartItemDTO;
 import Model.Color;
@@ -172,12 +173,25 @@ public class CheckOutServlet extends HttpServlet {
         String district = request.getParameter("district");
         String ward = request.getParameter("ward");
         String street = sanitizeInput(request.getParameter("street"));
-        String total = request.getParameter("total");
+        String totalS = request.getParameter("total");
+        int total = Integer.parseInt(totalS);
         String voucher = sanitizeInput(request.getParameter("voucher"));
-        int voucher_id = -1; // TODO: Implement voucher validation
+        int voucher_id = -1; 
+        boolean isValidVoucher = false;
+        int discount = 1;
+        VoucherDAO voucherDao = new VoucherDAO();
+        if(voucher!=null){
+            isValidVoucher = voucherDao.isVoucherValid(voucher);
+            if(isValidVoucher){
+                voucher_id=voucherDao.getVoucherIdByCode(voucher);
+                discount = voucherDao.getDiscountByVoucherCode(voucher);
+                total = total - total*discount/100;
+            }
+        }
+        
 
         String address = formatAddress(street, ward, district, city);
-        return new Orders(email, Integer.parseInt(total), voucher_id, address, phone);
+        return new Orders(email, total, voucher_id, address, phone);
     }
 
     private void handleCODOrder(HttpServletRequest request, HttpServletResponse response, 

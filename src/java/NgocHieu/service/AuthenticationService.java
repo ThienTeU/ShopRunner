@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService extends HttpServlet{
     
-    private static String SIGN_KEY = EnvConfig.get("SIGN_KEY");
+    private static String SIGN_KEY = "FICC426l/Y9LZqzQ7/nMEvKWIl3V9L8ywLf+FocZXRxo3/Uz8f0T+BsRS573FyIP";
     public static void main(String[] args) throws ParseException, JOSEException {
         AuthenticationService auth = new AuthenticationService();
         String email = auth.getEmailFromToken("eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJOZ29jSGlldS5jb20iLCJzdWIiOiJkdW9uZ2hpZXUyOTRAZ21haWwuY29tIiwicm9sZSI6IkFkbWluIiwiZXhwIjoxNzQyOTczMTE0LCJpYXQiOjE3NDI5NjIzMTR9.yKmHHO1yJubt8aCfp6ln5UvkXofmpM9KqEQLoF9wYUOBrop-2-rl0YCVYmO_GIjBMhqUicFQuKHsSL9vfzOMqA");

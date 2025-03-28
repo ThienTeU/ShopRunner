@@ -1,4 +1,4 @@
-package HieuPTM.controller;
+package HieuPTM;
 
 import HieuPTM.DAO.UserDAO;
 import HieuPTM.model.UserHieu;

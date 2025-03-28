@@ -44,7 +44,7 @@
                     link.addEventListener("click", function (e) {
                         let subCategory = document.getElementById("sub-" + this.dataset.id);
                         if (subCategory) {
-                            e.preventDefault(); 
+                            e.preventDefault();
                             subCategory.style.display = (subCategory.style.display === "none") ? "block" : "none";
                             window.location.href = this.href;
                         }
@@ -52,6 +52,9 @@
                 });
             });
         </script>
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     </head>
     <body>
 
@@ -219,6 +222,9 @@
                 </c:choose>
             </c:forEach>
         </div>
+
+        <!-- Bootstrap 5 JavaScript (bao gồm Popper.js) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     </body>
 </html>

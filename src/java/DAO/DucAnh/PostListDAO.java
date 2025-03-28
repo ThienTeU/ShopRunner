@@ -194,25 +194,24 @@ public class PostListDAO extends DBcontext {
     }
 
     public int actionWithPostById(int id, String action) {
-    String sql = "";
-    if (action.equals("hide")) {
-        sql = "UPDATE Post SET Status = 0 WHERE PostID = ?";
+        String sql = "";
+        if (action.equals("hide")) {
+            sql = "UPDATE Post SET Status = 0 WHERE PostID = ?";
+        }
+        if (action.equals("show")) {
+            sql = "UPDATE Post SET Status = 1 WHERE PostID = ?";
+        }
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, id);
+            int check = st.executeUpdate();
+            return check;
+        } catch (SQLException e) {
+            System.out.println("Error in actionWithPostById: " + e.getMessage());
+        }
+        return 0;
     }
-    if (action.equals("show")) {
-        sql = "UPDATE Post SET Status = 1 WHERE PostID = ?";
-    }
-    try {
-        PreparedStatement st = connection.prepareStatement(sql);
-        st.setInt(1, id);
-        int check = st.executeUpdate();
-        return check;
-    } catch (SQLException e) {
-        System.out.println("Error in actionWithPostById: " + e.getMessage());
-    }
-    return 0;
-}
 
-    
     public int deletePostByID(int postID) {
         String sql = "delete Post where PostID = ?";
         try {
@@ -256,6 +255,58 @@ public class PostListDAO extends DBcontext {
         }
         return postDTOs;
     }
+
+    public ArrayList<PostDTO> pagingPostWithSearch(int page, int pageSize) {
+        String sql = "SELECT p.PostID, p.Title, p.DateCreated, p.Postbanner, p.Context, p.Description, c.Name "
+                + "FROM Post p "
+                + "JOIN PostCategory c ON p.PostCategoryID = c.PostCategoryID "
+                + "ORDER BY p.DateCreated DESC "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        ArrayList<PostDTO> postDTOs = new ArrayList<>();
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+
+            // Tìm kiếm theo từ khóa trong Title và Description
+
+            // Tính toán OFFSET và FETCH
+            st.setInt(1, (page - 1) * pageSize);  // OFFSET
+            st.setInt(2, pageSize);  // FETCH NEXT
+
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                PostDTO postDTO = new PostDTO();
+                postDTO.setPostID(rs.getInt("PostID"));
+                postDTO.setTitle(rs.getString("Title"));
+                postDTO.setPostImg(rs.getString("Postbanner"));
+                postDTO.setDescription(rs.getString("Description"));
+                postDTO.setDateCreated(rs.getString("DateCreated"));
+                postDTO.setContext(rs.getString("Context"));
+                postDTO.setCategory(rs.getString("Name"));
+                postDTOs.add(postDTO);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return postDTOs;
+    }
+    
+    public int getTotalPosts() {
+    String sql = "SELECT COUNT(*) FROM Post";
+    try {
+        PreparedStatement st = connection.prepareStatement(sql);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1); // Trả về tổng số bài viết
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+
 
     public ArrayList<PostDTO> pagingPost(int indexPage) {
         String sql = "select p.PostID, p.Title, p.DateCreated, p.Postbanner, p.Context, p.Description, c.Name\n"

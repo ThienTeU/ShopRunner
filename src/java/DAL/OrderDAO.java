@@ -28,7 +28,9 @@ public class OrderDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         OrderDAO dao = new OrderDAO();
-//        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+        order.setStatus("Pending");
+        System.out.println(dao.insertOrder(order));;
 //        order.setPayment_method("vnpay");
 //        order.setStatus("paid");
 //        int order_id = dao.insertOrder(order);
@@ -36,7 +38,7 @@ public class OrderDAO extends DBContext {
 //        for (OrderResponse o : list) {
 //            System.out.println(o.getOrder().getLabel());
 //        }
-    dao.restoreProductQuantity(2116);
+  //  dao.restoreProductQuantity(2116);
 
     }
     
@@ -237,9 +239,9 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-
+    
     public Integer insertOrder(Orders order) throws SQLException {
-        String sql = "INSERT INTO Orders (email, total_price, order_date, status, voucher_id, phone, payment_method, shipping_address) "
+        String sql = "INSERT INTO Orders (email, total_price, order_date, status, VoucherID, phone, payment_method, shipping_address) "
                 + "VALUES (?, ?, DEFAULT, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -278,7 +280,7 @@ public class OrderDAO extends DBContext {
                 Orders order = new Orders(
                         rs.getString("email"),
                         rs.getInt("total_price"),
-                        rs.getInt("voucher_id"),
+                        rs.getInt("VoucherID"),
                         rs.getString("shipping_address"),
                         rs.getString("phone")
                 );

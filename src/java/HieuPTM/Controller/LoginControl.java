@@ -37,7 +37,7 @@ public class LoginControl extends HttpServlet {
                     token = c.getValue();
                 }
             }
-        } else {
+        }else{
             response.sendRedirect("/RunnerShop/home");
             return;
         }

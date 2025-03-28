@@ -1,4 +1,5 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -63,8 +64,9 @@
                         <div class="row g-4">
                             <div class="col-sm-12 col-xl-6 ">
                                 <div class="bg-secondary rounded h-100 p-4">
-                                    <h6 >lo?i</h6>
+                                    <h6 >Danh mục</h6>
 
+                                    
                                     <div class="table-responsive" style="max-height: 200px;
                                          overflow-y: auto;
                                          margin-left: 0.1rem;">
@@ -99,13 +101,13 @@
                             </div> 
                             <div class="col-sm-12 col-xl-6 ">
                                 <div class="bg-secondary rounded h-100 p-4">
-                                    <h6 class="mb-4" ">Add Category Post</h6>
+                                    <h6 class="mb-4" ">Thêm danh mục bài viết</h6>
                                     <form action="AddPostCategory" method="POST" onsubmit="return validateForm();">
                                         <div class="mb-3">
-                                            <label class="form-label">Category Name</label>
+                                            <label class="form-label">Danh mục</label>
                                             <input type="text" class="form-control" name="categoryPost" id="categoryPost">
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Add new category</button>
+                                        <button type="submit" class="btn btn-primary">Thêm danh mục</button>
                                     </form>
                                    
                                 </div>
@@ -117,8 +119,8 @@
 
                                 <div class="d-flex align-items-center justify-content-between mb-4">
                                     <form action="tableCategory" method="POST">       
-                                        <a href="postDashboard" class="btn btn-primary">All Post</a>
-                                        <a href="AddPost" class="btn btn-primary">Add post</a>
+                                        <a href="postDashboard" class="btn btn-primary">Tất cả bài viết</a>
+                                        <a href="AddPost" class="btn btn-primary">Thêm Bài Viết</a>
                                     </form>
                                      <form action="postDashboard" method="post">
                                         <div class="input-group">
@@ -138,11 +140,11 @@
                                             <tr class="text-white">
 
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Title</th>
+                                                <th scope="col">Tiêu Đề</th>
                                                 <th scope="col">Category</th>                                              
-                                                <th scope="col">Banner</th>                                              
-                                                <th scope="col">Date </th>
-                                                <th scope="col">Action </th>
+                                                <th scope="col">Ảnh nền</th>                                              
+                                                <th scope="col">Ngày </th>
+                                                <th scope="col">Chỉnh sửa </th>
                                                                                               
 
                                             </tr>
@@ -226,14 +228,14 @@
             <script src="admin/js/main.js"></script>
             <script>
                                                             function showMess(id) {
-                                                                var option = confirm('Are you sure to delete?');
+                                                                var option = confirm('Bạn có chắc chắn muốn xóa bài viết?');
                                                                 if (option === true) {
                                                                     window.location.href = 'DeletePost?id=' + id;
                                                                     ;
                                                                 }
                                                             }
                                                             function showMessForCategory(id) {
-                                                                var option = confirm('Are you sure to delete?');
+                                                                var option = confirm('Bạn có chắc chắn muốn xóa danh mục bài viết?');
                                                                 if (option === true) {
                                                                     window.location.href = 'DeleteCategory?id=' + id;
                                                                     ;

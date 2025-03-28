@@ -66,62 +66,62 @@
                     <div class="row g-4">
                         <div class="">
                             <div class="bg-secondary rounded h-100 p-4">
-                                <h6 class="mb-4">Add Voucher</h6>
+                                <h6 class="mb-4">Thêm mã giảm giá</h6>
                                 <form action="tableVoucher" method="POST" onsubmit="return validateForm()">
                                     <div class="left-side">
                                         <div class="col-md-6">
-                                            <label class="form-label">Voucher Name</label>
+                                            <label class="form-label">Tên mã giảm giá</label>
                                             <input type="text" class="form-control col-4" name="name">
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Start </label>
+                                            <label class="form-label">Bắt đầu </label>
                                             <input type="date" class="form-control col-3" name="start">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label">End </label>
+                                            <label class="form-label">Kết thúc </label>
                                             <input type="date" class="form-control col-3" name="end">
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Discount</label>
+                                            <label class="form-label">Giảm giá</label>
                                             <input type="number" class="form-control col-3" name="discount">
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Quantity </label>
+                                            <label class="form-label">Số lượng </label>
                                             <input type="number" class="form-control col-3" name="quantity">
                                         </div>
                                         <div style="margin-top: 15px;color: red" id="error-messages"></div>
 
-                                        <button type="submit" class="btn btn-primary">Add new voucher</button>
+                                        <button type="submit" class="btn btn-primary">Thêm mã giảm giá</button>
 
                                     </div>
                                     <div class="right-side">
                                         <div class="col-md-6">
-                                            <label class="form-label">Voucher Code</label>
+                                            <label class="form-label">Mã giảm giá</label>
                                             <input type="text" class="form-control col-4" id="code-input" name="code">
                                         </div>
-                                        <a class="btn btn-primary" onclick="generateCode()">Create Code</a>
+                                        <a class="btn btn-primary" onclick="generateCode()">Tạo mã giảm giá</a>
                                     </div>
 
                                 </form>
                             </div>
                             <div class="bg-secondary text-center rounded p-4">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h6 class="mb-0">All Product</h6>
+                                    <h6 class="mb-0">Mã giảm giá hiện có</h6>
                                 </div>
                                 <div class="table-responsive">
                                     <table id="categoryTable"
                                            class="table text-start align-middle table-bordered table-hover mb-0">
                                         <thead>
                                             <tr class="text-white">
-                                                <th scope="col">Voucher name</th>
-                                                <th scope="col">Voucher Code</th>
-                                                <th scope="col">Quantity Available</th>
-                                                <th scope="col">Discount</th>
-                                                <th scope="col">Start</th>
-                                                <th scope="col">End</th>
+                                                <th scope="col">Tên mã giảm giá</th>
+                                                <th scope="col">Mã giảm giá</th>
+                                                <th scope="col">Số lượng mã giảm giá có thể sử dụng</th>
+                                                <th scope="col">Giảm giá</th>
+                                                <th scope="col">Bắt đầu</th>
+                                                <th scope="col">Kết thúc</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>

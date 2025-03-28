@@ -31,14 +31,23 @@ public class AuthorizeFilter implements Filter {
 
     private static final List<String> publicUrls = Arrays.asList(
             "/",
-
+            "/Charts",
             "/home",                        
             //HieuPTM_STAFF
             "/LogOut",
             "/HieuPTM/StaffManage",
             "/profile",
             "/Profile.jsp",
+            "/feedbacklist",
+            "/feedbacksearch",
+            "/feedbackreply",
+            "/feedbackreplydelete",
+
+            "/tableVoucher",
+            "/Charts",
             "/ManhTuan/orderlist.jsp",
+            "/ManhTuan/test.jsp",
+            "/tableVoucher",
             "/orderlist",
             "/dashboard",
             "/ManhTuan/marketingdashboard.jsp",
@@ -48,7 +57,9 @@ public class AuthorizeFilter implements Filter {
             "/AddFeedbackServlet",
             "/RunnerShop/ManhTuan/customeradd",
             "/ManhTuan/customeradd",
-
+            "/feedbackstatus",
+            "/export",
+            
             "/HieuPTM/StaffManage.jsp",
             "/HieuPTM.Controller.StaffManage",
             "/StaffManage",

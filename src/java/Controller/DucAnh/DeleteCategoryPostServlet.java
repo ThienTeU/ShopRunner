@@ -68,9 +68,9 @@ public class DeleteCategoryPostServlet extends HttpServlet {
             System.out.println(postCategoryID);
             int checkDelete = pcdao.deletePostCategoryById(postCategoryID);
             if (checkDelete != 0) {
-                session.setAttribute("msg", "Delete CategoryPost Success");
+                session.setAttribute("msg", "Xóa danh mục thành công");
             } else {
-                session.setAttribute("msg", "Delete CategoryPost Not Success");
+                session.setAttribute("msg", "Xóa danh mục không thành công");
             }
             response.sendRedirect("postDashboard");
         } catch (Exception e) {

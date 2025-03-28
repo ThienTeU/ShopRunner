@@ -66,12 +66,10 @@
 
 
 <body>
-    
-        <%@include file="component/header.jsp" %>
+
     <%@ page pageEncoding="UTF-8" %>
     <!--    topbar-->
-
-    <div class="container-fluid">
+    <div class="container-fluid" >
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
@@ -92,108 +90,110 @@
                 </div>
             </div>
         </div>
-    <!--end top bar-->
-    
-    <div id="wrapper" class="d-flex justify-content-center">
-    <div class="col-lg-6 col-md-8 col-12">
-        <form action="PostListController" method="post" class="d-flex justify-content-center">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="What are you search for?" name="search">
-                <div class="input-group-append">
-                    <span class="input-group-text bg-transparent text-primary">
-                        <button type="submit" class="fa fa-search" style="text-decoration: none; border: none"></button>
-                    </span>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+        <!--end top bar-->
 
-    
-    <div id="wrapper">
-        <form action="PostListController">
-            <div class="option">
-                <a href="PostListController?num=0">Mới nhất</a>
-                <c:forEach items="${requestScope.postCategoryDTOs}" var="c">
-                    <a href="PostListController?num=${c.getCategoryID()}">${c.getName()}</a>
-                </c:forEach>
-            </div>
-        </form>
-        <section id="blog">
-            <c:if test="${size < 1}">
-                <div class="blog-heading">
-                    <span>Chúng ta có bài viết gì mới hôm nay?</span>
-                    <h3>Xin lỗi! không có bài viết nào cả</h3>
-                </div>
-            </c:if>
-            <c:if test="${size > 0}">
-                <div class="blog-heading">
-                    <span>Chúng ta có bài viết gì mới hôm nay?</span>
-                    <h3>Các bài viết gần đây</h3>
-                </div>
-                <div class="blog-container">
-                    <!-- blog1 -->
-                    <c:forEach items="${requestScope.postDTOs}" var="c">
-                        <div class="blog-box">
-                            <!-- img -->
-                            <div class="blog-img">
-                                <img src="images/Post/${c.getPostImg()}"
-                                     alt="">
-                            </div>
-                            <!-- text -->
-                            <div class="blog-text">
-                                <span>${c.getDateCreated()}</span>
-                                <a href="postDetail?postID=${c.getPostID()}" class="blog-title">${c.getTitle()}</a>
-                                <p>${c.getDescription()}</p>
-                                <a href="postDetail?postID=${c.getPostID()}">Xem thêm</a>
-                                <p>Số lượt xem: ${c.getViews()}</p>
-                            </div>
-                                <!-- Phân trang -->
-<div class="pagination">
-    <c:if test="${currentPage > 1}">
-        <a href="PostListController?page=${currentPage - 1}">« Trước</a>
-    </c:if>
-
-    <c:forEach var="i" begin="1" end="${totalPages}">
-        <a href="PostListController?page=${i}" class="${i == currentPage ? 'active' : ''}">${i}</a>
-    </c:forEach>
-
-    <c:if test="${currentPage < totalPages}">
-        <a href="PostListController?page=${currentPage + 1}">Sau »</a>
-    </c:if>
-</div>
+        <div id="wrapper" class="d-flex justify-content-center">
+            <div class="col-lg-6 col-md-8 col-12">
+                <form action="PostListController" method="post" class="d-flex justify-content-center">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="What are you search for?" name="search">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <button type="submit" class="fa fa-search" style="text-decoration: none; border: none"></button>
+                            </span>
                         </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div id="wrapper">
+            <form action="PostListController">
+                <div class="option">
+                    <a href="PostListController?num=0">Mới nhất</a>
+                    <c:forEach items="${requestScope.postCategoryDTOs}" var="c">
+                        <a href="PostListController?num=${c.getCategoryID()}">${c.getName()}</a>
                     </c:forEach>
-
-
-
                 </div>
-            </c:if>
+            </form>
+            <section id="blog">
+                <c:if test="${size < 1}">
+                    <div class="blog-heading">
+                        <span>Chúng ta có bài viết gì mới hôm nay?</span>
+                        <h3>Xin lỗi! không có bài viết nào cả</h3>
+                    </div>
+                </c:if>
+                <c:if test="${size > 0}">
+                    <div class="blog-heading">
+                        <span>Chúng ta có bài viết gì mới hôm nay?</span>
+                        <h3>Các bài viết gần đây</h3>
+                    </div>
+                    <div class="blog-container">
+                        <!-- blog1 -->
+                        <c:forEach items="${requestScope.postDTOs}" var="c">
+                            <div class="blog-box">
+                                <!-- img -->
+                                <div class="blog-img">
+                                    <img src="images/Post/${c.getPostImg()}"
+                                         alt="">
+                                </div>
+                                <!-- text -->
+                                <div class="blog-text">
+                                    <span>${c.getDateCreated()}</span>
+                                    <a href="postDetail?postID=${c.getPostID()}" class="blog-title">${c.getTitle()}</a>
+                                    <p>${c.getDescription()}</p>
+                                    <a href="postDetail?postID=${c.getPostID()}">Xem thêm</a>
+                                    <p>Số lượt xem: ${c.getViews()}</p>
+                                </div>
+                                <!-- Phân trang -->
 
-            <!-- blog container -->
+                            </div>
+                        </c:forEach>
 
 
 
-        </section>
-        <%@include file="component/footer.jsp" %>
-    </div><!-- end wrapper -->
+                    </div>
+                    <div class="pagination">
+                        <c:if test="${currentPage > 1}">
+                            <a href="PostListController?page=${currentPage - 1}">« Trước</a>
+                        </c:if>
 
-    <!-- Core JavaScript
-    ================================================== -->
-    <script src="css/css_post/js/jquery.min.js"></script>
-    <script src="css/css_post/js/tether.min.js"></script>
-    <script src="css/css_post/js/bootstrap.min.js"></script>
-    <script src="css/css_post/js/custom.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+                        <c:forEach var="i" begin="1" end="${totalPages}">
+                            <a href="PostListController?page=${i}" class="${i == currentPage ? 'active' : ''}">${i}</a>
+                        </c:forEach>
 
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+                        <c:if test="${currentPage < totalPages}">
+                            <a href="PostListController?page=${currentPage + 1}">Sau »</a>
+                        </c:if>
+                    </div>
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+                </c:if>
+
+                <!-- blog container -->
+
+
+
+            </section>
+            <%@include file="component/footer.jsp" %>
+        </div><!-- end wrapper -->
+
+        <!-- Core JavaScript
+        ================================================== -->
+        <script src="css/css_post/js/jquery.min.js"></script>
+        <script src="css/css_post/js/tether.min.js"></script>
+        <script src="css/css_post/js/bootstrap.min.js"></script>
+        <script src="css/css_post/js/custom.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+        <!-- Contact Javascript File -->
+        <script src="mail/jqBootstrapValidation.min.js"></script>
+        <script src="mail/contact.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
 </body>
 </html>

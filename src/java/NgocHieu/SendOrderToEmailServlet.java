@@ -5,6 +5,7 @@
 package NgocHieu;
 
 import DAL.ProductDAO;
+import DAO.DucAnh.VoucherDAO;
 import Model.CartItem;
 import Model.CartItemDTO;
 import Model.Color;
@@ -93,6 +94,7 @@ public class SendOrderToEmailServlet extends HttpServlet {
                     Logger.getLogger(SendOrderToEmailServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            
 
             String subject = "Xác nhận đơn hàng: #" + order.getOrder_id() + " - RunnerShop";
             String emailBody = "<html>"
@@ -152,10 +154,20 @@ public class SendOrderToEmailServlet extends HttpServlet {
                         + "<td>" + formatToVND((int) item.getProductPrice().getPrice()) + "</td>"
                         + "</tr>";
             }
+            VoucherDAO dao = new VoucherDAO();
             emailBody += "<tr>"
-                    + "<td colspan='5' style='text-align: right; font-weight: bold;'>Tổng Tiền:</td>"
+                    + "<td colspan='5' style='text-align: right; font-weight: bold;'>Thành Tiền:</td>"
                     + "<td style='font-weight: bold;'>" + formatToVND(total) + "</td>"
                     + "</tr>";
+            emailBody += "<tr>"
+                    + "<td colspan='5' style='text-align: right; font-weight: bold;'>Giảm giá:</td>"
+                    + "<td style='font-weight: bold;'>" + dao.getDiscountByVoucherCode(dao.getVoucherCodeById(order.getVoucher_id())) + "% </td>"
+                    + "</tr>";
+            emailBody += "<tr>"
+                    + "<td colspan='5' style='text-align: right; font-weight: bold;'>Tổng Tiền:</td>"
+                    + "<td style='font-weight: bold;'>" + formatToVND(order.getTotal_price()) + "</td>"
+                    + "</tr>";
+            
             emailBody += "</table>"
                     + "</div>"
                     + "<div class='footer'>"
