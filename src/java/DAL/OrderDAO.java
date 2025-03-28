@@ -5,7 +5,7 @@
 package DAL;
 
 import Model.CartItem;
-//import Model.OrderDetailAnh;
+import Model.OrderDetailAnh;
 import Model.OrderDetails;
 import Model.Orders;
 import Model.ProductPrice;
@@ -358,38 +358,38 @@ public class OrderDAO extends DBContext {
     }
     
     
-// public List<OrderDetailAnh> getProductsByOrderId(int orderId) throws SQLException {
-//        List<OrderDetailAnh> products = new ArrayList<>();
-//        String query = "SELECT " +
-//                "o.order_id, " +
-//                "p.product_id, " +
-//                "p.product_name, " +
-//                "MIN(pi.image_url) AS image_url, " +
-//                "od.quantity, " +
-//                "od.unit_price " +
-//                "FROM Orders o " +
-//                "INNER JOIN OrderDetails od ON o.order_id = od.order_id " +
-//                "INNER JOIN Product p ON od.Product_id = p.product_id " +
-//                "LEFT JOIN ProductImage pi ON p.product_id = pi.product_id " +
-//                "WHERE o.order_id = ? " +
-//                "GROUP BY o.order_id, p.product_id, p.product_name, od.quantity, od.unit_price";
-//
-//        try (PreparedStatement ps = connection.prepareStatement(query)) {
-//            ps.setInt(1, orderId);
-//            try (ResultSet rs = ps.executeQuery()) {
-//                while (rs.next()) {
-//                    OrderDetailAnh product = new OrderDetailAnh();
-//                    product.setOrderId(rs.getInt("order_id"));
-//                    product.setProductId(rs.getInt("product_id"));
-//                    product.setProductName(rs.getString("product_name"));
-//                    product.setImageUrl(rs.getString("image_url"));
-//                    product.setQuantity(rs.getInt("quantity"));
-//                    product.setUnitPrice(rs.getDouble("unit_price"));
-//                    products.add(product);
-//                }
-//            }
-//        }
-//
-//        return products;
-//    }
+ public List<OrderDetailAnh> getProductsByOrderId(int orderId) throws SQLException {
+        List<OrderDetailAnh> products = new ArrayList<>();
+        String query = "SELECT " +
+                "o.order_id, " +
+                "p.product_id, " +
+                "p.product_name, " +
+                "MIN(pi.image_url) AS image_url, " +
+                "od.quantity, " +
+                "od.unit_price " +
+                "FROM Orders o " +
+                "INNER JOIN OrderDetails od ON o.order_id = od.order_id " +
+                "INNER JOIN Product p ON od.Product_id = p.product_id " +
+                "LEFT JOIN ProductImage pi ON p.product_id = pi.product_id " +
+                "WHERE o.order_id = ? " +
+                "GROUP BY o.order_id, p.product_id, p.product_name, od.quantity, od.unit_price";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    OrderDetailAnh product = new OrderDetailAnh();
+                    product.setOrderId(rs.getInt("order_id"));
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setProductName(rs.getString("product_name"));
+                    product.setImageUrl(rs.getString("image_url"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setUnitPrice(rs.getDouble("unit_price"));
+                    products.add(product);
+                }
+            }
+        }
+
+        return products;
+    }
 }

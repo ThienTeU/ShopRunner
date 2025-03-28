@@ -1,7 +1,7 @@
 package Controller;
 
 import DAL.OrderDAO;
-//import Model.OrderDetailAnh;
+import Model.OrderDetailAnh;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -33,30 +33,30 @@ public class OrderControllerProfile extends HttpServlet {
             return;
         }
 
-//        try {
-//            // Chuyển orderId từ String sang int
-//            orderId = Integer.parseInt(orderIdParam);
-//
-//            // Gọi phương thức getProductsByOrderId từ DAO
-//            List<OrderDetailAnh> orderDetails = orderDAO.getProductsByOrderId(orderId);
-//
-//            // Kiểm tra nếu không có dữ liệu
-//            if (orderDetails.isEmpty()) {
-//                request.setAttribute("message", "No order details found for orderId = " + orderId);
-//            } else {
-//                // Gửi danh sách sản phẩm đến JSP
-//                request.setAttribute("orderDetails", orderDetails);
-//            }
-//
-//            // Chuyển tiếp (forward) đến trang JSP để hiển thị
-//            request.getRequestDispatcher("/orderDetailsProfile.jsp").forward(request, response);
-//
-//        } catch (NumberFormatException e) {
-//            // Xử lý lỗi chuyển đổi orderId
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID format");
-//        } catch (SQLException e) {
-//            // Xử lý lỗi truy vấn SQL
-//            throw new ServletException("Error retrieving order details", e);
-//        }
+        try {
+            // Chuyển orderId từ String sang int
+            orderId = Integer.parseInt(orderIdParam);
+
+            // Gọi phương thức getProductsByOrderId từ DAO
+            List<OrderDetailAnh> orderDetails = orderDAO.getProductsByOrderId(orderId);
+
+            // Kiểm tra nếu không có dữ liệu
+            if (orderDetails.isEmpty()) {
+                request.setAttribute("message", "No order details found for orderId = " + orderId);
+            } else {
+                // Gửi danh sách sản phẩm đến JSP
+                request.setAttribute("orderDetails", orderDetails);
+            }
+
+            // Chuyển tiếp (forward) đến trang JSP để hiển thị
+            request.getRequestDispatcher("/orderDetailsProfile.jsp").forward(request, response);
+
+        } catch (NumberFormatException e) {
+            // Xử lý lỗi chuyển đổi orderId
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID format");
+        } catch (SQLException e) {
+            // Xử lý lỗi truy vấn SQL
+            throw new ServletException("Error retrieving order details", e);
+        }
     }
 }

@@ -87,7 +87,7 @@ public class FeedbackDAO extends DBContext {
 
     public List<Feedback> getAllFeedbackById(int product_id) throws SQLException {
         List<Feedback> list = new ArrayList<>();
-        String sql = "SELECT * FROM Feedback WHERE product_id = ?";
+        String sql = "SELECT * FROM Feedback WHERE product_id = ? and status = 1";
         ps = connection.prepareStatement(sql);
         ps.setInt(1, product_id);
         try (ResultSet rs = ps.executeQuery()) {

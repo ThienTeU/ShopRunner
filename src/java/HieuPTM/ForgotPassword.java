@@ -1,4 +1,4 @@
-package HieuPTM.controller;
+package HieuPTM;
 
 import java.util.Properties;
 import java.util.Random;
