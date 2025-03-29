@@ -382,16 +382,6 @@
                                                                               type="currency" 
                                                                               currencySymbol="₫"/>
                                                         </span>
-<c:if test="${not empty sessionScope.userId}">
-    <button class="btn favorite-btn ${product.isFavorite ? 'btn-danger' : 'btn-outline-danger'}" 
-            data-product-id="${product.product_id}" 
-            data-action="${product.isFavorite ? 'remove' : 'add'}">
-        <i class="${product.isFavorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
-    </button>
-</c:if>
-<c:if test="${empty sessionScope.userId}">
-    <p><a href="LoginControl">Đăng nhập</a> để yêu thích sản phẩm.</p>
-</c:if>
 
 
                                                     </div>
@@ -463,16 +453,7 @@
                                                                               type="currency" 
                                                                               currencySymbol="₫"/>
                                                         </span>
-<c:if test="${not empty sessionScope.userId}">
-    <button class="btn favorite-btn ${product.isFavorite ? 'btn-danger' : 'btn-outline-danger'}" 
-            data-product-id="${product.product_id}" 
-            data-action="${product.isFavorite ? 'remove' : 'add'}">
-        <i class="${product.isFavorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
-    </button>
-</c:if>
-<c:if test="${empty sessionScope.userId}">
-    <p><a href="LoginControl">Đăng nhập</a> để yêu thích sản phẩm.</p>
-</c:if>
+
 
 
                                                     </div>

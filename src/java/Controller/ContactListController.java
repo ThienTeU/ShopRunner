@@ -3,6 +3,7 @@ package Controller;
 import DAL.ContactDAO;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,8 +32,30 @@ public class ContactListController extends HttpServlet {
         ContactDAO contactDAO = new ContactDAO();
         List<Contact> contactList = contactDAO.getAllContacts();
 
-        // Đưa danh sách contact vào request để hiển thị trên giao diện
-        request.setAttribute("contactList", contactList);
+        // Nhận tham số tìm kiếm và lọc từ request
+        String keyword = request.getParameter("keyword");
+        String statusFilter = request.getParameter("statusFilter");
+
+        // Lọc danh sách liên hệ dựa trên tham số
+        List<Contact> filteredContactList = contactList;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            filteredContactList = filteredContactList.stream()
+                .filter(contact -> contact.getFullName().toLowerCase().contains(keyword.toLowerCase())
+                        || contact.getEmail().toLowerCase().contains(keyword.toLowerCase())
+                        || contact.getContent().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+        }
+
+        if (statusFilter != null && !statusFilter.isEmpty()) {
+            boolean status = Boolean.parseBoolean(statusFilter);
+            filteredContactList = filteredContactList.stream()
+                .filter(contact -> contact.getStatus()== status)
+                .collect(Collectors.toList());
+        }
+
+        // Đưa danh sách đã lọc vào request để hiển thị trên giao diện
+        request.setAttribute("contactList", filteredContactList);
 
         // Chuyển hướng tới trang danh sách contact (JSP)
         request.getRequestDispatcher("AdminManage/contactList.jsp").forward(request, response);
