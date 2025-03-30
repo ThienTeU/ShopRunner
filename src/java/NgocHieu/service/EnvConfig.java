@@ -15,9 +15,9 @@ public class EnvConfig {
         try {
             // Xác định đường dẫn file .env
             //String path = "C:/Users/admin/ShopRunner/config.env";
-           // String path = "D:/swp/gitMOI/ShopRunner/config.env";
-            String path = "D:/never/ShopRunner/config.env";
-            
+            //String path = "D:/swp/gitMOI/ShopRunner/config.env";
+            //String path = "D:/never/ShopRunner/config.env";
+            String path = "D:/ShopRunner/config.env";
 
             FileInputStream fileInputStream = new FileInputStream(path);
             properties.load(fileInputStream);

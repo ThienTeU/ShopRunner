@@ -53,17 +53,16 @@ public class RegisterControl extends HttpServlet {
         int roleID = 2;
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
-        int genderID = Integer.parseInt(request.getParameter("gender")); // Ép kiểu gender sang int
+        int genderID = Integer.parseInt(request.getParameter("gender"));
 
-        // Lưu lại dữ liệu người dùng nhập để hiển thị lại khi lỗi
         request.setAttribute("username", userName);
         request.setAttribute("fullname", fullName);
         request.setAttribute("email", email);
         request.setAttribute("phone", phone);
-        request.setAttribute("gender", genderID); // Lưu gender để hiện lại nếu lỗi
+        request.setAttribute("gender", genderID);
         PasswordEncoder passEncoder = new BCryptPasswordEncoder(10);
         String passHashed = passEncoder.encode(password);
-        // Kiểm tra dữ liệu
+        
         if (!validateEmail(email)) {
             request.setAttribute("error", "Định dạng email không hợp lệ!");
             request.getRequestDispatcher("HieuPTM/Register.jsp").forward(request, response);
@@ -86,12 +85,10 @@ public class RegisterControl extends HttpServlet {
             return;
         }
 
-        // Sinh OTP
         Random rand = new Random();
         String otpvalue = String.format("%06d", rand.nextInt(999999));
         System.out.println("OTP cho đăng ký: " + otpvalue);
 
-        // Gửi email chứa OTP
         boolean sendMailSuccess = sendOTPEmail(email, otpvalue);
 
         if (!sendMailSuccess) {
@@ -100,18 +97,15 @@ public class RegisterControl extends HttpServlet {
             return;
         }
 
-        // Lưu thông tin vào session để xác minh OTP
         HttpSession session = request.getSession();
         session.setAttribute("otp", otpvalue);
-        session.setAttribute("otpTime", System.currentTimeMillis()); // Lưu thời điểm tạo OTP
+        session.setAttribute("otpTime", System.currentTimeMillis());
         session.setAttribute("userRegister", new UserHieu(userName, fullName, passHashed, phone, email, genderID, roleID));
 
-        // Điều hướng sang trang nhập OTP
         request.setAttribute("message", "Xác thực mã OTP đã được gửi qua email để hoàn tất đăng ký.");
         request.getRequestDispatcher("HieuPTM/EnterOTP.jsp").forward(request, response);
     }
 
-    // Hàm gửi OTP qua email
     private boolean sendOTPEmail(String email, String otpvalue) {
         try {
             Properties props = new Properties();
@@ -124,7 +118,7 @@ public class RegisterControl extends HttpServlet {
             Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("hieuphamtran04@gmail.com", "uqrr rrhy mvxz hbzw"); // Thông tin tạm
+                    return new PasswordAuthentication("hieuphamtran04@gmail.com", "uqrr rrhy mvxz hbzw");
                 }
             });
 
@@ -146,7 +140,6 @@ public class RegisterControl extends HttpServlet {
             return true;
 
         } catch (MessagingException e) {
-            e.printStackTrace();
             return false;
         }
     }

@@ -1,4 +1,4 @@
-package HieuPTM.controller;
+package HieuPTM;
 
 import java.util.Properties;
 import java.util.Random;
@@ -27,10 +27,12 @@ public class ForgotPassword extends HttpServlet {
         RequestDispatcher dispatcher;
 
         if (email != null && !email.trim().isEmpty()) {
+
+            request.setAttribute("message", "Vui lòng nhập email hợp lệ!");
+
             Random rand = new Random();
             String otpValue = String.format("%06d", rand.nextInt(999999));
 
-            // Email config
             String fromEmail = "hieuphamtran04@gmail.com";
             String password = "uqrr rrhy mvxz hbzw";
 
@@ -40,7 +42,9 @@ public class ForgotPassword extends HttpServlet {
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
-            Session sessionMail = Session.getDefaultInstance(props, new Authenticator() {
+            Session sessionMail;
+            sessionMail = Session.getDefaultInstance(props, new Authenticator() {
+                @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(fromEmail, password);
                 }
@@ -66,13 +70,12 @@ public class ForgotPassword extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("otp", otpValue);
                 session.setAttribute("email", email);
-                session.setAttribute("otpTime", new Date().getTime()); // Thời gian gửi OTP
+                session.setAttribute("otpTime", new Date().getTime());
 
                 request.setAttribute("message", "Mã OTP đã được gửi tới email của bạn!");
                 dispatcher = request.getRequestDispatcher("/HieuPTM/EnterOTP.jsp");
 
             } catch (MessagingException e) {
-                e.printStackTrace();
                 request.setAttribute("message", "Lỗi gửi email: " + e.getMessage());
                 dispatcher = request.getRequestDispatcher("/HieuPTM/ForgotPassword.jsp");
             }

@@ -1,6 +1,5 @@
 package HieuPTM.DAO;
 
-import static DAL.DBContext.connection;
 import HieuPTM.DBContext.DBContext;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import HieuPTM.model.UserHieu;
 import Model.StaffHieu;
-import Model.UserTuan;
 import NgocHieu.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,8 +15,7 @@ import java.util.List;
 
 @WebServlet(name = "UserDAO", urlPatterns = {"/UserDAO"})
 public class UserDAO extends DBContext {
-    
-    // Kiểm tra số điện thoại trùng
+
     public boolean checkPhoneDuplicate(String phone) {
         String sql = "SELECT 1 FROM [User] WHERE phone_number = ? AND [status] = 1";
         try (PreparedStatement st = connection.prepareStatement(sql)) {
@@ -31,60 +28,40 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-
-    public List<StaffHieu> getAllStaff() {
+public List<StaffHieu> getAllStaffPage(int index, int size) {
         List<StaffHieu> staffs = new ArrayList<>();
-        String sql = "  select * from [User] where role_id in (3,4)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    StaffHieu staff = new StaffHieu(
-                            rs.getInt("user_id"),
-                            rs.getInt("role_id"),
-                            rs.getString("user_name"),
-                            rs.getString("email"),
-                            rs.getString("phone_number"),
-                            rs.getBoolean("status")
-                    );
-
-                    staffs.add(staff);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return staffs;
-    }
-    public List<StaffHieu> getAllStaffPage(int index, int size) {
-        List<StaffHieu> staffs = new ArrayList<>();
+        
+        // Kiểm tra tham số đầu vào
+        if (index < 1) index = 1;
+        if (size <= 0) size = 10;
+        
         int offset = (index - 1) * size;
         String sql = "SELECT \n"
-                + "    u.user_id,\n"
-                + "    u.role_id,\n"
-                + "    u.user_name,\n"
-                + "    u.email,\n"
-                + "    u.phone_number,\n"
-                + "    u.status,\n"
-                + "    u.gender_id\n"
-                + "FROM [User] u\n"
-                + "WHERE u.role_id IN (3, 4)\n"
-                + "ORDER BY u.user_id\n"
-                + "OFFSET ? ROWS\n"
-                + "FETCH NEXT ? ROWS ONLY;";
+                   + "    user_id, role_id, user_name, full_name, email, password, \n"
+                   + "    phone_number, status, created_at, gender_id\n"
+                   + "FROM [User] \n"
+                   + "WHERE role_id IN (3, 4)\n"
+                   + "ORDER BY user_id\n"
+                   + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+        
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, offset);
             ps.setInt(2, size);
+            
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     StaffHieu staff = new StaffHieu(
                             rs.getInt("user_id"),
                             rs.getInt("role_id"),
                             rs.getString("user_name"),
+                            rs.getString("full_name"),
                             rs.getString("email"),
+                            rs.getString("password"),
                             rs.getString("phone_number"),
-                            rs.getBoolean("status")
+                            rs.getBoolean("status"),
+                            rs.getInt("gender_id"),
+                            rs.getString("created_at")
                     );
-
                     staffs.add(staff);
                 }
             }
@@ -93,8 +70,59 @@ public class UserDAO extends DBContext {
         }
         return staffs;
     }
+public List<StaffHieu> getAllStaff() {
+        List<StaffHieu> staffs = new ArrayList<>();
+        String sql = "SELECT user_id, role_id, user_name, full_name, email, password, phone_number, status, created_at, gender_id "
+                   + "FROM [User] WHERE role_id IN (3,4)";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                StaffHieu staff = new StaffHieu(
+                        rs.getInt("user_id"),
+                        rs.getInt("role_id"),
+                        rs.getString("user_name"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone_number"),
+                        rs.getBoolean("status"),
+                        rs.getInt("gender_id"),
+                        rs.getString("created_at")
+                );
+                staffs.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffs;
+    }
+    public UserHieu getUserByUsername(String username) {
+        UserHieu user = null;
+        String query = "SELECT * FROM Users WHERE userName = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                user = new UserHieu(
+                        rs.getString("userName"),
+                        rs.getString("fullName"),
+                        rs.getString("password"),
+                        rs.getString("phone"),
+                        rs.getString("email"),
+                        rs.getInt("genderID"),
+                        rs.getInt("roleID")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
 
-    // Lấy tất cả user có status = 1
+    
+
     public ArrayList<UserHieu> getAllUsers() {
         ArrayList<UserHieu> list = new ArrayList<>();
         String sql = "SELECT * FROM [User] WHERE [status] = 1 ORDER BY role_id ASC";
@@ -118,7 +146,6 @@ public class UserDAO extends DBContext {
         return list;
     }
 
-    // Lấy tất cả user không phải admin
     public ArrayList<UserHieu> getAllUsersNoAdmin() {
         ArrayList<UserHieu> list = new ArrayList<>();
         String sql = "SELECT * FROM [User] WHERE [status] = 1 AND role_id != 1 AND role_id != 2";
@@ -144,7 +171,6 @@ public class UserDAO extends DBContext {
         return list;
     }
 
-    // Kiểm tra đăng nhập
     public UserHieu check(String username, String password) {
         String sql = "SELECT * FROM [User] WHERE user_name = ? AND password = ? AND [status] = 1";
         try {
@@ -168,8 +194,7 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
-    
-    // Lấy user theo username
+
     public UserHieu getUserByEmail(String email) {
         String sql = "SELECT * FROM [User] WHERE email = ?";
         try {
@@ -195,7 +220,6 @@ public class UserDAO extends DBContext {
         return null;
     }
 
-    // Lấy user theo username
     public UserHieu getUser(String username) {
         String sql = "SELECT * FROM [User] WHERE user_name = ?";
         try {
@@ -219,7 +243,6 @@ public class UserDAO extends DBContext {
         return null;
     }
 
-    // Kiểm tra account admin
     public int checkAccountAdmin(String userName) {
         String sql = "SELECT role_id FROM [User] WHERE user_name = ? AND [status] = 1";
         try {
@@ -234,7 +257,6 @@ public class UserDAO extends DBContext {
         return 0;
     }
 
-    // Kiểm tra username trùng
     public boolean checkUserNameDuplicate(String username) {
         String sql = "SELECT 1 FROM [User] WHERE user_name = ? AND [status] = 1";
         try (PreparedStatement st = connection.prepareStatement(sql)) {
@@ -248,7 +270,6 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    // Kiểm tra email trùng
     public boolean checkEmailDuplicate(String email) {
         String sql = "SELECT 1 FROM [User] WHERE email = ? AND [status] = 1";
         try (PreparedStatement st = connection.prepareStatement(sql)) {
@@ -262,7 +283,6 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-    // Đăng ký user mới
     public String registerUser(UserHieu user) {
         if (checkUserNameDuplicate(user.getUserName())) {
             return "Tên đăng nhập đã tồn tại!";
@@ -292,7 +312,6 @@ public class UserDAO extends DBContext {
         }
     }
 
-    // Cập nhật ảnh user
     public void updateImage(String image, String userName) {
         String sql = "UPDATE [User] SET [image] = ? WHERE user_name = ? AND [status] = 1";
         try {
@@ -305,7 +324,6 @@ public class UserDAO extends DBContext {
         }
     }
 
-    // Đổi mật khẩu
     public void changePassword(UserHieu user) {
         String sql = "UPDATE [User] SET password = ? WHERE user_name = ? AND [status] = 1";
         try {
@@ -318,7 +336,6 @@ public class UserDAO extends DBContext {
         }
     }
 
-    // Tìm kiếm user theo tên
     public ArrayList<UserHieu> searchUserByName(String search) {
         ArrayList<UserHieu> list = new ArrayList<>();
         String sql = "SELECT * FROM [User] WHERE user_name LIKE ?";
@@ -342,25 +359,21 @@ public class UserDAO extends DBContext {
         return list;
     }
 
-// Hàm xóa user
     public void deleteUser(String userName) {
         String sql = "DELETE FROM [User] WHERE user_name = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userName);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
-    // Hàm update role thành Staff
     public void becomeStaff(String userName) {
         String sql = "UPDATE [User] SET role_id = 2 WHERE user_name = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userName);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -377,11 +390,9 @@ public class UserDAO extends DBContext {
             ps.setInt(7, user.getRoleID());
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
-    
     public static void main(String[] args) throws ParseException, JOSEException {
         UserDAO dao = new UserDAO();
         String token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJOZ29jSGlldS5jb20iLCJzdWIiOiJkdW9uZ2hpZXUyOTRAZ21haWwuY29tIiwicm9sZSI6IkFkbWluIiwiZXhwIjoxNzQzMDUzMTUzLCJpYXQiOjE3NDMwNDIzNTN9.-FVxmDcEIdppdrUZU5ziCIuPHRx5lkhCn6VR1UnmIq6zqC0OtF8KmcaNdw8nkolpdDldTTPCc1gV89zr24npbQ";
@@ -389,5 +400,4 @@ public class UserDAO extends DBContext {
         System.out.println(email);
         System.out.println(dao.getUserByEmail(email));
     }
-
 }

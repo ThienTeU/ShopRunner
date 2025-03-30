@@ -2,6 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+            <!-- Header -->
+        <%@ include file="/model/styles.jsp" %>
+        <%@ include file="/model/header.jsp" %>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Đăng kí tài khoản</title>
@@ -129,5 +132,7 @@
             }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Footer -->
+        <%@ include file="/model/footer.jsp" %>
     </body>
 </html>

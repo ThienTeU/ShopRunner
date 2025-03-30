@@ -583,6 +583,7 @@
 
         <!-- Footer -->
         <%@ include file="/model/footer.jsp" %>
+        
 
         <script>
             document.addEventListener('click', function (event) {

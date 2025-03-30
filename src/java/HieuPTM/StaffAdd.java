@@ -3,14 +3,13 @@ package HieuPTM;
 import DAL.StaffDAOHieu;
 import Model.StaffHieu;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @WebServlet(name = "StaffAdd", urlPatterns = {"/StaffAdd"})
@@ -18,51 +17,75 @@ public class StaffAdd extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        try {
+            // Lấy dữ liệu từ form
+            String userName = request.getParameter("userName").trim();
+            String fullName = request.getParameter("fullName").trim();
+            String email = request.getParameter("email").trim();
+            String phoneNumber = request.getParameter("phoneNumber").trim();
+            boolean status = "1".equals(request.getParameter("status"));
+            int gender = Integer.parseInt(request.getParameter("gender"));
+            int roleId = Integer.parseInt(request.getParameter("role"));
 
-        String userName = request.getParameter("userName");
-        String fullName = request.getParameter("fullName");
-        String email = request.getParameter("email");
-        String phoneNumber = request.getParameter("phoneNumber");
-        boolean status = "1".equals(request.getParameter("status"));
-        int gender = Integer.parseInt(request.getParameter("gender"));
-        int roleId = Integer.parseInt(request.getParameter("role"));
+            // Mật khẩu mặc định
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            String password = "12345678";
+            String encodedPassword = passwordEncoder.encode(password);
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        String password = "12345678";
-        String encodedPassword = passwordEncoder.encode(password);
-
-        StaffHieu staff = new StaffHieu(userName, fullName, email, encodedPassword, phoneNumber, status, gender);
-        StaffDAOHieu dao = new StaffDAOHieu();
-        List<StaffHieu> listStaff = dao.getAllStaff();
-        List<String> errors = new ArrayList<>();
-        request.setAttribute("staff", staff);
-
-        for (StaffHieu sta : listStaff) {
-            if (sta.getEmail().equals(email)) {
-                errors.add("Email đã tồn tại");
+            // Kiểm tra dữ liệu đầu vào
+            List<String> errors = new ArrayList<>();
+            if (userName.isEmpty() || fullName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty()) {
+                errors.add("Vui lòng nhập đầy đủ thông tin.");
             }
-            if (sta.getPhoneNumber().equals(phoneNumber)) {
-                errors.add("Số điện thoại đã tồn tại");
-            }
-            if (sta.getUserName().equals(userName)) {
-                errors.add("Tên tài khoản đã tồn tại");
-            }
-        }
-        if (!errors.isEmpty()) {
-            request.setAttribute("errors", errors);
-            request.setAttribute("staff", staff);
-            //request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
-            return;
-        }
 
-        String result = dao.addStaff(staff);
-        if ("Thêm nhân viên thành công!".equals(result)) {
-            request.setAttribute("success", "Thêm thành công!");
-        } else {
-            request.setAttribute("error", result);
-        }
+            // Tạo DAO để kiểm tra dữ liệu
+            StaffDAOHieu dao = new StaffDAOHieu();
 
-        request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+            if (dao.checkUserNameDuplicate(userName)) {
+                errors.add("Tên tài khoản đã tồn tại.");
+            }
+            if (dao.checkEmailDuplicate(email)) {
+                errors.add("Email đã tồn tại.");
+            }
+            if (dao.checkPhoneDuplicate(phoneNumber)) {
+                errors.add("Số điện thoại đã tồn tại.");
+            }
+            
+            // Tạo đối tượng nhân viên
+            StaffHieu staff = new StaffHieu(0, roleId, userName, fullName, email, encodedPassword, phoneNumber, status, gender, null);
+            if (!errors.isEmpty()) {
+    request.setAttribute("errors", errors);
+    request.setAttribute("staff", staff); // Giữ dữ liệu nhập
+    request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+    return;
+}
+
+
+            // Nếu có lỗi, quay lại trang và hiển thị lỗi
+            if (!errors.isEmpty()) {
+                request.setAttribute("errors", errors);
+                request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+                return;
+            }
+
+            
+            
+            // Thêm nhân viên
+            String result = dao.addStaff(staff);
+            if (result.equals("Thêm nhân viên thành công!")) {
+                request.setAttribute("success", "Thêm nhân viên thành công!");
+            } else {
+                request.setAttribute("error", result);
+            }
+
+            // Chuyển hướng về trang quản lý nhân viên
+            request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi xử lý dữ liệu: " + e.getMessage());
+            request.getRequestDispatcher("HieuPTM/StaffManage.jsp").forward(request, response);
+        }
     }
 
     @Override
@@ -79,17 +102,6 @@ public class StaffAdd extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }
-    
-    public static void main(String[] args) {
-        StaffDAOHieu dao = new StaffDAOHieu();
-        StaffHieu staff = new StaffHieu("sv", "sv", "sv@36.com", "1", "0931338288", true, 1);
-                //userName, fullName, email, encodedPassword, phoneNumber, status, gender
-        dao.addStaff(staff);
-        List<StaffHieu> listStaff = dao.getAllStaff();
-        for(StaffHieu a : listStaff){
-            System.out.println(a.toString());
-        }
+        return "Thêm nhân viên mới";
     }
 }

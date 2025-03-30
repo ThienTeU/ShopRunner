@@ -1,7 +1,8 @@
 package HieuPTM.Controller;
 
-import com.google.gson.Gson;
 import HieuPTM.DAO.DashboardDAO;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.Map;
 import jakarta.servlet.ServletException;
@@ -9,40 +10,37 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
+import java.io.PrintWriter;
 
-@WebServlet(name = "AdminDashboard", urlPatterns = {"/admin/dashboard"})
+@WebServlet(name = "AdminDashboard", urlPatterns = {"/AdminDashboard"})
 public class AdminDashboard extends HttpServlet {
-
-    private final DashboardDAO dashboardDAO = new DashboardDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
 
-        if (action == null) {
-            // Lấy dữ liệu từ DAO và kiểm tra null
-            Map<String, Integer> orderStatus = dashboardDAO.getOrderStatusCounts();
-            Map<String, Double> revenueByCategory = dashboardDAO.getRevenueByCategory();
-            Map<String, Integer> newCustomers = dashboardDAO.getNewCustomersLast7Days();
-            Map<String, Double> feedbackRatings = dashboardDAO.getFeedbackRatings();
+        DashboardDAO dao = new DashboardDAO();
 
-            // Đảm bảo không bị null
-            if (orderStatus == null) orderStatus = new HashMap<>();
-            if (revenueByCategory == null) revenueByCategory = new HashMap<>();
-            if (newCustomers == null) newCustomers = new HashMap<>();
-            if (feedbackRatings == null) feedbackRatings = new HashMap<>();
+        // Lấy dữ liệu
+        Map<String, Integer> orderStatus = dao.getOrderStatusCounts();
+        Map<String, Double> revenue = dao.getRevenueByCategory();
+        Map<String, Integer> newCustomers = dao.getNewCustomersLast7Days();
+        Map<String, Double> feedbackRatings = dao.getFeedbackRatings();
 
-            // Gán vào request
-            request.setAttribute("orderStatus", orderStatus);
-            request.setAttribute("revenueByCategory", revenueByCategory);
-            request.setAttribute("newCustomers", newCustomers);
-            request.setAttribute("feedbackRatings", feedbackRatings);
-
-            // Chuyển hướng đến dashboard.jsp
-            request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
-            return;
+        // Nếu có ngày, lấy xu hướng đơn hàng
+        if (startDate != null && endDate != null) {
+            Map<String, Integer> orderTrends = dao.getOrderTrends(startDate, endDate);
+            request.setAttribute("orderTrends", orderTrends);
         }
+
+        request.setAttribute("orderStatus", orderStatus);
+        request.setAttribute("revenue", revenue);
+        request.setAttribute("newCustomers", newCustomers);
+        request.setAttribute("feedbackRatings", feedbackRatings);
+
+        // Chuyển hướng đến trang AdminDash.jsp
+        request.getRequestDispatcher("/HieuPTM/AdminDash.jsp").forward(request, response);
     }
 }
