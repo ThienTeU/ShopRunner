@@ -103,6 +103,7 @@
             }
 
             .navbar .nav-icon {
+                position: relative;
                 cursor: pointer;
                 font-size: 20px;
                 color: #333;
@@ -110,8 +111,8 @@
 
             .navbar .nav-icon .badge-count {
                 position: absolute;
-                top: -5px;
-                right: -5px;
+                top: -8px;
+                right: -25px;
                 background-color: red;
                 color: white;
                 padding: 2px 8px;
@@ -158,14 +159,14 @@
 
                 <!-- Menu -->
                 <ul class="menu">
-                    <li><a href="/RunnerShop/home?uid=${param.uid}">Trang chủ</a></li>
-                    <li><a href="/RunnerShop/About.jsp?uid=${param.uid}">Giới thiệu</a></li>
+                    <li><a href="/RunnerShop/home">Trang chủ</a></li>
+                    <li><a href="/RunnerShop/About.jsp">Giới thiệu</a></li>
                     <li class="dropdown">
-                        <a href="#" class="nav-link">Sản phẩm</a>
+                        <a href="productlist" class="nav-link">Sản phẩm</a>
                         <div class="dropdown-menu">
                             <c:forEach var="category" items="${categories}">
                                 <c:if test="${category.parentId == null}">
-                                    <a href="/RunnerShop/productlist?category=${category.id}&uid=${param.uid}">${category.name}</a>
+                                    <a href="/RunnerShop/productlist?category=${category.id}">${category.name}</a>
                                     <ul>
                                         <c:forEach var="subCategory" items="${categories}">
                                             <c:if test="${subCategory.parentId == category.id}">
@@ -196,6 +197,9 @@
                                 <c:otherwise>
                                     <a class="dropdown-item" href="#">Xin chào, ${sessionScope.user.userName}</a>
                                     <a class="dropdown-item" href="/RunnerShop/profile">Thông tin cá nhân</a>
+                                    <c:if test="${sessionScope.role == 'Admin' || sessionScope.role == 'Marketing' || sessionScope.role == 'Saler'}">
+                                        <a class="dropdown-item" style="font-weight: 600; color: #029ef3" href="/RunnerShop/admin">Trang Quản Lý</a>
+                                    </c:if>
                                     <a class="dropdown-item" href="/RunnerShop/ChangePassword">Đổi mật khẩu</a>
                                     <a class="dropdown-item" href="/RunnerShop/LogOut">Đăng xuất</a>
                                 </c:otherwise>

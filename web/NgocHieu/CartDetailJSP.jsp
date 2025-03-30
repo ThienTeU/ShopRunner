@@ -30,18 +30,17 @@
     
     <body>
         <%@ include file="/model/header.jsp" %> 
-        <div class="row">
+        <div class="row" style="margin-top: 65px">
             <c:choose>
             <c:when test="${empty cartItemsDTO}">
                 <%@ include file="/model/header.jsp" %> 
-                <div class="alert alert-warning text-center" style="margin-top:50px">
-                    
+                <div class="alert alert-warning text-center">
                     Giỏ hàng của bạn đang trống <a class="fw-bold" href="productlist">MUA NGAY</a>
                 </div>
             </c:when>
             <c:otherwise>
                 
-                <div class="row mx-4" style="margin-top: 70px">
+                <div class="row mx-4">
                     <div class="col-md-8">
                         <h2 class="fw-bold">GIỎ HÀNG CỦA BẠN</h2>
                         <p>TỔNG CỘNG (${sessionScope.cart.size()} các sản phẩm) <span class="fw-bold"><span class="productPrice">${total}</span></span></p>

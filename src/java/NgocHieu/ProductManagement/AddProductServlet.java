@@ -56,14 +56,15 @@ public class AddProductServlet extends HttpServlet {
             ProductDAO dao2 = new ProductDAO();
             
             Part filePart = request.getPart("thumbnail");           
-            String thumbnail = getThumbnailUrl(filePart);
+            //String thumbnail = getThumbnailUrl(filePart);
             String product_name = request.getParameter("product_name");
             String description = request.getParameter("description");
             int discount = Integer.parseInt(request.getParameter("discount"));            
             int category_id = Integer.parseInt(request.getParameter("category_id"));
             
-            int product_id = dao.addProduct(category_id, product_name.trim(), description.trim(), discount, 0, thumbnail);
-            
+            int product_id = dao.addProduct(category_id, product_name.trim(), description.trim(), discount, 0, "");
+            String thumbnail = getThumbnailUrl(filePart, product_id);
+            dao.updateThumbnail(product_id, thumbnail);
             request.setAttribute("product_id", product_id);
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -71,9 +72,8 @@ public class AddProductServlet extends HttpServlet {
         request.getRequestDispatcher("NgocHieu/AddProductPriceJSP.jsp").forward(request, response);
     }
 
-    public String getThumbnailUrl(Part filePart) throws IOException, SQLException {
+    public String getThumbnailUrl(Part filePart, int productId) throws IOException, SQLException {
         InsertProductDAO dao = new InsertProductDAO();
-        int maxId = dao.getMaxProductId();
 
         // Xử lý file upload
         String fileExtension = ".avif"; // Chỉ chấp nhận .avif
@@ -81,7 +81,6 @@ public class AddProductServlet extends HttpServlet {
         String fileName = "thumbnail" + fileExtension; // Đổi tên file 
 
         // Đường dẫn lưu file
-        int productId = maxId + 1;
         String uploadPath = "D:\\ShopRunner\\web\\Image2\\productID_" + productId;
         File uploadDir = new File(uploadPath);
 

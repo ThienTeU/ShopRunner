@@ -46,9 +46,15 @@
             <table style="width: 100%;">
                 <tbody>
                     <tr>
+                        <td><label style="font-weight: bold;">Mã Sản Phẩm:</label></td>
+                        <td><input type="number" name="product_id" value="${product_id}" required readonly
+                                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></td>
+                    </tr>
+                    <tr>
                         <td><label style="font-weight: bold;">Mã Giá Sản Phẩm:</label></td>
                         <td><input type="number" name="productprice_id" value="${productprice_id}" required 
                                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></td>
+                        
                     </tr>                   
                     <tr>
                         <td><label style="font-weight: bold;">Danh Mục:</label></td>

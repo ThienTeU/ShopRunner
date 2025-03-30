@@ -7,6 +7,7 @@ package NgocHieu.test;
 import DAL.UserDAO;
 import Model.User;
 import NgocHieu.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,13 +34,15 @@ public class testlogin extends HttpServlet {
             UserDAO dao = new UserDAO();
             AuthenticationService auth = new AuthenticationService();
             String token = auth.loginAuthentication(rawUser);
+            String role = auth.getUserRoleFromToken(token);
             response.getWriter().println("Token: " + token);
             if(token!=null){
                 User user = dao.getUserByUsername(rawUser.getUserName());
                 response.getWriter().println("Role: " + user.getRoleById());
                 request.getSession().setAttribute("token", token);
+                request.getSession().setAttribute("role", role);
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | ParseException | JOSEException ex) {
             Logger.getLogger(testlogin.class.getName()).log(Level.SEVERE, null, ex);
         }
 

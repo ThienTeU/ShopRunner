@@ -31,7 +31,7 @@ public class InsertProductDAO extends DBContext {
         System.out.println(dao.isExistedProductQuantityId(186));
         //int productprice_id = dao.addProductPrice(product_id, 1, 0);
         //int productquantity_id = dao.addProductQuantity(productprice_id, 1, 1);
-        Product product = new Product(1,4,"Giày","Description",10,false,"Image2/productID_1/thumbnail.avif","2025-03-19");
+        Product product = new Product(1, 4, "Giày", "Description", 10, false, "Image2/productID_1/thumbnail.avif", "2025-03-19");
         dao.updateProduct(product);
     }
 
@@ -43,12 +43,12 @@ public class InsertProductDAO extends DBContext {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1) > 0; // Nếu số lượng > 0, tức là đã tồn tại
+                    return rs.getInt(1) > 0;
                 }
             }
         } catch (SQLException e) {
         }
-        return false; // Trả về false nếu có lỗi
+        return false;
     }
 
     public boolean isColorExistsForProduct(int productId, int colorId) throws SQLException {
@@ -98,26 +98,25 @@ public class InsertProductDAO extends DBContext {
     }
 
     public void updateProduct(Product product) throws SQLException {
-    String query = "UPDATE [Product]\n"
-            + "SET \n"
-            + "    [product_name] = ?,\n"
-            + "    [category_id] = ?,\n"
-            + "    [description] = ?,\n"
-            + "    [discount] = ?,\n"
-            + "    [thumbnail] = ?\n"  // Loại bỏ dấu phẩy ở đây
-            + "WHERE \n"
-            + "    [product_id] = ?;";
+        String query = "UPDATE [Product]\n"
+                + "SET \n"
+                + "    [product_name] = ?,\n"
+                + "    [category_id] = ?,\n"
+                + "    [description] = ?,\n"
+                + "    [discount] = ?,\n"
+                + "    [thumbnail] = ?\n"
+                + "WHERE \n"
+                + "    [product_id] = ?;";
 
-    ps = connection.prepareStatement(query);
-    ps.setString(1, product.getProduct_name());
-    ps.setInt(2, product.getCategory_id());
-    ps.setString(3, product.getDescription());
-    ps.setInt(4, product.getDiscount());
-    ps.setString(5, product.getThumbnail());
-    ps.setInt(6, product.getProduct_id());
-    ps.executeUpdate();
-}
-
+        ps = connection.prepareStatement(query);
+        ps.setString(1, product.getProduct_name());
+        ps.setInt(2, product.getCategory_id());
+        ps.setString(3, product.getDescription());
+        ps.setInt(4, product.getDiscount());
+        ps.setString(5, product.getThumbnail());
+        ps.setInt(6, product.getProduct_id());
+        ps.executeUpdate();
+    }
 
     //Insert Data
     public ProductPrice getProductPrice(int productPrice_id) throws SQLException {
@@ -143,7 +142,7 @@ public class InsertProductDAO extends DBContext {
 
     public int getMaxProductId() throws SQLException {
         String sql = "SELECT MAX(product_id) FROM dbo.Product";
-        int maxProductId = 0; // Mặc định nếu bảng rỗng
+        int maxProductId = 0;
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
@@ -168,12 +167,10 @@ public class InsertProductDAO extends DBContext {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         productImage_id = generatedKeys.getInt(1);
-                        System.out.println("✅ Thêm hình ảnh sản phẩm thành công với productImage_id = " + productImage_id);
                         saveProductImageQueryToFile(product_id, image_url, color_id);  // Ghi câu lệnh vào file
                     }
                 }
             } else {
-                System.out.println("⚠️ Lỗi thêm hình ảnh sản phẩm.");
             }
         }
     }
@@ -188,9 +185,7 @@ public class InsertProductDAO extends DBContext {
                 new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
             writer.write(query + "\n");
             writer.flush();
-            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
         } catch (IOException e) {
-            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 
@@ -209,12 +204,10 @@ public class InsertProductDAO extends DBContext {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         productQuantity_id = generatedKeys.getInt(1);
-                        System.out.println("✅ Thêm số lượng sản phẩm thành công với productQuantity_id = " + productQuantity_id);
                         saveProductQuantityQueryToFile(productPrice_id, size_id, quantity);  // Ghi câu lệnh vào file
                     }
                 }
             } else {
-                System.out.println("⚠️ Lỗi thêm số lượng sản phẩm.");
             }
         }
 
@@ -231,9 +224,7 @@ public class InsertProductDAO extends DBContext {
                 new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
             writer.write(query + "\n");
             writer.flush();
-            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
         } catch (IOException e) {
-            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 
@@ -252,12 +243,10 @@ public class InsertProductDAO extends DBContext {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         productPrice_id = generatedKeys.getInt(1);
-                        System.out.println("✅ Thêm giá sản phẩm thành công với productPrice_id = " + productPrice_id);
-                        saveProductPriceQueryToFile(product_id, color_id, price);  // Ghi câu lệnh vào file
+                        saveProductPriceQueryToFile(product_id, color_id, price);
                     }
                 }
             } else {
-                System.out.println("⚠️ Lỗi thêm giá sản phẩm.");
             }
         }
 
@@ -274,9 +263,7 @@ public class InsertProductDAO extends DBContext {
                 new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
             writer.write(query + "\n");
             writer.flush();
-            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
         } catch (IOException e) {
-            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 
@@ -310,6 +297,24 @@ public class InsertProductDAO extends DBContext {
         return product_id;
     }
 
+    public boolean updateThumbnail(int product_id, String newThumbnail) throws SQLException {
+        String sql = "UPDATE dbo.Product SET thumbnail = ? WHERE product_id = ?";
+        boolean isUpdated = false;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, newThumbnail);
+            ps.setInt(2, product_id);
+
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                isUpdated = true;
+            }
+        }
+
+        return isUpdated;
+    }
+
     private void saveProductQueryToFile(int category_id, String product_name, String description, int discount, int status, String thumbnail) {
         String query = String.format(
                 "INSERT INTO dbo.Product (category_id, product_name, description, discount, status, thumbnail, created_at) VALUES (%d, N'%s', N'%s', %d, %d, '%s', DEFAULT);",
@@ -320,9 +325,7 @@ public class InsertProductDAO extends DBContext {
                 new OutputStreamWriter(new FileOutputStream("D:/insertQueries.txt", true), StandardCharsets.UTF_8))) {
             writer.write(query + "\n");
             writer.flush();
-            System.out.println("📁 Query đã được lưu vào insert_queries.txt với UTF-8");
         } catch (IOException e) {
-            System.err.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 

@@ -40,7 +40,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="contactEmail">Email<span style="color: red">*</span></label>
                                 <div class="input-group" style="align-items: center">
-                                    <input name="email" style="position: relative" class="form-control" id="contactEmail" placeholder="Nhập email" type="email" value="" required/>
+                                    <input name="email" style="position: relative" class="form-control" id="contactEmail" placeholder="Nhập email" type="email" value="${sessionScope.user.email != null ? sessionScope.user.email :""}" required/>
                                     <i id="emailValid" style="position: absolute; right: 10px; display: none" class="fas fa-check text-success"></i>
                                 </div>
                                 <span id="invalidEmail" style="color: red; font-size: 15px;display: none; margin-top: 5px" >Địa chỉ email không hợp lệ. Vui lòng nhập một địa chỉ email hợp lệ.</span>
@@ -114,7 +114,13 @@
                         </div>
                         <div style="color: black; text-decoration: underline !important; cursor: pointer" onclick="showVoucher()">
                             Sử dụng mã giảm giá
-                            <div id="voucherInput" style="margin-top: 10px; display: none"><input class="form-control" type="text" name="voucher"></div>
+                            <div id="voucherInput" style="margin-top: 10px; display: none"><input id="voucherField" class="form-control" type="text" name="voucher"></div>
+
+                        </div>
+                        <div>
+                            <span id="voucherMessage" style="text-decoration: none"></span>
+                            <br>
+                            <button onclick="checkVoucher(event)">Kiểm tra</button>
                         </div>
                         <hr><!-- comment -->
                         <div class="mb-4">
@@ -128,6 +134,7 @@
                                 </div>
                                 <!-- lay gia tri ship method tu js -->
                                 <input type="hidden" id="paymentMethod" name="paymentMethod" value="">
+
                             </div>
                             <div class="form-group form-check">
                                 <input class="form-check-input" id="billingSame" type="checkbox" required/>
@@ -154,7 +161,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <input type="hidden" name="total" id="total" value="${total}">
                         <input type="hidden" id="shippingFee1" name="shippingFee1" value="">
                         <input type="hidden" id="totalPrice1" name="totalPrice1" value="">
@@ -166,7 +173,7 @@
                     <h2 class="h4 section-title">GIỎ HÀNG CỦA BẠN</h2>
                     <div class="d-flex justify-content-between mb-2">
                         <span>${sessionScope.cart.size()} các sản phẩm</span>
-                        <span class="productPrice">${total}</span>
+                        <span class="productPrice" id="totalP">${total}</span>
 
                     </div>
                     <div class="d-flex justify-content-between mb-2">
@@ -223,6 +230,61 @@
         </div>
     </div>
     <script>
+        function checkVoucher(event) {
+            // Ngăn không cho button gửi form
+            event.preventDefault();
+
+            var voucherInput = document.getElementById("voucherField").value; // Lấy giá trị voucher
+            var voucherMessage = document.getElementById("voucherMessage");
+            let total = parseInt(document.getElementById("total").value); // Chuyển giá trị tổng sang kiểu int
+            let shippingFee = parseInt(document.getElementById("shippingFee").textContent);
+            // Kiểm tra xem voucherInput có hợp lệ không trước khi gửi AJAX
+            if (!voucherInput) {
+                voucherMessage.innerHTML = "Vui lòng nhập mã giảm giá!";
+                voucherMessage.style.color = "red";
+                return;
+            }
+
+            // Thực hiện AJAX request
+            $.ajax({
+                url: 'CheckVoucherValid', // URL endpoint
+                type: 'GET', // Phương thức GET
+                data: {voucherInput: voucherInput}, // Dữ liệu gửi đi
+                beforeSend: function () {
+                    $('#spinner').show(); // Hiển thị spinner trước khi gửi request
+                },
+                success: function (response) {
+                    console.log(response);
+                    console.log(voucherInput);
+                    console.log(shippingFee);
+                    if (response.isValid === true) {
+                        voucherMessage.innerHTML = "Voucher hợp lệ!";
+                        voucherMessage.style.color = "green";
+
+                        // Kiểm tra discount và tính toán lại total
+                        let discount = response.discount;
+                        total = total - Math.floor(discount * total)/100;  // Áp dụng giảm giá và làm tròn xuống số nguyên
+
+                        // Cập nhật lại giá trị total trong giao diện
+                        document.getElementById("totalP").innerText = total.toLocaleString("vi-VN") + "₫";
+                        let totalPrice = total + shippingFee*1000;
+                        document.getElementById("totalPrice").innerText = totalPrice.toLocaleString("vi-VN") + "₫";
+                    } else {
+                        voucherMessage.innerHTML = "Voucher không hợp lệ!";
+                        voucherMessage.style.color = "red";
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Lỗi khi tải dữ liệu:', error);
+                    alert('Có lỗi xảy ra khi tải dữ liệu!');
+                },
+                complete: function () {
+                    $('#spinner').hide(); // Ẩn spinner khi hoàn tất
+                }
+            });
+        }
+
+
         function showVoucher() {
             var voucher = document.getElementById("voucherInput");
             voucher.style.display = "flex";

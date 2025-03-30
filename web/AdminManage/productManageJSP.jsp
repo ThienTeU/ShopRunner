@@ -626,7 +626,7 @@
                                         }
 
                                         if (price < 0 || price > 100000000) {
-                                            alert("Giảm giá phải nằm trong khoảng 0 - 99%!");
+                                            alert("Giá sản phẩm không hợp lệ!");
                                             return false;
                                         }
 
@@ -764,6 +764,7 @@
                                         let form = $("form");
                                         let productprice_id = form.find("input[name='productprice_id']").val();
                                         let quantity = form.find("input[name='quantity']").val();
+                                        let productId = form.find("input[name='product_id']").val();
 
                                         // Kiểm tra dữ liệu đầu vào
                                         if (!productprice_id || !quantity) {
@@ -796,6 +797,7 @@
                                             url: 'AddProductQuantityServlet',
                                             type: 'POST',
                                             data: {
+                                                product_id: productId,
                                                 productprice_id: productprice_id,
                                                 quantity: quantity,
                                                 size_id: selectedSizes.join(',')

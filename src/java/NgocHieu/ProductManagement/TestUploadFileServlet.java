@@ -37,12 +37,18 @@ public class TestUploadFileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         InsertProductDAO dao = new InsertProductDAO();
+        String product_id = request.getParameter("product_id");
         int productId = 0;
-        try {
-            productId = dao.getMaxProductId();
-        } catch (SQLException ex) {
-            Logger.getLogger(TestUploadFileServlet.class.getName()).log(Level.SEVERE, null, ex);
+        if (product_id == null) {
+            try {
+                productId = dao.getMaxProductId();
+            } catch (SQLException ex) {
+                Logger.getLogger(TestUploadFileServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            productId = Integer.parseInt(product_id);
         }
+
         int productprice_id = Integer.parseInt(request.getParameter("productprice_id"));
         ProductPrice pp = new ProductPrice();
         try {

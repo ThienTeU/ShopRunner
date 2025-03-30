@@ -30,119 +30,143 @@ public class AuthorizeFilter implements Filter {
     private final AuthenticationService authService = new AuthenticationService();
 
     private static final List<String> publicUrls = Arrays.asList(
-            "/",
-
-            "/home",    
-            //HieuPTM_Guest
-            "/RegisterControl",
-            "/ForgotPassword",
-            "/ValidateOTP",
-            "/NewPassword",
-            //HieuPTM_User
-            "/LoginControl",
-            "/Charts",
+            //HieuDN
             "/home",
-            //HieuPTM_STAFF
-            "/LogOut",
-            "/ChangePassword",
-            //HieuPTM_Admin
-            "/AdminDashboard",
-            "/HieuPTM/AdminDashboard.jsp",
-            "/HieuPTM/StaffManage.jsp",
-            "/HieuPTM.Controller.StaffManage",
-            "/StaffManage",
-            "/StaffSearch",
-            "/StaffAdd",
-            "/StaffChangeStatus",
-            "/HieuPTM/StaffManage",
-            "/profile",
-            "/Profile.jsp",
-            "/About.jsp",
-            "/feedbacklist",
-            "/feedbacksearch",
-            "/feedbackreply",
-            "/feedbackreplydelete",
-            "/tableVoucher",
-            "/Charts",
-            "/ManhTuan/orderlist.jsp",
-            "/ManhTuan/test.jsp",
-            "/tableVoucher",
-            "/orderlist",
-            "/ordersprofile",
-            "/dashboard",
-            "/ManhTuan/marketingdashboard.jsp",
-            "/home",
-            "/ManagerSeller.jsp",
-            "/AddFeedbackServlet",
-            "/RunnerShop/ManhTuan/customeradd",
-            "/ManhTuan/customeradd",
-
-
-            "/feedbackstatus",
-            "/export",
-            "/HieuPTM/StaffManage.jsp",
-            "/HieuPTM.Controller.StaffManage",
-            "/StaffManage",
-            "/StaffSearch",
-            "/StaffAdd",
-            "/StaffChangeStatus",
-            //HieuPTM
-            "/LoginControl",
-            "/RegisterControl",
-            "/ForgotPassword",
-            "/ValidateOTP",
-            "/ChangePassword",
-            "/NewPassword",
-            "/RunnerShop/ManhTuan/customeradd",
-            "/ManhTuan/customeradd",
-            "/ManhTuan/customeraddressdetail.jsp",
-            "/ManhTuan/feedbackmanagement.jsp",
-            "/customeradd.jsp",
-            "/customeraddressedit",
-            "/customeraddressadd",
-            "/ManhTuan/marketingdashboard.jsp",
-            "/ManhTuan/customeraddressadd.jsp",
-            "/ManhTuan/customeraddressedit.jsp",
-            "/RunnerShop",
-            "/testlogin",
-            "/productlist",
             "/ProductDetailServlet",
-            "/CheckOutServlet",
-            "/CheckOutVnpayServlet",
-            "/customeraddressdetail",
-            "/ManhTuan/customeraddressadd",
-            "/ManhTuan/CheckOutJSP.jsp",
-            "/ManhTuan/customeradd.jsp",
-            "/customeradd",
-            "/RunnerShop/customeradd",
-            "/customeraddressadd",
-            "/changeStatus",
-            "/customeredit",
-            "/customersearch",
-            "/customerlist",
             "/CartDetailServlet",
+            "/CheckOutServlet",
+            "/NgocHieu/handler/access-denied.jsp",
+            "/error.jsp",
             "/AddToCartServlet",
-            "/UpdateCart",
-            "/GetShippingFeeServlet",
             "/RemoveFromCartServlet",
             "/SendOrderToEmailServlet",
-            "/vnpayquery/*",
+            "/UpdateCart",
+            "/GetShippingFeeServlet",
+            "CheckVoucherValid",
+            "/CheckOutVnpayServlet",
+            "/vnpay_return.jsp",
             "/vnpayajax",
-            "/NgocHieu/CheckOutJSP.jsp",
-            "/NgocHieu/OrderSuccessJSP.jsp",
+            "/vnpayquery/*",
             "/vnpayrefund/*",
-            "/AddFeedbackServlet",
-            "/NgocHieu/vnpay/vnpay_pay.jsp",
-            "https://sandbox.vnpayment.vn/paymentv2/Transaction/PaymentMethod.html?token=161cbbf8d2ed4c8baf99ae68ea32fd7d",
-            "/NgocHieu/handler/access-denied.jsp",
-            "/model/header.jsp"
+            "/LoginControl",
+            "/testlogin",
+            //TuanDM
+            "/productcategory",
+            "/productcheckbox",
+            "/productfilter",
+            "/productlist",
+            "/productsearch",
+            "/productsort",
+            "/home",
+            "/Contact.jsp",
+            "/success.jsp",
+            "/error.jsp",
+            //HieuPTM
+            "/HieuPTM/Register.jsp",
+            "/HieuPTM/RegisterSuccess.jsp",
+            "/HieuPTM/EnterOTP.jsp",
+            "/HieuPTM/Login.jsp",
+            "/HieuPTM/ForgotPassword.jsp",
+            "/HieuPTM/NewPassword",
+            "/RegisterControl",
+            "/ValidateOTP",
+            "/LoginControl",
+            "/ForgotPassword",
+            "/NewPassword"
     );
 
-    private static final List<String> userAllowedUrls = Arrays.asList(
-            "/user/dashboard.jsp",
-            "/user/Profile.jsp",
-            "/user/settings.jsp",
-            "/api/user/data"
+    private static final List<String> customerAllowedUrls = Arrays.asList(
+            "/AddFeedbackServlet",
+            "/ChangePassword",
+            "/HieuPTM/ChangePassword.jsp",
+            "/update-profile",
+            "/Profile.jsp",
+            "/profile"
+    );
+
+    private static final List<String> marketingAllowedUrls = Arrays.asList(
+            "/ManhTuan/customeradd.jsp",
+            "/ManhTuan/customeraddressdetail.jsp",
+            "/ManhTuan/customeraddressedit.jsp",
+            "/ManhTuan/customeredit.jsp",
+            "/ManhTuan/customerlist.jsp",
+            "/ManhTuan/feedbackmanagement.jsp",
+            "/ManhTuan/marketingdashboard.jsp",
+            "/ManhTuan/orderdetail.jsp",
+            "/ManhTuan/orderlist.jsp",
+            "/customeradd",
+            "/customeraddressadd",
+            "/customeraddressdetail",
+            "/customeraddressedit",
+            "/changeStatus",
+            "/customeredit",
+            "/customerlist",
+            "/customersearch",
+            "/dashboard",
+            "/feedbackstatus",
+            "/export",
+            "/feedbacklist",
+            "/feedbackreply",
+            "/feedbackreplydelete",
+            "/feedbackreplyedit",
+            "/feedbacksearch",
+            "/orderdetail",
+            "/orderlist",
+            "/ordersearch",
+            "/contactList",
+            "/admin",
+            "/AdminManage/adminHome.jsp"
+    );
+
+    private static final List<String> salerAllowedUrls = Arrays.asList(
+            "/AddProductPriceServlet",
+            "/AddProductQuantityServlet",
+            "/AddProductServlet",
+            "/CancelOrderServlet",
+            "/EditProductServlet",
+            "/ProductDashboard",
+            "/TestUploadFileServlet",
+            "/UpdatePriceServlet",
+            "/UpdateQuantityServlet",
+            "/UpdateStatusServlet",
+            "/OrderManageServlet",
+            //Validate Input For Adding Product
+            "/CheckExistColorServlet",
+            "/CheckExistProductIdServlet",
+            "/CheckExistProductNameServlet",
+            "/CheckExistProductPriceIdServlet",
+            "/CheckExistProductQuantityIdServlet",
+            //TuanDM
+            "/ManhTuan/customeradd.jsp",
+            "/ManhTuan/customeraddressdetail.jsp",
+            "/ManhTuan/customeraddressedit.jsp",
+            "/ManhTuan/customeredit.jsp",
+            "/ManhTuan/customerlist.jsp",
+            "/ManhTuan/feedbackmanagement.jsp",
+            "/ManhTuan/orderdetail.jsp",
+            "/ManhTuan/orderlist.jsp",
+            "/customeradd",
+            "/customeraddressadd",
+            "/customeraddressdetail",
+            "/customeraddressedit",
+            "/changeStatus",
+            "/customeredit",
+            "/customerlist",
+            "/customersearch",
+            "/dashboard",
+            "/feedbackstatus",
+            "/export",
+            "/feedbacklist",
+            "/feedbackreply",
+            "/feedbackreplydelete",
+            "/feedbackreplyedit",
+            "/feedbacksearch",
+            "/orderdetail",
+            "/orderlist",
+            "/ordersearch",
+            "/contactList",
+            "/admin",
+            "/AdminManage/adminHome.jsp"
     );
 
     @Override
@@ -159,7 +183,8 @@ public class AuthorizeFilter implements Filter {
         }
 
         // Bỏ qua file tĩnh
-        if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".avif") || path.contains("sandbox") || path.contains("vnpay")) {
+        if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") ||
+                path.endsWith(".jpg") || path.endsWith(".avif") || path.contains("sandbox") || path.contains("vnpay")) {
             chain.doFilter(request, response);
             return;
         }
@@ -177,7 +202,15 @@ public class AuthorizeFilter implements Filter {
                     return;
                 }
 
-                if ("User".equals(role) && userAllowedUrls.contains(path)) {
+                if ("Customer".equals(role) && customerAllowedUrls.contains(path)) {
+                    chain.doFilter(request, response);
+                    return;
+                }
+                if ("Marketing".equals(role) && marketingAllowedUrls.contains(path)) {
+                    chain.doFilter(request, response);
+                    return;
+                }
+                if ("Saler".equals(role) && salerAllowedUrls.contains(path)) {
                     chain.doFilter(request, response);
                     return;
                 }

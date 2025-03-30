@@ -1,4 +1,5 @@
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -19,26 +20,58 @@
                     </div>
                     <div class="ms-3">
                         <h6 class="mb-0">${account.getFullname()}</h6>
-                        <span>Admin</span>
+                        <span>${sessionScope.role}</span>
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="admin" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Manager</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Quản Lý</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="tableAccount" class="dropdown-item">Account</a>
-                            <a href="tableCategory" class="dropdown-item">Category</a>
-                            <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Product</a>
-                            <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Voucher</a>
-                            <a href="${pageContext.request.contextPath}/dashboard" class="dropdown-item">Marketing Dashboard</a>
-                            <a href="${pageContext.request.contextPath}/managerbanner" class="dropdown-item">Manager Banner</a>
-                            <a href="${pageContext.request.contextPath}/contactList" class="dropdown-item">Manager Contact</a>
-                            <a href="${pageContext.request.contextPath}/manageproductfavorite" class="dropdown-item">Manager Favorite</a>
-                            <a href="${pageContext.request.contextPath}/customerlist" class="dropdown-item">Manager Customer</a>
+                            <c:if test="${sessionScope.role == 'Admin'}">
+                                <a href="${pageContext.request.contextPath}/StaffManage" class="dropdown-item">Quản Lý Nhân Viên</a>
+                            </c:if>
 
-                            <a href="${pageContext.request.contextPath}/feedbacklist" class="dropdown-item">Manage Feedback</a>
-                            <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Manage Post</a>
+                            <c:if test="${sessionScope.role == 'Marketing' || sessionScope.role == 'Admin'}">
+                                <a href="${pageContext.request.contextPath}/dashboard" class="dropdown-item">Marketing Dashboard</a>
+                                <a href="${pageContext.request.contextPath}/managerbanner" class="dropdown-item">Quản Lý Banner</a>
+                                <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Quản Lý Bài Đăng</a>
+                                <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Quản Lý Mã Giảm Giá</a>
+                            </c:if>
+                            
+                            <c:if test="${sessionScope.role == 'Saler' || sessionScope.role == 'Admin'}">
+                                <a href="${pageContext.request.contextPath}/contactList" class="dropdown-item">Quản Lý Liên Hệ</a>
+                                <a href="${pageContext.request.contextPath}/orderlist" class="dropdown-item">Quản Lý Đơn hàng</a>
+                                <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Quản Lý Sản Phẩm</a>
+                                <a href="${pageContext.request.contextPath}/customerlist" class="dropdown-item">Quản Lý Khách Hàng</a>
+                                <a href="${pageContext.request.contextPath}/feedbacklist" class="dropdown-item">Quản Lý Đánh Giá</a>
+                                <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Quản Lý Bài Đăng</a>
+                                <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Quản Lý Mã Giảm Giá</a>
+                            </c:if>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Thống Kê</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <c:if test="${sessionScope.role == 'Admin'}">
+                                <a href="${pageContext.request.contextPath}/StaffManage" class="dropdown-item">Quản Lý Nhân Viên</a>
+                            </c:if>
+
+                            <c:if test="${sessionScope.role == 'Marketing' || sessionScope.role == 'Admin'}">
+                                <a href="${pageContext.request.contextPath}/dashboard" class="dropdown-item">Marketing Dashboard</a>
+                                <a href="${pageContext.request.contextPath}/managerbanner" class="dropdown-item">Quản Lý Banner</a>
+                                <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Quản Lý Bài Đăng</a>
+                                <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Quản Lý Mã Giảm Giá</a>
+                            </c:if>
+                            
+                            <c:if test="${sessionScope.role == 'Saler' || sessionScope.role == 'Admin'}">
+                                <a href="${pageContext.request.contextPath}/contactList" class="dropdown-item">Quản Lý Liên Hệ</a>
+                                <a href="${pageContext.request.contextPath}/orderlist" class="dropdown-item">Quản Lý Đơn hàng</a>
+                                <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Quản Lý Sản Phẩm</a>
+                                <a href="${pageContext.request.contextPath}/customerlist" class="dropdown-item">Quản Lý Khách Hàng</a>
+                                <a href="${pageContext.request.contextPath}/feedbacklist" class="dropdown-item">Quản Lý Đánh Giá</a>
+                                <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Quản Lý Bài Đăng</a>
+                                <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Quản Lý Mã Giảm Giá</a>
+                            </c:if>
                         </div>
                     </div>
                     <!--                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
@@ -57,11 +90,11 @@
                 </div>
             </nav>
         </div>
-                        <script>
-                            $(document).on('click', 'a', function (e) {
-                                    // Đảm bảo không ngăn chặn hành vi mặc định của liên kết
-                                    window.location.href = $(this).attr('href');
-                                });
-                        </script>
+        <script>
+            $(document).on('click', 'a', function (e) {
+                // Đảm bảo không ngăn chặn hành vi mặc định của liên kết
+                window.location.href = $(this).attr('href');
+            });
+        </script>
     </body>
 </html>

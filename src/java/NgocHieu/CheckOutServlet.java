@@ -186,6 +186,7 @@ public class CheckOutServlet extends HttpServlet {
                 voucher_id=voucherDao.getVoucherIdByCode(voucher);
                 discount = voucherDao.getDiscountByVoucherCode(voucher);
                 total = total - total*discount/100;
+                voucherDao.decrementVoucherQuantity(voucher);
             }
         }
         

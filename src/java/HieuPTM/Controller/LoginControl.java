@@ -45,11 +45,15 @@ public class LoginControl extends HttpServlet {
         response.getWriter().print(rememberMe);
         if (rememberMe) {
             try {
-                String email = AuthenticationService.getEmailFromToken(token);
+                AuthenticationService auth = new AuthenticationService();
+                String email = AuthenticationService.getEmailFromToken(token);    
+                
                 if (email != null) {
                     UserDAO dao = new UserDAO();
                     UserHieu user = dao.getUserByEmail(email);
+                    String role = auth.getUserRoleFromToken(token);
                     request.getSession().setAttribute("user", user);
+                    request.getSession().setAttribute("role", role);
                     response.sendRedirect("/RunnerShop/home");
                     return;
                 }
@@ -110,8 +114,11 @@ public class LoginControl extends HttpServlet {
         } else {
             // Nếu đăng nhập thành công, redirect về Home và truyền uid qua URL
             String email = "";
+            String role = "";
             try {
+                AuthenticationService auth = new AuthenticationService();
                 email = AuthenticationService.getEmailFromToken(token);
+                role = auth.getUserRoleFromToken(token);
             } catch (ParseException | JOSEException ex) {
                 Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -119,6 +126,8 @@ public class LoginControl extends HttpServlet {
             UserHieu user = dao.getUserByEmail(email);
             request.getSession().setAttribute("user", user);
             request.getSession().setAttribute("user_id",user.getUserID());
+            request.getSession().setAttribute("role", role);
+            
             response.sendRedirect(request.getContextPath() + "/home");
         }
     }

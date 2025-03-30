@@ -44,6 +44,7 @@ public class AddProductQuantityServlet extends HttpServlet {
             String productprice_idStr = request.getParameter("productprice_id");
             String quantityStr = request.getParameter("quantity");
             String sizeIdsString = request.getParameter("size_id");
+            String product_id = request.getParameter("product_id");
 
             if (productprice_idStr == null || quantityStr == null || sizeIdsString == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -90,6 +91,7 @@ public class AddProductQuantityServlet extends HttpServlet {
 
             // Nếu thành công, forward đến trang upload ảnh
             request.setAttribute("productprice_id", productprice_id);
+            request.setAttribute("product_id", product_id);
             request.getRequestDispatcher("NgocHieu/UploadImgJSP.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {

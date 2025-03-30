@@ -35,6 +35,8 @@
                         <h4 class="widget-title">Runner Shop</h4>
                         <div class="about-company">
                             <img src="${pageContext.request.contextPath}/images/LOGO.png" 
+                                 height="30px"
+                                 width="30px"
                                  alt="Runner Shop Logo" 
                                  class="footer-logo mb-3">
                             <p class="company-description">

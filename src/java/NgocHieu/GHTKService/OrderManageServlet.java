@@ -27,6 +27,7 @@ public class OrderManageServlet extends HttpServlet {
     throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
         List<OrderResponse> listOrderResponse = orderDAO.getAllOrderResponse();
+        request.setAttribute("ghtkStatuses", EnumStatusGHTK.values());
         request.setAttribute("listOrderResponse", listOrderResponse);
         response.getWriter().print(listOrderResponse);
         request.getRequestDispatcher("AdminManage/orderManageJSP.jsp").forward(request, response);

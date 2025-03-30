@@ -28,7 +28,7 @@ public class CustomerAdd extends HttpServlet {
         boolean status = "1".equals(request.getParameter("status"));
         int gender = Integer.parseInt(request.getParameter("gender"));
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        String password = "1";
+        String password = "12345678";
         String encodedPassword = passwordEncoder.encode(password);
         UserTuan customer = new UserTuan(userName, fullName, email, encodedPassword, phoneNumber, status, gender);
         ProductDAOTuan dao = new ProductDAOTuan();

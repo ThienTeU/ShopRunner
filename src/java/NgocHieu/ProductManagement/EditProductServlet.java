@@ -25,21 +25,21 @@ import java.util.logging.Logger;
         maxFileSize = 1024 * 1024 * 10, // 10MB
         maxRequestSize = 1024 * 1024 * 50 // 50MB
 )
-@WebServlet(name="EditProductServlet", urlPatterns={"/EditProductServlet"})
+@WebServlet(name = "EditProductServlet", urlPatterns = {"/EditProductServlet"})
 public class EditProductServlet extends HttpServlet {
-   
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String id = request.getParameter("product_id");
-        if(id == null ){
+        if (id == null) {
             response.getWriter().println("<script>alert('Product Id bị rỗng'); window.location='ProductDashboard';</script>");
             return;
         }
         int product_id = Integer.parseInt(id);
         ProductDAO productDao = new ProductDAO();
-        
+
         try {
             Product product = productDao.getProductById(product_id);
             List<Category> listCategory = productDao.getAllCategories();
@@ -50,7 +50,7 @@ public class EditProductServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(EditProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } 
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -58,10 +58,10 @@ public class EditProductServlet extends HttpServlet {
         try {
             InsertProductDAO dao = new InsertProductDAO();
             ProductDAO dao2 = new ProductDAO();
-            
+
             Part filePart = request.getPart("thumbnail");
             //
-            
+
             String id = request.getParameter("product_id");
             String product_name = request.getParameter("product_name");
             String description = request.getParameter("description");
@@ -69,46 +69,62 @@ public class EditProductServlet extends HttpServlet {
             int discount = Integer.parseInt(request.getParameter("discount"));
             int category_id = Integer.parseInt(request.getParameter("category_id"));
             int product_id = Integer.parseInt(id);
-            String thumbnail = getThumbnailUrl(filePart,product_id);
-            Product product = new Product(product_id,category_id,product_name,description,discount,false,thumbnail,created_at);
+            String thumbnail = getThumbnailUrl(filePart, product_id);
+            Product product = new Product(product_id, category_id, product_name, description, discount, false, thumbnail, created_at);
             response.getWriter().print(product_id + "|" + category_id + " | " + product_name + " | " + description + " | " + discount + "|" + thumbnail + "|" + created_at);
             dao.updateProduct(product);
-            response.sendRedirect("ProductDashboard");
+            response.getWriter().print(thumbnail);
+            //response.sendRedirect("ProductDashboard");
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public String getThumbnailUrl(Part filePart, int product_id) throws IOException, SQLException {
+    InsertProductDAO dao = new InsertProductDAO();
     
-    public String getThumbnailUrl(Part filePart,int product_id) throws IOException, SQLException{
-        InsertProductDAO dao = new InsertProductDAO();
-            
-            // Xử lý file upload
-            String fileExtension = ".avif"; // Chỉ chấp nhận .avif
-            String fileName = "thumbnail" + fileExtension; // Đổi tên file 
+    // Xử lý file upload
+    String fileExtension = ".avif"; // Chỉ chấp nhận .avif
+    String fileName = "thumbnail" + fileExtension; // Giữ nguyên tên file là "thumbnail.avif"
 
-            // Đường dẫn lưu file
-            String uploadPath = "C:\\Users\\admin\\ShopRunner\\web\\Image2\\productID_"+ product_id;
-            File uploadDir = new File(uploadPath);
-            
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
-            }
+    // Đường dẫn lưu file
+    String uploadPath = "D:\\ShopRunner\\web\\Image2\\productID_" + product_id;
+    File uploadDir = new File(uploadPath);
 
-            // Ghi file vào thư mục
-            File file = new File(uploadPath, fileName);
-            try (InputStream fileContent = filePart.getInputStream(); FileOutputStream outputStream = new FileOutputStream(file)) {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = fileContent.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            }
-
-            // Lưu thông tin sản phẩm vào DB với đường dẫn ảnh
-            String thumbnailPath = "Image2/productID_" + product_id + "/"+fileName; // Đường dẫn tương đối
-            
-            return thumbnailPath;
+    if (!uploadDir.exists()) {
+        uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
     }
+
+    // Xóa ảnh cũ (nếu có)
+    File oldFile = new File(uploadPath, fileName);
+    if (oldFile.exists()) {
+        boolean deleted = oldFile.delete(); // Xóa ảnh cũ
+        if (deleted) {
+            System.out.println("File cũ đã bị xóa: " + oldFile.getAbsolutePath());
+        } else {
+            System.out.println("Không thể xóa file cũ: " + oldFile.getAbsolutePath());
+        }
+    } else {
+        System.out.println("Không tìm thấy file cũ: " + oldFile.getAbsolutePath());
+    }
+
+    // Ghi file vào thư mục
+    File file = new File(uploadPath, fileName);
+    try (InputStream fileContent = filePart.getInputStream(); FileOutputStream outputStream = new FileOutputStream(file)) {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fileContent.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+    }
+
+    // Lưu thông tin sản phẩm vào DB với đường dẫn ảnh
+    String thumbnailPath = "Image2/productID_" + product_id + "/" + fileName; // Đường dẫn tương đối
+
+    return thumbnailPath;
+}
+
+
 
     @Override
     public String getServletInfo() {

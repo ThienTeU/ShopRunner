@@ -90,9 +90,11 @@
                                             <td>${o.order.insuranceFee}</td>
                                             <td>${o.order.trackingId}</td>
                                             <td>
-                                                <c:if test="${o.order.statusId == -1}">
-                                                    <button class="btn btn-danger">Đã hủy</button>
-                                                </c:if>
+                                                    <c:forEach items="${ghtkStatuses}" var="status">
+                                                        <c:if test="${o.order.statusId == status.statusId}">
+                                                            <button class="btn btn-outline-dark">${status.statusName}</button>
+                                                        </c:if>
+                                                    </c:forEach>
                                             </td>
                                             <td>
                                                 <c:if test="${o.order.statusId == 1 || o.order.statusId==2 || o.order.statusId == 12}">

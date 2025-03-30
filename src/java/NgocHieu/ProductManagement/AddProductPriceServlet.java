@@ -62,6 +62,7 @@ public class AddProductPriceServlet extends HttpServlet {
             int productprice_id = dao.addProductPrice(product_id, color_id, price);
             request.setAttribute("color_id", color_id);
             request.setAttribute("productprice_id", productprice_id);
+            request.setAttribute("product_id", product_id);
 
         } catch (Exception e) {
             e.printStackTrace(); // In stack trace đầy đủ
