@@ -53,7 +53,7 @@
 
                 </nav>
             </div>
-            <%@include file="component/SideBarAdmin.jsp" %>
+            <%@include file="AdminManage/component/SideBarAdmin.jsp" %>
 
             <!-- Content Start -->
             <div class="content">
