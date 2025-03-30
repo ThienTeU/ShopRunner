@@ -19,6 +19,7 @@ import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProductDAOTuan extends DBContext {
 
@@ -38,6 +39,51 @@ public class ProductDAOTuan extends DBContext {
 
     }
 
+    public List<OrderDetails> getOrderDetailsByOrderId(int orderId) {
+        List<OrderDetails> orderDetails = new ArrayList<>();
+        String sql = "SELECT \n"
+                + "    od.order_detail_id,\n"
+                + "    p.product_name,\n"
+                + "    pp.price,\n"
+                + "    od.quantity,\n"
+                + "    (od.quantity * pp.price) AS total_price_per_item,\n"
+                + "    o.total_price AS total_order_price,\n"
+                + "    o.VoucherID,\n"
+                + "    o.shipping_address\n"
+                + "FROM Orders o\n"
+                + "JOIN OrderDetails od ON o.order_id = od.order_id\n"
+                + "JOIN Product p ON p.product_id = od.Product_id\n"
+                + "JOIN ProductPrice pp ON pp.ProductPrice_id = od.ProductPrice_id\n"
+                + "WHERE o.order_id = ?;";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String voucherId = rs.getString("VoucherID");
+                    if (rs.wasNull()) {
+                        voucherId = "Không có";
+                    }
+
+                    OrderDetails detail = new OrderDetails(
+                            rs.getInt("order_detail_id"),
+                            rs.getString("product_name"),
+                            rs.getInt("price"),
+                            rs.getInt("quantity"),
+                            voucherId,
+                            rs.getInt("total_order_price"),
+                            rs.getString("shipping_address")
+                    );
+                    orderDetails.add(detail);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orderDetails;
+    }
+
     public void updateFeedbackStatus(int feedbackId, boolean status) {
         String sql = "UPDATE Feedback SET status = ? WHERE feedback_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -48,6 +94,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
+
     public void deleteReply(int feedbackId) {
         String sql = "delete from FeedbackReply where feedback_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -57,7 +104,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
-    
+
     public void editReply(int feedbackId, String replyContent) {
         String sql = "UPDATE FeedbackReply SET reply_content = ? WHERE feedback_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -68,6 +115,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
+
     public void addReply(int feedbackId, String replyContent) {
         String sql = "INSERT INTO FeedbackReply (feedback_id, reply_content)\n"
                 + "VALUES (?, ?)";
@@ -79,6 +127,7 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
     }
+
     public int countFilteredFeedbacks(String searchName, String searchProduct, String ratingFilter) {
         int count = 0;
         String sql = "SELECT COUNT(*) FROM Feedback fb "
@@ -351,7 +400,10 @@ public class ProductDAOTuan extends DBContext {
 
     public List<Orders> getOrderByDate(String startDate, String endDate) {
         List<Orders> orders = new ArrayList<Orders>();
-        String sql = "select * from Orders WHERE order_date BETWEEN ? AND ?";
+        String sql = "SELECT TOP 5 * \n"
+                + "FROM Orders \n"
+                + "WHERE order_date BETWEEN ? AND ? \n"
+                + "ORDER BY order_date DESC;";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(startDate));
             ps.setDate(2, Date.valueOf(endDate));
@@ -373,6 +425,145 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
         return orders;
+    }
+
+    public List<Orders> searchOrders(String email, String orderDate, String status, String paymentMethod) {
+        List<Orders> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM [Orders] WHERE 1=1");
+
+        if (email != null && !email.isEmpty()) {
+            sql.append(" AND email LIKE ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+        if (paymentMethod != null && !paymentMethod.isEmpty()) {
+            sql.append(" AND payment_method = ?");
+        }
+
+        // Xử lý sắp xếp theo order_date
+        if ("asc".equalsIgnoreCase(orderDate)) {
+            sql.append(" ORDER BY order_date ASC");
+        } else {
+            sql.append(" ORDER BY order_date DESC"); // Mặc định mới nhất
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (email != null && !email.isEmpty()) {
+                ps.setString(index++, "%" + email + "%");
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (paymentMethod != null && !paymentMethod.isEmpty()) {
+                ps.setString(index++, paymentMethod);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Orders> searchOrdersByPage(String email, String orderDate, String status, String paymentMethod, int page, int pageSize) {
+        List<Orders> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM [Orders] WHERE 1=1");
+
+        if (email != null && !email.isEmpty()) {
+            sql.append(" AND email LIKE ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+        if (paymentMethod != null && !paymentMethod.isEmpty()) {
+            sql.append(" AND payment_method = ?");
+        }
+
+        // Xử lý sắp xếp theo order_date
+        if ("asc".equalsIgnoreCase(orderDate)) {
+            sql.append(" ORDER BY order_date ASC");
+        } else {
+            sql.append(" ORDER BY order_date DESC"); // Mặc định là mới nhất
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (email != null && !email.isEmpty()) {
+                ps.setString(index++, "%" + email + "%");
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (paymentMethod != null && !paymentMethod.isEmpty()) {
+                ps.setString(index++, paymentMethod);
+            }
+
+            ps.setInt(index++, (page - 1) * pageSize);
+            ps.setInt(index++, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Orders> getAllOrderByPage(int page, int pageSize) {
+        List<Orders> list = new ArrayList<>();
+        String sql = "SELECT * FROM [Orders] ORDER BY order_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setEmail(rs.getString("email"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public List<Orders> getAllOrder() {
@@ -854,12 +1045,97 @@ public class ProductDAOTuan extends DBContext {
         return customers;
     }
 
+    public List<ProductTuan> filterProducts(List<String> colors, List<String> sizes, int minPrice, int maxPrice) {
+        List<ProductTuan> products = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating, MIN(pp.price) AS price FROM Product p "
+                + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
+                + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
+                + "LEFT JOIN ProductQuantity pq ON pp.ProductPrice_id = pq.ProductPrice_id "
+                + "LEFT JOIN Color c ON pp.color_id = c.color_id "
+                + "LEFT JOIN Size s ON pq.size_id = s.size_id "
+                + "WHERE pp.price BETWEEN ? AND ?");
+
+        if (colors != null && !colors.isEmpty()) {
+            sql.append(" AND c.color IN (");
+            sql.append(colors.stream().map(c -> "'" + c + "'").collect(Collectors.joining(",")));
+            sql.append(")");
+        }
+
+        if (sizes != null && !sizes.isEmpty()) {
+            sql.append(" AND s.size IN (");
+            sql.append(sizes.stream().map(s -> "'" + s + "'").collect(Collectors.joining(",")));
+            sql.append(")");
+        }
+
+        sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            ps.setInt(1, minPrice);
+            ps.setInt(2, maxPrice);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProductTuan product = extractProduct(rs);
+                    product.setColors(getColorsByProductId(product.getProductId()));
+                    product.setPrices(getPricesByProductId(product.getProductId()));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    public List<ProductTuan> filterProductsPages(List<String> colors, List<String> sizes, int minPrice, int maxPrice, int page, int pageSize) {
+        List<ProductTuan> products = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating, MIN(pp.price) AS price FROM Product p "
+                + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
+                + "LEFT JOIN ProductPrice pp ON p.product_id = pp.product_id "
+                + "LEFT JOIN ProductQuantity pq ON pp.ProductPrice_id = pq.ProductPrice_id "
+                + "LEFT JOIN Color c ON pp.color_id = c.color_id "
+                + "LEFT JOIN Size s ON pq.size_id = s.size_id "
+                + "WHERE pp.price BETWEEN ? AND ?");
+        if (colors != null && !colors.isEmpty()) {
+            sql.append(" AND c.color IN (");
+            sql.append(colors.stream().map(c -> "'" + c + "'").collect(Collectors.joining(",")));
+            sql.append(")");
+        }
+        if (sizes != null && !sizes.isEmpty()) {
+            sql.append(" AND s.size IN (");
+            sql.append(sizes.stream().map(s -> "'" + s + "'").collect(Collectors.joining(",")));
+            sql.append(")");
+        }
+        sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at");
+
+        sql.append(" ORDER BY p.created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            ps.setInt(1, minPrice);
+            ps.setInt(2, maxPrice);
+            ps.setInt(3, (page - 1) * pageSize); 
+            ps.setInt(4, pageSize); 
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProductTuan product = extractProduct(rs);
+                    product.setColors(getColorsByProductId(product.getProductId()));
+                    product.setPrices(getPricesByProductId(product.getProductId()));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
     public List<ProductTuan> getProductsByColorAndSize(List<String> colors, List<String> sizes) {
         List<ProductTuan> products = new ArrayList<>();
         if (colors == null || colors.isEmpty() || sizes == null || sizes.isEmpty()) {
             return products;
         }
-
         String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating "
                 + "FROM Product p "
                 + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
@@ -875,7 +1151,6 @@ public class ProductDAOTuan extends DBContext {
                 sql += ",";
             }
         }
-
         sql += ") AND s.size IN (";
         for (int i = 0; i < sizes.size(); i++) {
             sql += "'" + sizes.get(i) + "'";
@@ -883,7 +1158,6 @@ public class ProductDAOTuan extends DBContext {
                 sql += ",";
             }
         }
-
         sql += ") GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
                 + "p.discount, p.status, p.thumbnail, p.created_at "
                 + "ORDER BY p.created_at DESC";
@@ -957,53 +1231,137 @@ public class ProductDAOTuan extends DBContext {
         return products;
     }
 
-    public List<ProductTuan> getProducts(String key, String dateSort, String rateSort, String priceSort, int index, int pageSize) {
+    public List<ProductTuan> searchProducts(String key, String date, String rate, String price, String views) {
         List<ProductTuan> products = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(
-                "WITH RecursiveCategory AS ( "
-                + "    SELECT category_id FROM Category WHERE category_id IN (1, 2) "
-                + "    UNION ALL "
-                + "    SELECT c.category_id FROM Category c INNER JOIN RecursiveCategory rc ON c.parent_id = rc.category_id "
-                + ") "
-                + "SELECT p.*, ISNULL(avgFeedback.rating, 0) AS rating, pp.price "
-                + "FROM Product p "
-                + "LEFT JOIN ( "
-                + "    SELECT product_id, AVG(rating) AS rating FROM Feedback GROUP BY product_id "
-                + ") avgFeedback ON p.product_id = avgFeedback.product_id "
-                + "LEFT JOIN ( "
-                + "    SELECT product_id, MIN(price) AS price FROM ProductPrice GROUP BY product_id "
-                + ") pp ON p.product_id = pp.product_id "
-                + "WHERE p.category_id IN (SELECT category_id FROM RecursiveCategory) "
-        );
+        StringBuilder sql = new StringBuilder("SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, \n"
+                + "       p.status, p.thumbnail, p.created_at, \n"
+                + "       ISNULL(AVG(f.rating), 0) AS rating, \n"
+                + "       ISNULL(AVG(pp.price), 0) AS price, \n"
+                + "       ISNULL(pv.[view], 0) AS view_count\n"
+                + "FROM Product p\n"
+                + "LEFT JOIN Feedback f ON f.product_id = p.product_id\n"
+                + "LEFT JOIN ProductPrice pp ON pp.product_id = p.product_id\n"
+                + "LEFT JOIN ProductView pv ON pv.product_id = p.product_id ");
 
-        if (key != null && !key.isEmpty()) {
-            sql.append(" AND p.product_name LIKE ? COLLATE Latin1_General_CI_AI ");
+        List<String> conditions = new ArrayList<>();
+        if (key != null && !key.trim().isEmpty()) {
+            conditions.add("p.product_name LIKE ?");
         }
 
-        StringBuilder orderByClause = new StringBuilder();
-        if (dateSort != null && !dateSort.equals("default")) {
-            orderByClause.append(dateSort.equals("new") ? "p.created_at DESC, " : "p.created_at ASC, ");
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ").append(String.join(" AND ", conditions));
         }
-        if (rateSort != null && !rateSort.equals("default")) {
-            orderByClause.append(rateSort.equals("high") ? "rating DESC, " : "rating ASC, ");
+        sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
+                + "         p.discount, p.status, p.thumbnail, p.created_at, pv.[view] ");
+
+        List<String> orderByClauses = new ArrayList<>();
+        if (date.equals("new")) {
+            orderByClauses.add("p.created_at DESC");
+        } else if (date.equals("old")) {
+            orderByClauses.add("p.created_at ASC");
         }
-        if (priceSort != null && !priceSort.equals("default")) {
-            orderByClause.append(priceSort.equals("high") ? "pp.price DESC, " : "pp.price ASC, ");
+        if (rate.equals("high")) {
+            orderByClauses.add("rating DESC");
+        } else if (rate.equals("low")) {
+            orderByClauses.add("rating ASC");
         }
-        if (!orderByClause.isEmpty()) {
-            sql.append(" ORDER BY ").append(orderByClause.substring(0, orderByClause.length() - 2));
-        } else {
-            sql.append(" ORDER BY p.created_at DESC");
+        if (price.equals("high")) {
+            orderByClauses.add("price DESC");
+        } else if (price.equals("low")) {
+            orderByClauses.add("price ASC");
+        }
+        if (views.equals("high")) {
+            orderByClauses.add("view_count DESC");
+        } else if (views.equals("low")) {
+            orderByClauses.add("view_count ASC");
         }
 
-        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        if (!orderByClauses.isEmpty()) {
+            sql.append(" ORDER BY ").append(String.join(", ", orderByClauses));
+        }
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             int paramIndex = 1;
-            if (key != null && !key.isEmpty()) {
+            if (key != null && !key.trim().isEmpty()) {
                 ps.setString(paramIndex++, "%" + key + "%");
             }
-            ps.setInt(paramIndex++, Math.max((index - 1) * pageSize, 0));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProductTuan product = extractProduct(rs);
+                    product.setColors(getColorsByProductId(product.getProductId()));
+                    product.setPrices(getPricesByProductId(product.getProductId()));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    public List<ProductTuan> searchProductsPages(String key, String date, String rate, String price, String views, int page, int pageSize) {
+        List<ProductTuan> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT p.product_id, p.category_id, p.product_name, p.description, p.discount, \n"
+                + "       p.status, p.thumbnail, p.created_at, \n"
+                + "       ISNULL(AVG(f.rating), 0) AS rating, \n"
+                + "       ISNULL(AVG(pp.price), 0) AS price, \n"
+                + "       ISNULL(pv.[view], 0) AS view_count\n"
+                + "FROM Product p\n"
+                + "LEFT JOIN Feedback f ON f.product_id = p.product_id\n"
+                + "LEFT JOIN ProductPrice pp ON pp.product_id = p.product_id\n"
+                + "LEFT JOIN ProductView pv ON pv.product_id = p.product_id ");
+
+        List<String> conditions = new ArrayList<>();
+        if (key != null && !key.trim().isEmpty()) {
+            conditions.add("p.product_name LIKE ?");
+        }
+
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ").append(String.join(" AND ", conditions));
+        }
+        sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
+                + "         p.discount, p.status, p.thumbnail, p.created_at, pv.[view] ");
+
+        List<String> orderByClauses = new ArrayList<>();
+        if ("new".equals(date)) {
+            orderByClauses.add("p.created_at DESC");
+        } else if ("old".equals(date)) {
+            orderByClauses.add("p.created_at ASC");
+        }
+
+        if ("high".equals(rate)) {
+            orderByClauses.add("rating DESC");
+        } else if ("low".equals(rate)) {
+            orderByClauses.add("rating ASC");
+        }
+
+        if ("high".equals(price)) {
+            orderByClauses.add("price DESC");
+        } else if ("low".equals(price)) {
+            orderByClauses.add("price ASC");
+        }
+
+        if ("high".equals(views)) {
+            orderByClauses.add("view_count DESC");
+        } else if ("low".equals(views)) {
+            orderByClauses.add("view_count ASC");
+        }
+
+        if (!orderByClauses.isEmpty()) {
+            sql.append(" ORDER BY ").append(String.join(", ", orderByClauses));
+        } else {
+            sql.append(" ORDER BY p.created_at ASC");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (key != null && !key.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + key + "%");
+            }
+            ps.setInt(paramIndex++, (page - 1) * pageSize);
             ps.setInt(paramIndex, pageSize);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -1017,68 +1375,6 @@ public class ProductDAOTuan extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return products;
-    }
-
-    public List<ProductTuan> getProducts(String key, String dateSort, String rateSort, String priceSort) {
-        List<ProductTuan> products = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(
-                "WITH RecursiveCategory AS ( "
-                + "    SELECT category_id FROM Category WHERE category_id in (1,2) "
-                + "    UNION ALL "
-                + "    SELECT c.category_id FROM Category c INNER JOIN RecursiveCategory rc ON c.parent_id = rc.category_id "
-                + ") "
-                + "SELECT p.*, ISNULL(avgFeedback.rating, 0) AS rating, pp.price "
-                + "FROM Product p "
-                + "LEFT JOIN ( "
-                + "    SELECT product_id, AVG(rating) AS rating FROM Feedback GROUP BY product_id "
-                + ") avgFeedback ON p.product_id = avgFeedback.product_id "
-                + "LEFT JOIN ( "
-                + "    SELECT product_id, MIN(price) AS price FROM ProductPrice GROUP BY product_id "
-                + ") pp ON p.product_id = pp.product_id "
-                + "WHERE p.category_id IN (SELECT category_id FROM RecursiveCategory) "
-        );
-
-        // Search theo tên sản phẩm
-        if (key != null && !key.isEmpty()) {
-            sql.append(" AND p.product_name LIKE ? ");
-        }
-
-        // Sort điều kiện
-        StringBuilder orderByClause = new StringBuilder();
-        if (dateSort != null && !dateSort.equals("default")) {
-            orderByClause.append(dateSort.equals("new") ? "p.created_at DESC, " : "p.created_at ASC, ");
-        }
-        if (rateSort != null && !rateSort.equals("default")) {
-            orderByClause.append(rateSort.equals("high") ? "rating DESC, " : "rating ASC, ");
-        }
-        if (priceSort != null && !priceSort.equals("default")) {
-            orderByClause.append(priceSort.equals("high") ? "pp.price DESC, " : "pp.price ASC, ");
-        }
-        if (!orderByClause.isEmpty()) {
-            sql.append(" ORDER BY ").append(orderByClause.substring(0, orderByClause.length() - 2));
-        }
-
-        // Thực thi truy vấn
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            int index = 1;
-            if (key != null && !key.isEmpty()) {
-                ps.setString(index++, "%" + key + "%");
-            }
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ProductTuan product = extractProduct(rs);
-                    product.setColors(getColorsByProductId(product.getProductId()));
-                    product.setPrices(getPricesByProductId(product.getProductId()));
-                    products.add(product);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         return products;
     }
 
@@ -1102,7 +1398,44 @@ public class ProductDAOTuan extends DBContext {
         return products;
     }
 
-    public List<ProductTuan> getAllProducts(int id) {
+    public List<ProductTuan> getAllProductsByCategoryIdPages(int id, int index, int size) {
+        List<ProductTuan> products = new ArrayList<>();
+        int offset = (index - 1) * size;
+        String sql = "WITH RecursiveCategory AS (\n"
+                + "                    SELECT category_id FROM Category WHERE category_id = ?\n"
+                + "                   UNION ALL\n"
+                + "                   SELECT c.category_id \n"
+                + "                   FROM Category c\n"
+                + "                    INNER JOIN RecursiveCategory rc ON c.parent_id = rc.category_id\n"
+                + "                )\n"
+                + "                SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating \n"
+                + "                FROM Product p\n"
+                + "               LEFT JOIN Feedback f ON p.product_id = f.product_id \n"
+                + "                WHERE p.category_id IN (SELECT category_id FROM RecursiveCategory)\n"
+                + "               GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
+                + "                  p.discount, p.status, p.thumbnail, p.created_at\n"
+                + "				  order by p.created_at\n"
+                + "				  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.setInt(2, offset);
+            ps.setInt(3, size);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProductTuan product = extractProduct(rs);
+                    product.setColors(getColorsByProductId(product.getProductId()));
+                    product.setPrices(getPricesByProductId(product.getProductId()));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    public List<ProductTuan> getAllProductsByCategoryId(int id) {
         List<ProductTuan> products = new ArrayList<>();
         String sql = "WITH RecursiveCategory AS (\n"
                 + "    SELECT category_id FROM Category WHERE category_id = ?\n"
@@ -1120,61 +1453,6 @@ public class ProductDAOTuan extends DBContext {
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ProductTuan product = extractProduct(rs);
-                    product.setColors(getColorsByProductId(product.getProductId()));
-                    product.setPrices(getPricesByProductId(product.getProductId()));
-                    products.add(product);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return products;
-    }
-
-    public List<ProductTuan> getAllProductsByKey(String key) {
-        List<ProductTuan> products = new ArrayList<>();
-        String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating FROM Product p \n"
-                + "                LEFT JOIN Feedback f ON p.product_id = f.product_id \n"
-                + "				where p.product_name like ?\n"
-                + "                GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
-                + "                p.discount, p.status, p.thumbnail, p.created_at\n"
-                + "				";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, "%" + key + "%");
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ProductTuan product = extractProduct(rs);
-                    product.setColors(getColorsByProductId(product.getProductId()));
-                    product.setPrices(getPricesByProductId(product.getProductId()));
-                    products.add(product);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return products;
-    }
-
-    public List<ProductTuan> getAllProductsByPages(int index, int size, String key) {
-        List<ProductTuan> products = new ArrayList<>();
-        int offset = (index - 1) * size;
-        String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating \n"
-                + "FROM Product p \n"
-                + "LEFT JOIN Feedback f ON p.product_id = f.product_id \n"
-                + "WHERE p.product_name LIKE ? \n"
-                + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
-                + "         p.discount, p.status, p.thumbnail, p.created_at\n"
-                + "ORDER BY (SELECT NULL)\n"
-                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, "%" + key + "%");
-            ps.setInt(2, offset);
-            ps.setInt(3, size);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ProductTuan product = extractProduct(rs);
@@ -1217,70 +1495,6 @@ public class ProductDAOTuan extends DBContext {
         return products;
     }
 
-    public List<ProductTuan> getAllProductsByPages(int index, int size, String dateSort, String rateSort, String priceSort) {
-        List<ProductTuan> products = new ArrayList<>();
-        int offset = (index - 1) * size;
-        String orderByClause = "";
-        if (dateSort != null && !dateSort.isEmpty() && !dateSort.equals("default")) {
-            if (dateSort.equals("new")) {
-                orderByClause += "p.created_at DESC, ";
-            } else if (dateSort.equals("old")) {
-                orderByClause += "p.created_at ASC, ";
-            }
-        }
-        if (rateSort != null && !rateSort.isEmpty() && !rateSort.equals("default")) {
-            if (rateSort.equals("high")) {
-                orderByClause += "rating DESC, ";
-            } else if (rateSort.equals("low")) {
-                orderByClause += "rating ASC, ";
-            }
-        }
-        if (priceSort != null && !priceSort.isEmpty() && !priceSort.equals("default")) {
-            if (priceSort.equals("high")) {
-                orderByClause += "pp.price DESC, ";
-            } else if (priceSort.equals("low")) {
-                orderByClause += "pp.price ASC, ";
-            }
-        }
-        String sql = "SELECT p.*, ISNULL(avgFeedback.rating, 0) AS rating, pp.price\n"
-                + "FROM Product p\n"
-                + "LEFT JOIN (\n"
-                + "    SELECT product_id, AVG(rating) AS rating\n"
-                + "    FROM Feedback\n"
-                + "    GROUP BY product_id\n"
-                + ") avgFeedback ON p.product_id = avgFeedback.product_id\n"
-                + "LEFT JOIN (\n"
-                + "    SELECT product_id, MIN(price) AS price\n"
-                + "    FROM ProductPrice\n"
-                + "    GROUP BY product_id\n"
-                + ") pp ON p.product_id = pp.product_id\n";
-        if (!orderByClause.isEmpty()) {
-            orderByClause = "ORDER BY " + orderByClause.substring(0, orderByClause.length() - 2);
-        }
-        if (!orderByClause.isEmpty()) {
-            sql += " " + orderByClause;
-        }
-        sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, offset);
-            ps.setInt(2, size);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ProductTuan product = extractProduct(rs);
-                    product.setColors(getColorsByProductId(product.getProductId()));
-                    product.setPrices(getPricesByProductId(product.getProductId()));
-                    products.add(product);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return products;
-    }
-
     public int getTotalProducts() {
         String sql = "SELECT COUNT(*) FROM Product";
         try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(sql)) {
@@ -1291,66 +1505,6 @@ public class ProductDAOTuan extends DBContext {
             e.printStackTrace();
         }
         return 0;
-    }
-
-    public List<ProductTuan> sortProducts(String dateSort, String rateSort, String priceSort) {
-        List<ProductTuan> products = new ArrayList<>();
-
-        String orderByClause = "";
-
-        if (dateSort != null && !dateSort.isEmpty() && !dateSort.equals("default")) {
-            if (dateSort.equals("new")) {
-                orderByClause += "p.created_at DESC, ";
-            } else if (dateSort.equals("old")) {
-                orderByClause += "p.created_at ASC, ";
-            }
-        }
-        if (rateSort != null && !rateSort.isEmpty() && !rateSort.equals("default")) {
-            if (rateSort.equals("high")) {
-                orderByClause += "rating DESC, ";
-            } else if (rateSort.equals("low")) {
-                orderByClause += "rating ASC, ";
-            }
-        }
-        if (priceSort != null && !priceSort.isEmpty() && !priceSort.equals("default")) {
-            if (priceSort.equals("high")) {
-                orderByClause += "pp.price DESC, ";
-            } else if (priceSort.equals("low")) {
-                orderByClause += "pp.price ASC, ";
-            }
-        }
-        String sql = "SELECT p.*, ISNULL(avgFeedback.rating, 0) AS rating, pp.price\n"
-                + "FROM Product p\n"
-                + "LEFT JOIN (\n"
-                + "    SELECT product_id, AVG(rating) AS rating\n"
-                + "    FROM Feedback\n"
-                + "    GROUP BY product_id\n"
-                + ") avgFeedback ON p.product_id = avgFeedback.product_id\n"
-                + "LEFT JOIN (\n"
-                + "    SELECT product_id, MIN(price) AS price\n"
-                + "    FROM ProductPrice\n"
-                + "    GROUP BY product_id\n"
-                + ") pp ON p.product_id = pp.product_id\n";
-
-        if (!orderByClause.isEmpty()) {
-            orderByClause = "ORDER BY " + orderByClause.substring(0, orderByClause.length() - 2);
-        }
-
-        if (!orderByClause.isEmpty()) {
-            sql += " " + orderByClause;
-        }
-
-        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                ProductTuan product = extractProduct(rs);
-                product.setColors(getColorsByProductId(product.getProductId()));
-                product.setPrices(getPricesByProductId(product.getProductId()));
-                products.add(product);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return products;
     }
 
     // Lấy sản phẩm theo ID
@@ -1422,17 +1576,14 @@ public class ProductDAOTuan extends DBContext {
 
     public List<CategoryTuan> getAllCategories() {
         List<CategoryTuan> categories = new ArrayList<>();
-        String sql = "SELECT * FROM Category";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
+        String sql = "SELECT category_id, name, parent_id FROM Category";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                int id = rs.getInt("category_id");
-                String name = rs.getString("name");
-                int parentId = rs.getInt("parent_id");
-                // Kiểm tra nếu parent_id là null
-                Integer parent = rs.wasNull() ? null : parentId;
-                CategoryTuan cat = new CategoryTuan(id, name, parent);
-                categories.add(cat);
+                categories.add(new CategoryTuan(
+                        rs.getInt("category_id"),
+                        rs.getString("name"),
+                        rs.getObject("parent_id") != null ? rs.getInt("parent_id") : null
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1440,32 +1591,27 @@ public class ProductDAOTuan extends DBContext {
         return categories;
     }
 
-    // Xây dựng cây danh mục
-    public List<CategoryTuan> getCategoryTree() {
-        List<CategoryTuan> allCategories = getAllCategories();
-        Map<Integer, CategoryTuan> map = new HashMap<>();
-        List<CategoryTuan> roots = new ArrayList<>();
+    public List<CategoryTuan> buildCategoryTree(List<CategoryTuan> categories) {
+        Map<Integer, CategoryTuan> categoryMap = new HashMap<>();
+        List<CategoryTuan> rootCategories = new ArrayList<>();
 
-        // Lưu tất cả danh mục theo id
-        for (CategoryTuan cat : allCategories) {
-            map.put(cat.getCategoryId(), cat);
+        // Đưa tất cả danh mục vào HashMap
+        for (CategoryTuan category : categories) {
+            categoryMap.put(category.getId(), category);
         }
 
-        // Phân loại danh mục cha con
-        for (CategoryTuan cat : allCategories) {
-            if (cat.getParentId() != null) {
-                CategoryTuan parent = map.get(cat.getParentId());
-                if (parent != null) {
-                    parent.getChildren().add(cat);
-                } else {
-                    // Nếu không tìm thấy parent thì xem như danh mục gốc
-                    roots.add(cat);
-                }
+        // Xây dựng cây danh mục
+        for (CategoryTuan category : categories) {
+            if (category.getParentId() == null) {
+                rootCategories.add(category);
             } else {
-                roots.add(cat);
+                CategoryTuan parent = categoryMap.get(category.getParentId());
+                if (parent != null) {
+                    parent.getChildren().add(category);
+                }
             }
         }
-        return roots;
+        return rootCategories;
     }
 
     private ProductTuan extractProduct(ResultSet rs) throws SQLException {

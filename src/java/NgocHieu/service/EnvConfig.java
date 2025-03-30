@@ -17,7 +17,10 @@ public class EnvConfig {
             //String path = "C:/Users/admin/ShopRunner/config.env";
             //String path = "D:/swp/gitMOI/ShopRunner/config.env";
             //String path = "D:/never/ShopRunner/config.env";
-            String path = "D:/ShopRunner/config.env";
+            //String path = "D:/ShopRunner/config.env";
+            String path = "C:/Users/admin/OneDrive/Desktop/ShopRunner/config.env";
+           // String path = "D:/swp/gitMOI/ShopRunner/config.env";
+            
 
             FileInputStream fileInputStream = new FileInputStream(path);
             properties.load(fileInputStream);

@@ -71,7 +71,7 @@ public class EditProductServlet extends HttpServlet {
             int product_id = Integer.parseInt(id);
             String thumbnail = getThumbnailUrl(filePart,product_id);
             Product product = new Product(product_id,category_id,product_name,description,discount,false,thumbnail,created_at);
-            response.getWriter().print(id);
+            response.getWriter().print(product_id + "|" + category_id + " | " + product_name + " | " + description + " | " + discount + "|" + thumbnail + "|" + created_at);
             dao.updateProduct(product);
             response.sendRedirect("ProductDashboard");
         } catch (SQLException ex) {

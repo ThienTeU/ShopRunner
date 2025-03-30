@@ -148,4 +148,38 @@ input:focus, select:focus, textarea:focus {
             </div>
         </section>
     </body>
+    <script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/; // Chỉ cho phép chữ cái và khoảng trắng
+        const phoneRegex = /^0\d{9,10}$/; // Bắt đầu bằng 0 và dài 10-11 số
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Kiểm tra định dạng email
+
+        // Kiểm tra họ tên
+        if (!nameRegex.test(name)) {
+            alert('Họ tên không được chứa ký tự đặc biệt hoặc số.');
+            event.preventDefault();
+            return;
+        }
+
+        // Kiểm tra số điện thoại
+        if (!phoneRegex.test(phone)) {
+            alert('Số điện thoại phải bắt đầu bằng số 0 và có 10-11 chữ số.');
+            event.preventDefault();
+            return;
+        }
+
+        // Kiểm tra email
+        if (!emailRegex.test(email)) {
+            alert('Vui lòng nhập đúng định dạng email.');
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
+
+
+    
 </html>

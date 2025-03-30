@@ -71,7 +71,6 @@ public class OrderDAO extends DBContext {
         try (PreparedStatement stmt = connection.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                // Tạo đối tượng OrderInfo từ dữ liệu database
                 OrderResponseInfo orderInfo = new OrderResponseInfo();
                 orderInfo.setOrderId(rs.getString("order_id"));
                 orderInfo.setLabel(rs.getString("label"));
@@ -85,7 +84,6 @@ public class OrderDAO extends DBContext {
                 orderInfo.setStatusId(rs.getInt("status_id"));
                 orderInfo.setPackageId(rs.getString("package_id"));
 
-                // Tạo đối tượng OrderResponse
                 OrderResponse orderResponse = new OrderResponse();
                 orderResponse.setSuccess(rs.getBoolean("success"));
                 orderResponse.setMessage(rs.getString("message"));
@@ -318,18 +316,17 @@ public class OrderDAO extends DBContext {
         int totalOrders = 0;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, email); // Gán giá trị email vào câu lệnh SQL
+            ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    totalOrders = rs.getInt("total_orders"); // Lấy tổng số đơn hàng
+                    totalOrders = rs.getInt("total_orders"); 
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return totalOrders; // Trả về tổng số đơn hàng
+        return totalOrders; 
     }
-// Method to retrieve orders by user ID
     public List<Orders> getOrdersByUserId(int userId) {
         List<Orders> ordersList = new ArrayList<>();
         String sql = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, o.phone, o.payment_method, o.shipping_address "
@@ -392,4 +389,36 @@ public class OrderDAO extends DBContext {
 
         return products;
     }
+public List<Orders> getOrdersByUserIdAndStatus(int userId, String status) {
+    List<Orders> ordersList = new ArrayList<>();
+    String query = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, " +
+                   "o.phone, o.payment_method, o.shipping_address " +
+                   "FROM Orders o " +
+                   "WHERE o.email = (SELECT email FROM [User] WHERE user_id = ?) AND o.status = ?";
+
+    try (PreparedStatement ps = connection.prepareStatement(query)) { // Sử dụng đúng connection
+        ps.setInt(1, userId);
+        ps.setString(2, status);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Orders order = new Orders();
+                order.setOrder_id(rs.getInt("order_id"));
+                order.setOrder_date(rs.getString("order_date"));
+                order.setTotal_price(rs.getInt("total_price"));
+                order.setStatus(rs.getString("status"));
+                order.setVoucher_id(rs.getInt("voucher_id"));
+                order.setPhone(rs.getString("phone"));
+                order.setPayment_method(rs.getString("payment_method"));
+                order.setShipping_address(rs.getString("shipping_address"));
+                ordersList.add(order);
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi truy vấn đơn hàng theo userId và status: " + e.getMessage());
+    }
+    return ordersList;
+}
+
+
 }

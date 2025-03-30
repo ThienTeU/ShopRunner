@@ -37,45 +37,101 @@
 
         <!-- Template Stylesheet -->
         <link href="${pageContext.request.contextPath}/AdminManage/admin/css/style.css" rel="stylesheet">
-        
-        <style>
-             /* CSS tùy chỉnh cho giao diện chuyên nghiệp */
-        .contact-details {
-            background-color: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .contact-details h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .contact-details p {
-            font-size: 1rem;
-            color: #555;
-            margin-bottom: 10px;
-        }
-        .contact-details strong {
-            color: #000;
-        }
-        .btn-back {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-        .btn-back:hover {
-            background-color: #0056b3;
-        }
-        </style>
+
+<style>
+    /* Nền tổng thể */
+    body {
+        background-color: #f4f7f9;
+        font-family: 'Roboto', sans-serif;
+        color: #333;
+    }
+
+    /* Tiêu đề chính */
+    h1, h2, h3 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    /* Nâng cấp giao diện nút */
+    .btn-back, .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: #fff;
+        font-weight: bold;
+        padding: 12px 20px;
+        border-radius: 5px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-back:hover, .btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #003f7d);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Card nâng cấp */
+    .contact-details {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 30px;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contact-details:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Dòng trạng thái */
+    .status {
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .status-resolved {
+        color: #fff;
+        background-color: #28a745;
+    }
+
+    .status-pending {
+        color: #fff;
+        background-color: #dc3545;
+    }
+
+    /* Hiệu ứng hover cho liên kết */
+    a {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: #0056b3;
+    }
+
+    /* Footer */
+    footer {
+        background: #2c3e50;
+        color: #fff;
+        padding: 20px 0;
+        text-align: center;
+    }
+
+    footer a {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    footer a:hover {
+        color: #f4d03f;
+    }
+</style>
+
     </head>
 
     <body>
@@ -101,19 +157,25 @@
                 <!-- Navbar End -->
                 <!-- Sale & Revenue End -->
                 <!-- Recent Sales Start -->
-            <div class="container my-4">
-                <div class="contact-details">
-                    <h1>Chi tiết liên hệ</h1>
-                    <p><strong>ID:</strong> ${contact.contactId}</p>
-                    <p><strong>Tên:</strong> ${contact.fullName}</p>
-                    <p><strong>Email:</strong> ${contact.email}</p>
-                    <p><strong>Số điện thoại:</strong> ${contact.phone}</p>
-                    <p><strong>Thành phố:</strong> ${contact.city}</p>
-                    <p><strong>Nội dung:</strong> ${contact.content}</p>
-                    <p><strong>Ngày tạo:</strong> ${contact.createdAt}</p>
-                    <a href="contactList" class="btn-back">Quay lại danh sách liên hệ</a>
+                <div class="container my-4">
+                    <div class="contact-details">
+                        <h1>Chi tiết liên hệ</h1>
+                        <p><strong>ID:</strong> ${contact.contactId}</p>
+                        <p><strong>Tên:</strong> ${contact.fullName}</p>
+                        <p><strong>Email:</strong> ${contact.email}</p>
+                        <p><strong>Số điện thoại:</strong> ${contact.phone}</p>
+                        <p><strong>Nội dung:</strong> ${contact.content}</p>
+                        <p><strong>Ngày tạo:</strong> ${contact.createdAt}</p>
+<p>
+    <strong>Trạng thái đơn:</strong>
+    <span class="status ${contact.status ? 'status-resolved' : 'status-pending'}">
+        ${contact.status ? 'Đã giải quyết' : 'Chưa giải quyết'}
+    </span>
+</p>
+
+                        <a href="contactList" class="btn-back">Quay lại danh sách liên hệ</a>
+                    </div>
                 </div>
-            </div>
 
 
                 <!-- Recent Sales End -->
@@ -139,6 +201,27 @@
         <script src="${pageContext.request.contextPath}/AdminManage/admin/lib/tempusdominus/js/moment.min.js"></script>
         <script src="${pageContext.request.contextPath}/AdminManage/admin/lib/tempusdominus/js/moment-timezone.min.js"></script>
         <script src="${pageContext.request.contextPath}/AdminManage/admin/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+<script>
+    // Hiệu ứng cuộn mượt
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Hiển thị nút quay lại đầu trang khi cuộn
+    const backToTop = document.querySelector('.back-to-top');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTop.classList.add('show');
+        } else {
+            backToTop.classList.remove('show');
+        }
+    });
+</script>
 
         <!-- Template Javascript -->
         <script src="${pageContext.request.contextPath}/AdminManage/admin/js/main.js"></script>

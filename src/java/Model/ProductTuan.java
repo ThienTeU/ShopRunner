@@ -1,21 +1,21 @@
 package Model;
 
-
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 /**
  *
  * @author tuan
  */
 public class ProductTuan {
+
     private int productId;
     private int categoryId;
     private String productName;
@@ -30,6 +30,7 @@ public class ProductTuan {
 
     public ProductTuan() {
     }
+
     public boolean isWithin10Days(String inputTime) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -40,7 +41,7 @@ public class ProductTuan {
             return diffInDays < 10;
         } catch (Exception e) {
             e.printStackTrace();
-            return false; 
+            return false;
         }
     }
 
@@ -65,7 +66,6 @@ public class ProductTuan {
         this.colors = colors;
         this.prices = prices;
     }
-
 
     public int getProductId() {
         return productId;
@@ -146,10 +146,10 @@ public class ProductTuan {
     public void setPrices(List<ProductPriceTuan> prices) {
         this.prices = prices;
     }
-    
+
     public List<ProductPriceTuan> getSortedPrices() {
-        Collections.sort(prices, (a, b) -> Double.compare(a.getPrice(), b.getPrice()));
-        return prices;
+        Collections.sort(prices, Comparator.comparingDouble(ProductPriceTuan::getPrice));
+        return prices.size() > 2 ? prices.subList(0, 2) : prices;
     }
 
     @Override
@@ -170,5 +170,5 @@ public class ProductTuan {
         sb.append('}');
         return sb.toString();
     }
-    
+
 }

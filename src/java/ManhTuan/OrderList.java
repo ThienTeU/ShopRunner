@@ -7,6 +7,7 @@ package ManhTuan;
 
 import DAL.ProductDAOTuan;
 import Model.Orders;
+import Model.UserTuan;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -26,7 +27,25 @@ public class OrderList extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         ProductDAOTuan dao = new ProductDAOTuan();
-        List<Orders> orders = dao.getAllOrder();
+        List<Orders> list = dao.getAllOrder();
+        int count = 0;
+        for (Orders cus : list) {
+            count++;
+        }
+        int size = 10;
+        int end = 0;
+        if (count % size == 0) {
+            end = count / size;
+        } else {
+            end = (count / size) + 1;
+        }
+        int index = 1;
+        if (request.getParameter("index") != null && !request.getParameter("index").isEmpty()) {
+            index = Integer.parseInt(request.getParameter("index"));
+        }
+        List<Orders> orders = dao.getAllOrderByPage(index, size);
+        request.setAttribute("check", "list");
+        request.setAttribute("end", end);
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("/ManhTuan/orderlist.jsp").forward(request, response);
     } 

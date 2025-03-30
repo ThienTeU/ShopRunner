@@ -127,9 +127,8 @@
                                 <span class="productPrice">${sessionScope.cart.size() == 0 ? "0" : total + 70000}</span>
                             </div>
                             <c:if test="${sessionScope.cart.size() != 0}">
-                                <p class="text-muted">(Đã bao gồm thuế <span class="productPrice">79259</span>)</p>
+                                <p class="text-muted">(Đã bao gồm thuế )</p>
                             </c:if>
-                            <a href="#" class="text-primary">SỬ DỤNG MÃ KHUYẾN MÃI</a>
                             <a class="btn btn-dark w-100 mt-3" href="CheckOutServlet" id="checkout-button">THANH TOÁN</a>
                             <a class="btn bg-light border-dark w-100 mt-3 text-dark" href="productlist" id="checkout-button">TIẾP TỤC MUA SẮM</a>
 

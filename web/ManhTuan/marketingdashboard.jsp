@@ -11,7 +11,9 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
-        <div class="container-fluid">
+                <%@ include file="/model/header.jsp" %>
+
+                <div class="container-fluid" style="margin-top: 100px">
             <h1 class="my-4">Marketing Dashboard</h1>
 
             <!-- Bộ lọc và tìm kiếm -->
@@ -40,8 +42,6 @@
 
 
 
-
-            <!-- Biểu đồ doanh thu, sản phẩm bán chạy, khách hàng, lượt xem, đánh giá -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <h5>Doanh thu theo ngày</h5>
@@ -71,8 +71,7 @@
                 </div>
             </div>
 
-            <!-- Danh sách đơn hàng gần đây -->
-            <h3>Đơn hàng gần đây</h3>
+            <h3>Top 5 đơn hàng gần đây</h3>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -92,7 +91,7 @@
                             <td>${order.total_price}</td>
                             <td>${order.status}</td>
                             <td>${order.order_date}</td>
-                            <td><a href="OrderManageServlet" class="btn btn-info">Chi tiết</a></td>
+                            <td><a href="orderdetail?id=${order.order_id}" class="btn btn-info">Chi tiết</a></td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -211,6 +210,7 @@
                 }
             });
         </script>
+        <%@ include file="/model/footer.jsp" %>
 
     </body>
 </html>
