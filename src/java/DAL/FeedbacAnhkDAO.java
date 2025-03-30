@@ -9,7 +9,6 @@ public class FeedbacAnhkDAO extends DBContext {
 
     
     
-        // Lấy danh sách phản hồi theo Email
     public List<FeedbackAnh> getFeedbackByEmail(String email) {
         List<FeedbackAnh> feedbackList = new ArrayList<>();
         String query = "SELECT f.feedback_id, f.product_id, p.product_name, f.feedback_content, f.rating, f.created_at, f.status " +
@@ -18,7 +17,7 @@ public class FeedbacAnhkDAO extends DBContext {
                        "WHERE f.email = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, email); // Gán giá trị email vào câu lệnh SQL
+            stmt.setString(1, email); 
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -48,7 +47,7 @@ public class FeedbacAnhkDAO extends DBContext {
         int totalFeedback = 0;
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, email); // Gán giá trị email vào câu lệnh SQL
+            stmt.setString(1, email); 
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -66,9 +65,8 @@ public class FeedbacAnhkDAO extends DBContext {
     public static void main(String[] args) {
         FeedbacAnhkDAO dao = new FeedbacAnhkDAO();
 
-        // Test: Đếm tổng số phản hồi theo Email
         System.out.println("----- Test getTotalFeedbackByEmail -----");
-        String testEmail = "123@gmail.com"; // Thay đổi email này theo dữ liệu trong database
+        String testEmail = "123@gmail.com"; 
         int totalFeedback = dao.getTotalFeedbackByEmail(testEmail);
         System.out.println("Total feedback for email " + testEmail + ": " + totalFeedback);
     }

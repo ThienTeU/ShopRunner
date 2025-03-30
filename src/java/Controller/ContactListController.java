@@ -28,15 +28,12 @@ public class ContactListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy danh sách contact từ DAO
         ContactDAO contactDAO = new ContactDAO();
         List<Contact> contactList = contactDAO.getAllContacts();
 
-        // Nhận tham số tìm kiếm và lọc từ request
         String keyword = request.getParameter("keyword");
         String statusFilter = request.getParameter("statusFilter");
 
-        // Lọc danh sách liên hệ dựa trên tham số
         List<Contact> filteredContactList = contactList;
 
         if (keyword != null && !keyword.isEmpty()) {
@@ -54,10 +51,8 @@ public class ContactListController extends HttpServlet {
                 .collect(Collectors.toList());
         }
 
-        // Đưa danh sách đã lọc vào request để hiển thị trên giao diện
         request.setAttribute("contactList", filteredContactList);
 
-        // Chuyển hướng tới trang danh sách contact (JSP)
         request.getRequestDispatcher("AdminManage/contactList.jsp").forward(request, response);
     }
 

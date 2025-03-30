@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 public class ContactDAO extends DBContext {
     private static final Logger LOGGER = Logger.getLogger(ContactDAO.class.getName());
 
-    // Thêm mới một Contact
     public boolean saveContact(Contact contact) {
         String query = "INSERT INTO Contact (full_name, phone, email, city, content) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -27,7 +26,6 @@ public class ContactDAO extends DBContext {
         }
     }
 
-    // Lấy tất cả Contact từ cơ sở dữ liệu
     public List<Contact> getAllContacts() {
         List<Contact> contacts = new ArrayList<>();
         String query = "SELECT contact_id, full_name, phone, email, city, content, created_at, status FROM Contact";
@@ -51,7 +49,6 @@ public class ContactDAO extends DBContext {
         return contacts;
     }
 
-    // Xóa một Contact theo ID
     public boolean deleteContact(int contactId) {
         String query = "DELETE FROM Contact WHERE contact_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -63,7 +60,6 @@ public class ContactDAO extends DBContext {
         }
     }
 
-    // Cập nhật thông tin của một Contact
     public boolean updateContact(Contact contact) {
         String query = "UPDATE Contact SET full_name = ?, phone = ?, email = ?, city = ?, content = ? WHERE contact_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -73,14 +69,13 @@ public class ContactDAO extends DBContext {
             ps.setString(4, contact.getCity());
             ps.setString(5, contact.getContent());
             ps.setInt(6, contact.getContactId());
-            return ps.executeUpdate() > 0; // Trả về true nếu cập nhật thành công
+            return ps.executeUpdate() > 0; 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error while updating contact: {0}", e.getMessage());
             return false;
         }
     }
 
-    // Lấy một Contact theo ID
     public Contact getContactById(int contactId) {
         String query = "SELECT contact_id, full_name, phone, email, city, content, created_at, status FROM Contact WHERE contact_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -115,5 +110,44 @@ public void updateContactStatus(int contactId, boolean status) {
         e.printStackTrace();
     }
 }
+
+public List<Contact> getContacts(int offset, int limit) {
+    List<Contact> contacts = new ArrayList<>();
+    String query = "SELECT contact_id, full_name, phone, email, city, content, created_at, status FROM Contact LIMIT ? OFFSET ?";
+    try (PreparedStatement ps = connection.prepareStatement(query)) {
+        ps.setInt(1, limit);
+        ps.setInt(2, offset);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Contact contact = new Contact();
+                contact.setContactId(rs.getInt("contact_id"));
+                contact.setFullName(rs.getString("full_name"));
+                contact.setPhone(rs.getString("phone"));
+                contact.setEmail(rs.getString("email"));
+                contact.setCity(rs.getString("city"));
+                contact.setContent(rs.getString("content"));
+                contact.setCreatedAt(rs.getTimestamp("created_at"));
+                contact.setStatus(rs.getBoolean("status"));
+                contacts.add(contact);
+            }
+        }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "Error while retrieving contacts with pagination: {0}", e.getMessage());
+    }
+    return contacts;
+}
+public int getTotalRecords() {
+    String query = "SELECT COUNT(*) FROM Contact";
+    try (PreparedStatement ps = connection.prepareStatement(query);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+            return rs.getInt(1); 
+        }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "Error while retrieving total records: {0}", e.getMessage());
+    }
+    return 0;
+}
+
 
 }

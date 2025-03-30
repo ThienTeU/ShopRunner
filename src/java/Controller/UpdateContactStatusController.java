@@ -24,15 +24,12 @@ public class UpdateContactStatusController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy thông tin từ form
         int contactId = Integer.parseInt(request.getParameter("id"));
         boolean status = Boolean.parseBoolean(request.getParameter("status"));
 
-        // Gọi DAO để cập nhật trạng thái
         ContactDAO contactDAO = new ContactDAO();
         contactDAO.updateContactStatus(contactId, status);
 
-        // Quay lại trang danh sách contact
         response.sendRedirect("contactList");
     }
 

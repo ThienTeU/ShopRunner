@@ -61,6 +61,7 @@
         </section>
 
         <!-- Search Bar -->
+        <!-- Search Bar -->
         <div class="container searchbar-container">
             <form class="d-flex searchbar" action="home" method="GET">
                 <div class="input-group">
