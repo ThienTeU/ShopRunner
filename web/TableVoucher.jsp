@@ -93,7 +93,9 @@
                                             <input type="number" class="form-control col-3" name="quantity">
                                         </div>
                                         <div style="margin-top: 15px;color: red" id="error-messages"></div>
-
+                                        <div>
+                                            
+                                        </div>
                                         <button type="submit" class="btn btn-primary">Thêm mã giảm giá</button>
 
                                     </div>
@@ -205,12 +207,12 @@
                                 errorDiv.innerHTML = ""; // Xóa các thông báo lỗi trước đó (nếu có)
 
                                 if (voucherName === "") {
-                                    displayError("Voucher Name is required");
+                                    displayError("Không được để trống tên");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 }
 
                                 if (startDate === "") {
-                                    displayError("Start Date is required");
+                                    displayError("Không được để trống ngày bắt đầu");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 } else {
                                     var currentDate = new Date().toISOString().split("T")[0];
@@ -221,7 +223,7 @@
                                 }
 
                                 if (endDate === "") {
-                                    displayError("End Date is required");
+                                    displayError("Không được để trống ngày kết thúc");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 } else {
                                     if (endDate < startDate) {
@@ -231,22 +233,22 @@
                                 }
 
                                 if (discount === "") {
-                                    displayError("Discount is required");
+                                    displayError("Không được để trống % muốn giảm");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 } else if (isNaN(discount) || discount < 0) {
-                                    displayError("Discount must be a non-negative number");
+                                    displayError("Mã giảm giá phải lớn hơn 0%");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 }
 
                                 if (quantity === "") {
-                                    displayError("Quantity is required");
+                                    displayError("Không được để trống số lượng");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 } else if (isNaN(quantity) || quantity <= 0) {
-                                    displayError("Quantity must be a positive number");
+                                    displayError("Số lượng phải là số dương");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 }
                                 if (Code === "") {
-                                    displayError("Code is required");
+                                    displayError("Không được để trống mã giảm giá");
                                     return false; // Ngăn chặn gửi form khi có lỗi
                                 } 
 
