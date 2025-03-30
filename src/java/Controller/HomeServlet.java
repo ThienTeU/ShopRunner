@@ -29,14 +29,12 @@ public class HomeServlet extends HttpServlet {
         CategoryDAO categoryDAO = new CategoryDAO();
         BannerDAO bannerDAO = new BannerDAO();
         ProductDAO productDAO = new ProductDAO();
-        PostDAO postDAO = new PostDAO(); // Khởi tạo PostDAO
+        PostDAO postDAO = new PostDAO(); 
 
-        // Lấy các tham số
         String searchQuery = request.getParameter("query");
         String categoryFilter = request.getParameter("category");
         String sortPrice = request.getParameter("sortPrice");
         
-        // Xử lý phân trang cho sản phẩm
         int pageSize = 12;
         int page = 1;
         try {
@@ -46,11 +44,9 @@ public class HomeServlet extends HttpServlet {
         }
         int offset = (page - 1) * pageSize;
 
-        // Khởi tạo danh sách sản phẩm
         List<Product> listproduct;
         int totalProducts;
 
-        // Xử lý tìm kiếm và lọc sản phẩm
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
             listproduct = productDAO.searchProducts(searchQuery, sortPrice, offset, pageSize);
             totalProducts = productDAO.getTotalSearchResults(searchQuery);
@@ -98,20 +94,16 @@ public class HomeServlet extends HttpServlet {
                 new ArrayList<>();
         }
 
-        // Tính tổng số trang cho sản phẩm
         int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
 
-        // Lấy dữ liệu khác
         List<Banner> bannerList = bannerDAO.getAllBanners();
         List<CategoryAnh> categories = categoryDAO.getAllCategories();
         List<Product> topViewedProducts = productDAO.getTopViewedProducts(9);
         List<Product> newestProducts = productDAO.getNewestProducts(9);
 
-        // Lấy bài viết cho trang chủ
         List<Post> latestPosts = postDAO.getLatestPosts(3); // Lấy 3 bài viết mới nhất
         List<Post> popularPosts = postDAO.getPopularPosts(3); // Lấy 3 bài viết phổ biến nhất
 
-        // Set attributes cho sản phẩm
         request.setAttribute("cbanners", bannerList);
         request.setAttribute("categories", categories);
         request.setAttribute("topViewedProducts", topViewedProducts);
@@ -124,13 +116,10 @@ public class HomeServlet extends HttpServlet {
         request.setAttribute("category", categoryFilter);
         request.setAttribute("sortPrice", sortPrice);
 
-        // Set attributes cho bài viết
         request.setAttribute("latestPosts", latestPosts);
         request.setAttribute("popularPosts", popularPosts);
 
-        // Forward to JSP
         request.getRequestDispatcher("HomePage.jsp").forward(request, response);
     }
 
-    // ... các phương thức khác giữ nguyên
 }

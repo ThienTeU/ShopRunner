@@ -104,7 +104,6 @@ if (filePart == null || filePart.getSize() == 0) {
 }
 
 
-            // Validate file type
             String fileName = getSubmittedFileName(filePart);
             String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
             if (!ALLOWED_EXTENSIONS.contains(fileExtension)) {
@@ -139,7 +138,6 @@ if (filePart == null || filePart.getSize() == 0) {
                 return;
             }
 
-            // Process file upload
             String uploadPath = getUploadPath(request);
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
@@ -150,14 +148,12 @@ if (filePart == null || filePart.getSize() == 0) {
             String filePath = uploadPath + File.separator + uniqueFileName;
             filePart.write(filePath);
 
-            // Create banner object
             Banner banner = new Banner();
             banner.setImage_url("banner_images/" + uniqueFileName);
             banner.setLink_url(linkUrl);
             banner.setDisplay_order(displayOrder);
             banner.setStatus(status);
 
-            // Save to database
             if (bannerDAO.addBanner(banner)) {
                 response.sendRedirect("managerbanner?action=list");
             } else {
@@ -201,7 +197,6 @@ if (filePart == null || filePart.getSize() == 0) {
                 return;
             }
 
-            // Get and validate display order
             int displayOrder;
             try {
                 displayOrder = Integer.parseInt(request.getParameter("displayOrder"));
@@ -218,7 +213,6 @@ if (filePart == null || filePart.getSize() == 0) {
                 return;
             }
 
-            // Check if display order exists (excluding current banner)
             if (bannerDAO.isDisplayOrderExists(displayOrder, bannerId)) {
                 request.setAttribute("error", "Thứ tự hiển thị này đã tồn tại!");
                 request.setAttribute("banner", banner);
@@ -226,7 +220,6 @@ if (filePart == null || filePart.getSize() == 0) {
                 return;
             }
 
-            // Process file upload if new file is provided
             Part filePart = request.getPart("imageFile");
             if (filePart != null && filePart.getSize() > 0) {
                 String fileName = getSubmittedFileName(filePart);
@@ -239,7 +232,6 @@ if (filePart == null || filePart.getSize() == 0) {
                     return;
                 }
 
-                // Delete old file
                 String oldFilePath = request.getServletContext().getRealPath("") + 
                                    File.separator + banner.getImage_url();
                 File oldFile = new File(oldFilePath);
@@ -247,7 +239,6 @@ if (filePart == null || filePart.getSize() == 0) {
                     oldFile.delete();
                 }
 
-                // Save new file
                 String uploadPath = getUploadPath(request);
                 String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
                 String filePath = uploadPath + File.separator + uniqueFileName;
@@ -255,7 +246,6 @@ if (filePart == null || filePart.getSize() == 0) {
                 banner.setImage_url("banner_images/" + uniqueFileName);
             }
 
-            // Update other fields
             banner.setLink_url(request.getParameter("linkUrl"));
             banner.setDisplay_order(displayOrder);
             banner.setStatus(request.getParameter("status") != null);
@@ -282,7 +272,6 @@ if (filePart == null || filePart.getSize() == 0) {
             Banner banner = bannerDAO.getBannerById(bannerId);
 
             if (banner != null) {
-                // Delete image file
                 String filePath = request.getServletContext().getRealPath("") + 
                                 File.separator + banner.getImage_url();
                 File file = new File(filePath);
@@ -290,7 +279,6 @@ if (filePart == null || filePart.getSize() == 0) {
                     file.delete();
                 }
 
-                // Delete from database
                 if (bannerDAO.deleteBanner(bannerId)) {
                     response.sendRedirect("managerbanner?action=list");
                 } else {

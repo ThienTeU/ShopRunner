@@ -15,10 +15,9 @@ public class AddressDAO extends DBContext {
         String query = "SELECT address_id, name, phone, city, district, ward, street FROM Address WHERE user_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, userId); // Đặt giá trị tham số userId
+            ps.setInt(1, userId); 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // Tạo đối tượng AddressAnh và gán dữ liệu từ ResultSet
                     AddressAnh address = new AddressAnh();
                     address.setAddressId(rs.getInt("address_id"));
                     address.setName(rs.getString("name"));
@@ -28,29 +27,24 @@ public class AddressDAO extends DBContext {
                     address.setWard(rs.getString("ward"));
                     address.setStreet(rs.getString("street"));
 
-                    // Thêm đối tượng vào danh sách
                     addresses.add(address);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Log lỗi nếu có
+            e.printStackTrace(); 
         }
 
-        return addresses; // Trả về danh sách địa chỉ
+        return addresses; 
     }
     
     
       public static void main(String[] args) {
-        // Tạo đối tượng AddressDAO
         AddressDAO addressDAO = new AddressDAO();
 
-        // Đặt userId cần kiểm tra (thay số 1 bằng userId thực tế trong cơ sở dữ liệu của bạn)
         int userId = 5;
 
-        // Gọi phương thức getAddressesByUserId và lưu kết quả
         List<AddressAnh> addresses = addressDAO.getAddressesByUserId(userId);
 
-        // Kiểm tra và in danh sách địa chỉ
         if (addresses.isEmpty()) {
             System.out.println("Không tìm thấy địa chỉ nào cho userId: " + userId);
         } else {
@@ -78,7 +72,7 @@ public class AddressDAO extends DBContext {
         ps.setString(5, address.getWard());
         ps.setString(6, address.getStreet());
         ps.setInt(7, userId);
-        return ps.executeUpdate() > 0; // Trả về true nếu thêm thành công
+        return ps.executeUpdate() > 0; 
     } catch (SQLException e) {
         e.printStackTrace();
     }
@@ -88,11 +82,11 @@ public boolean deleteAddress(int addressId) {
     String query = "DELETE FROM Address WHERE address_id = ?";
     try (PreparedStatement ps = connection.prepareStatement(query)) {
         ps.setInt(1, addressId);
-        return ps.executeUpdate() > 0; // Trả về true nếu xóa thành công
+        return ps.executeUpdate() > 0;
     } catch (SQLException e) {
         e.printStackTrace();
     }
-    return false; // Trả về false nếu có lỗi
+    return false; 
 }
 
 
@@ -106,11 +100,11 @@ public boolean updateAddress(AddressAnh address) {
         ps.setString(5, address.getWard());
         ps.setString(6, address.getStreet());
         ps.setInt(7, address.getAddressId());
-        return ps.executeUpdate() > 0; // Trả về true nếu cập nhật thành công
+        return ps.executeUpdate() > 0; 
     } catch (SQLException e) {
         e.printStackTrace();
     }
-    return false; // Trả về false nếu có lỗi
+    return false; 
 }
 
 }
