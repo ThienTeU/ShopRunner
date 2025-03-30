@@ -57,12 +57,14 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <%@include file="model/header.jsp" %>
+
 
 </head>
 <body>
-    <%@include file="component/header.jsp" %>
 
-    <%@include file="component/topbar.jsp" %>
+
+
     <%@ page pageEncoding="UTF-8" %>
 
     <div id="wrapper">
@@ -71,6 +73,9 @@
                 <div class="row">
                     <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
                         <div class="page-wrapper">
+                            *<h2></h2>
+                            *<h2></h2>
+
                             <div class="blog-title-area text-center">
                                 <h3 class="limited-text" style="max-width: 800px; word-wrap: break-word;" >${pdto.getTitle()}</h3>
                             </div><!-- end title -->
@@ -84,12 +89,14 @@
                             </div><!-- end content -->
 
                         </div><!-- end page-wrapper -->
-                        
+
                     </div><!-- end col -->
                     <!-- new post -->
                     <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                         <div class="sidebar">
                             <div class="widget">
+                                *<h2></h2>
+                                *<h2></h2>
                                 <h2 class="widget-title">Mới nhất</h2>
                                 <div class="trend-videos">
                                     <c:forEach items="${requestScope.pdtos}" var="c">
@@ -113,13 +120,55 @@
                                         <hr class="invis">
                                     </c:forEach>
                                 </div><!-- end videos -->
+                                <!-- Thêm bài viết mẫu cho Voucher -->
+                                <style>
+                                    .blog-container {
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        min-height: 50vh;
+                                        text-align: center;
+                                    }
+                                    .blog-box {
+                                        max-width: 500px;
+                                        background: #fff;
+                                        padding: 20px;
+                                        border-radius: 10px;
+                                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                                    }
+                                    .blog-img img {
+                                        width: 100%;
+                                        border-radius: 10px;
+                                    }
+                                    .blog-title {
+                                        font-size: 20px;
+                                        font-weight: bold;
+                                        color: #007bff;
+                                        display: block;
+                                        margin-top: 10px;
+                                    }
+                                </style>
+                                <h2 class="widget-title">Nhận Voucher</h2>
+                                
+                                    <div class="blog-box">
+                                        <div class="blog-img">
+                                            <img src="images/Post/voucher.jpg" alt="Voucher Special">
+                                        </div>
+                                        <div class="blog-text">
+                                            <span>Nhận ngay mã giảm giá</span>
+                                            <a href="sendVoucher.jsp" class="blog-title">Mã giảm giá đặc biệt!</a>
+                                            <p>Nhấn vào đây để nhận ngay mã giảm giá hấp dẫn nếu bạn là người dùng mới.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Voucher -->
                             </div><!-- end widget -->
                         </div><!-- end sidebar -->
                     </div><!-- end col -->
                 </div><!-- end row -->
             </div><!-- end container -->
         </section>
-        <%@include file="component/footer.jsp" %>
+        <%@include file="model/footer.jsp" %>
     </div><!-- end wrapper -->
 
     <!-- Core JavaScript

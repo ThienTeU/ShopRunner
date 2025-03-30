@@ -16,6 +16,36 @@ import java.util.List;
  */
 public class VoucherDAO extends DBcontext {
 
+    public String getVoucherCode() {
+        String voucher = null;
+        String sql = "SELECT TOP 1 VoucherCode FROM Voucher "
+                + "WHERE Quantity > 0 AND DateStart <= GETDATE() "
+                + "AND DateEnd >= GETDATE() AND Discount = 10 "
+                + "ORDER BY NEWID()";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                voucher = rs.getString("VoucherCode");
+                decreaseVoucherQuantity(voucher);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return voucher;
+    }
+
+    public void decreaseVoucherQuantity(String voucherCode) {
+        String sql = "UPDATE Voucher SET Quantity = Quantity - 1 WHERE VoucherCode = ? AND Quantity > 0";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, voucherCode);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Voucher> listVoucher() {
         String sql = "SELECT [VoucherID]\n"
                 + "      ,[Name]\n"
@@ -265,6 +295,8 @@ public class VoucherDAO extends DBcontext {
         } catch (Exception e) {
         }
     }
+    
+    
 
     public void UpdateVoucher(String name, String code, String start, String end, int discount, int quantity) {
         String sql = "UPDATE [dbo].[Voucher]\n"
@@ -346,6 +378,31 @@ public class VoucherDAO extends DBcontext {
         } catch (Exception e) {
         }
     }
+
+public Voucher getRandomVoucherWith10PercentDiscount() {
+    String sql = "SELECT TOP 1 [VoucherID], [Name], [VoucherCode], [DateStart], [DateEnd], [Discount], [Quantity] "
+               + "FROM [dbo].[Voucher] WHERE Discount = 10 AND Quantity > 0 ORDER BY NEWID()";
+    try {
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Voucher v = new Voucher();
+            v.setVourcherID(rs.getInt(1));
+            v.setName(rs.getString(2));
+            v.setVoucherCode(rs.getString(3));
+            v.setStart(rs.getString(4));
+            v.setEnd(rs.getString(5));
+            v.setDiscount(rs.getInt(6));
+            v.setQuantity(rs.getInt(7));
+            return v;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null; // Trả về null nếu không có voucher hợp lệ
+}
+
+
 
     public static void main(String[] args) {
         VoucherDAO voucherDAO = new VoucherDAO();

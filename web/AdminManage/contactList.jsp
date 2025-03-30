@@ -62,46 +62,83 @@
                 <!-- Navbar End -->
                 <!-- Sale & Revenue End -->
                 <!-- Recent Sales Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="bg-secondary text-center rounded p-4">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h6 class="mb-0">Quản Lí Banner </h6>
-                        </div>              
-
-                        <div class="table-responsive">
-                            <table class="table text-start align-middle table-bordered table-hover mb-0">
-                                <thead>
-                                    <tr class="text-white">
-                                        <th>ID</th>
-                                        <th>Tên</th>
-                                        <th>Email</th>
-                                        <th>Số điện thoại</th>
-                                        <th>Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="contact" items="${contactList}">
-
-                                        <tr>
-                                            <td>${contact.contactId}</td>
-                                            <td>${contact.fullName}</td>
-                                            <td>${contact.email}</td>
-                                            <td>${contact.phone}</td>
-                                            <td>
-                                                <a href="contactDetail?id=${contact.contactId}">Xem chi tiết</a> |
-                                                <form action="deleteContact" method="post" style="display:inline;">
-                                                    <input type="hidden" name="id" value="${contact.contactId}">
-                                                    <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa liên hệ này?');">Xóa</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Quản Lí Contact</h6>
+        </div>              
+        <!-- Form tìm kiếm và lọc -->
+<form action="contactList" method="get" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="keyword" class="form-control" placeholder="Nhập từ khóa tìm kiếm..." value="${param.keyword}">
                 </div>
+                <div class="col-md-4">
+                    <select name="statusFilter" class="form-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="true" ${param.statusFilter == 'true' ? 'selected' : ''}>Đã hoàn thành</option>
+                        <option value="false" ${param.statusFilter == 'false' ? 'selected' : ''}>Yêu cầu mới</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </div>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="thead-dark">
+                    <tr class="text-white bg-primary">
+                        <th class="text-center">ID</th>
+                        <th>Họ và tên</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Nội dung</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="contact" items="${contactList}">
+                        <tr>
+                            <td class="text-center">${contact.contactId}</td>
+                            <td>${contact.fullName}</td>
+                            <td>${contact.phone}</td>
+                            <td>${contact.email}</td>
+                            <td>${contact.content}</td>
+                            <td>${contact.createdAt}</td>
+                            <td>
+                                <!-- Kiểm tra trạng thái -->
+                                <c:choose>
+                                    <c:when test="${contact.status}">
+                                        <span class="badge bg-success" style="color: green">Đã hoàn thành</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <form action="updateContactStatus" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="${contact.contactId}">
+                                            <button type="submit" name="status" value="true" class="btn btn-sm btn-primary">
+                                                ✔
+                                            </button>
+                                        </form>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <a href="contactDetail?id=${contact.contactId}" class="btn btn-sm btn-info">Xem chi tiết</a>
+                                <form action="deleteContact" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="${contact.contactId}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa liên hệ này?');">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
                 <!-- Recent Sales End -->
 
 

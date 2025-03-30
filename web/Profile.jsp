@@ -260,7 +260,9 @@
             }
         </style>
     </head>
+
     <body>
+        
         <!-- Header -->
         <div class="profile-header">
             <div class="container">
@@ -279,28 +281,23 @@
         <div class="container py-5">
             <div class="row">
                 <!-- Thống kê -->
-                <div class="col-12 mb-4">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="stats-card bg-primary">
-                                <h3>${stats.orders}</h3>
-                                <p><strong>Tổng số đơn hàng:</strong> ${totalOrders}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stats-card bg-success">
-                                <h3>${stats.reviews}</h3>
-                                <p><strong>Tổng số lượt đánh giá:</strong> ${totalFeedbacks}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stats-card bg-info">
-                                <h3>${stats.favorites}</h3>
-                                <p><strong>Yêu thích</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="col-12 mb-6">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <div class="stats-card bg-primary">
+                <h3>${stats.orders}</h3>
+                <p><strong>Tổng số đơn hàng:</strong> ${totalOrders}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card bg-success">
+                <h3>${stats.reviews}</h3>
+                <p><strong>Tổng số lượt đánh giá:</strong> ${totalFeedbacks}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
                 <!-- Thông tin cá nhân -->
                 <div class="col-md-8">
@@ -322,11 +319,7 @@
                                         Địa chỉ
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="security-tab" data-bs-toggle="pill" href="#security" role="tab">
-                                        Bảo mật
-                                    </a>
-                                </li>
+
                                 <li class="nav-item">
                                     <a class="nav-link" id="feedback-tab" data-bs-toggle="pill" href="#feedback" role="tab">
                                         Lịch sử phản hồi
@@ -356,7 +349,7 @@
                                     <div class="tab-pane fade" id="update-profile" role="tabpanel">
                                         <h5>Cập nhật thông tin cá nhân</h5>
 
-                                        <form action="update-profile" method="POST">
+<form id="updateProfileForm" action="update-profile" method="POST" onsubmit="return validateForm(event, 'updateProfileForm')">
                                             <!-- Hidden field để gửi userId -->
                                             <input type="hidden" name="userId" value="${user.userId}">
 
@@ -554,6 +547,19 @@
                                 <!-- Tab Đơn hàng -->
                                 <div class="tab-pane fade" id="orders" role="tabpanel">
                                     <h3>Danh sách đơn hàng</h3>
+                                    <div class="mb-3">
+<form method="GET" action="ordersprofile">
+    <label for="orderStatus" class="form-label">Lọc theo trạng thái:</label>
+    <select class="form-select" id="orderStatus" name="status" onchange="this.form.submit()">
+        <option value="">Tất cả</option>
+        <option value="Đã giao" ${status == 'Đã giao' ? 'selected' : ''}>Đã giao</option>
+        <option value="Đang xử lý" ${status == 'Đang xử lý' ? 'selected' : ''}>Đang xử lý</option>
+        <option value="Đã hủy" ${status == 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
+    </select>
+</form>
+
+</div>
+
                                     <c:if test="${not empty orders}">
                                         <table class="table table-hover align-middle">
                                             <thead class="table-light">
@@ -696,12 +702,105 @@
 
                         <!-- Bootstrap JS -->
                         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+                        
                         <script>
-                            // Hiệu ứng cho các nút
-                            document.querySelectorAll('.btn').forEach(btn => {
-                                btn.addEventListener('mouseenter', () => btn.classList.add('shadow-lg'));
-                                btn.addEventListener('mouseleave', () => btn.classList.remove('shadow-lg'));
-                            });
-                        </script>
+function validateForm(event, formId) {
+    // Lấy form cần kiểm tra
+    const form = document.getElementById(formId);
+    const inputs = form.querySelectorAll("input, select");
+
+    // Regex cho từng loại dữ liệu
+    const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỳỵỷỹ\s]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^0\d{9,10}$/;
+    const addressRegex = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỳỵỷỹ\s,.-]+$/;
+
+    // Duyệt qua tất cả các input trong form
+    for (const input of inputs) {
+        const value = input.value.trim();
+        const fieldName = input.getAttribute("name");
+
+        // Kiểm tra các trường cụ thể
+        if (fieldName === "fullName" || fieldName === "name") {
+            if (!nameRegex.test(value)) {
+                alert("Họ và tên không được chứa ký tự đặc biệt hoặc số.");
+                event.preventDefault();
+                return false;
+            }
+        } else if (fieldName === "email") {
+            if (!emailRegex.test(value)) {
+                alert("Email không đúng định dạng.");
+                event.preventDefault();
+                return false;
+            }
+        } else if (fieldName === "phone" || fieldName === "phoneNumber") {
+            if (!phoneRegex.test(value)) {
+                alert("Số điện thoại phải có 10-11 số và bắt đầu bằng số 0.");
+                event.preventDefault();
+                return false;
+            }
+        } else if (fieldName === "street" || fieldName === "ward" || fieldName === "district" || fieldName === "city") {
+            if (!addressRegex.test(value)) {
+                alert("Địa chỉ không được chứa ký tự đặc biệt.");
+                event.preventDefault();
+                return false;
+            }
+        }
+    }
+
+    // Nếu tất cả đều hợp lệ
+    return true;
+}
+
+
+
+
+function validateForm(event, formId) {
+    // Lấy form cần kiểm tra
+    const form = document.getElementById(formId);
+    const inputs = form.querySelectorAll("input");
+
+    // Regex cho từng loại dữ liệu
+    const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỳỵỷỹ\s]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^0\d{9,10}$/;
+
+    // Duyệt qua tất cả các input trong form
+    for (const input of inputs) {
+        const value = input.value.trim();
+        const fieldName = input.getAttribute("name");
+
+        // Kiểm tra các trường cụ thể
+        if (fieldName === "fullName") {
+            if (!nameRegex.test(value)) {
+                alert("Họ và tên không được chứa ký tự đặc biệt hoặc số.");
+                event.preventDefault();
+                return false;
+            }
+        } else if (fieldName === "email") {
+            if (!emailRegex.test(value)) {
+                alert("Email không đúng định dạng.");
+                event.preventDefault();
+                return false;
+            }
+        } else if (fieldName === "phoneNumber") {
+            if (!phoneRegex.test(value)) {
+                alert("Số điện thoại phải có 10-11 số và bắt đầu bằng số 0.");
+                event.preventDefault();
+                return false;
+            }
+        }
+    }
+
+    // Nếu tất cả đều hợp lệ
+    return true;
+}
+
+
+</script>
+
+
+
                         </body>
                         </html>

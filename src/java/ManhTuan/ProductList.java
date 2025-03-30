@@ -38,21 +38,21 @@ public class ProductList extends HttpServlet {
             end = (count / size) + 1;
         }
         int index = 1;
-        if(request.getParameter("index")!=null && !request.getParameter("index").isEmpty()){
-             index = Integer.parseInt(request.getParameter("index"));
+        if (request.getParameter("index") != null && !request.getParameter("index").isEmpty()) {
+            index = Integer.parseInt(request.getParameter("index"));
         }
         List<ProductTuan> products = dao.getAllProductsByPages(index, size);
-        List<CategoryTuan> categories = dao.getCategoryTree();
-        List<Size> list = new ArrayList<>();
-        List<Color> colorsAll = new ArrayList<>();
-        colorsAll = dao.getAllColor();
-        list = dao.getAllSize();
+        List<Size> list = dao.getAllSize();
+        List<Color> colorsAll = dao.getAllColor();
+        List<CategoryTuan> categories = dao.getAllCategories();
+        List<CategoryTuan> categoryTree = dao.buildCategoryTree(categories);
+        request.setAttribute("categoryTree", categoryTree);
         request.setAttribute("colorsAll", colorsAll);
         request.setAttribute("size", list);
-        request.setAttribute("categories", categories);
         request.setAttribute("end", end);
+        request.setAttribute("check", "list");
         request.setAttribute("products", products);
-        request.getRequestDispatcher("/ManhTuan/productlist.jsp").forward(request, response);
+        request.getRequestDispatcher("/ManhTuan/test.jsp").forward(request, response);
     }
 
     @Override
@@ -60,7 +60,6 @@ public class ProductList extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -75,9 +74,13 @@ public class ProductList extends HttpServlet {
 
     public static void main(String[] args) {
         ProductDAOTuan dao = new ProductDAOTuan();
-        List<ProductTuan> products = dao.getAllProductsByPages(1, 9);
-        for (ProductTuan p : products) {
-            System.out.println(p);
+        List<CategoryTuan> categories = dao.getAllCategories();
+        List<CategoryTuan> categoryTree = dao.buildCategoryTree(categories);
+        for (CategoryTuan p : categories) {
+            System.out.println(p.toString());
+        }
+        for (CategoryTuan p : categoryTree) {
+            System.out.println(p.toString());
         }
     }
 }

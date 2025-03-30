@@ -13,7 +13,6 @@ import java.util.List;
 public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
     
     public static void main(String[] args) {
-        
     }
     
     public String addStaff(StaffHieu staff) {
@@ -27,57 +26,29 @@ public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
         return "Số điện thoại đã tồn tại!";
     }
 
-    String sql = "INSERT INTO [User] (role_id, user_name, full_name, email, password, phone_number, status, gender_id) "
-               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+String sql = "INSERT INTO [User] (role_id, user_name, full_name, email, password, phone_number, status, created_at, gender_id) "
+           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setInt(1, staff.getRoleId());
-        ps.setString(2, staff.getUserName());
-        ps.setString(3, staff.getFullName());
-        ps.setString(4, staff.getEmail());
-        ps.setString(5, staff.getPassword()); // Đảm bảo đã mã hóa trước khi truyền vào
-        ps.setString(6, staff.getPhoneNumber());
-        ps.setBoolean(7, staff.isStatus());
-        ps.setInt(8, staff.getGenderId());
 
-        int rows = ps.executeUpdate();
-        return rows > 0 ? "Thêm nhân viên thành công!" : "Thêm nhân viên thất bại!";
-    } catch (SQLException e) {
+try (PreparedStatement ps = connection.prepareStatement(sql)) {
+    ps.setInt(1, staff.getRoleId());
+    ps.setString(2, staff.getUserName());
+    ps.setString(3, staff.getFullName());
+    ps.setString(4, staff.getEmail());
+    ps.setString(5, staff.getPassword());
+    ps.setString(6, staff.getPhoneNumber());
+    ps.setBoolean(7, staff.isStatus());
+    ps.setString(8, staff.getCreatedAt());
+    ps.setInt(9, staff.getGenderId());
+
+    int rows = ps.executeUpdate();
+    return rows > 0 ? "Thêm nhân viên thành công!" : "Thêm nhân viên thất bại!";
+}
+ catch (SQLException e) {
         e.printStackTrace();
         return "Lỗi: " + e.getMessage();
     }
 }
-
-    
-//    public String addStaff(StaffHieu staff) {
-//    if (checkUserNameDuplicate(staff.getUserName())) {
-//        return "Tên đăng nhập đã tồn tại!";
-//    }
-//    if (checkEmailDuplicate(staff.getEmail())) {
-//        return "Email đã tồn tại!";
-//    }
-//            if (checkPhoneDuplicate(staff.getPhoneNumber())) {
-//            return "Số điện thoại đã tồn tại!";
-//        }
-//
-//    String sql = "INSERT INTO [User] (role_id, user_name, email, phone_number, status, gender_id) "
-//               + "VALUES (?, ?, ?, ?, ?, ?)";
-//
-//    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-//        ps.setInt(1, staff.getRoleId());
-//        ps.setString(2, staff.getUserName());
-//        ps.setString(3, staff.getEmail());
-//        ps.setString(4, staff.getPhoneNumber());
-//        ps.setBoolean(5, staff.isStatus());
-//        ps.setInt(6, staff.getGenderId());
-//
-//        int rows = ps.executeUpdate();
-//        return rows > 0 ? "Thêm nhân viên thành công!" : "Thêm nhân viên thất bại!";
-//    } catch (SQLException e) {
-//        return "Lỗi: " + e.getMessage();
-//    }
-//}
-
     
     public List<StaffHieu> searchStaffPage(String userName, String email, String phone, Boolean status, int offset, int size) {
         List<StaffHieu> staffList = new ArrayList<>();
@@ -220,21 +191,26 @@ public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
 
     public List<StaffHieu> getAllStaff() {
         List<StaffHieu> staffs = new ArrayList<>();
-        String sql = "  select * from [User] where role_id in (3,4)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    StaffHieu staff = new StaffHieu(
-                            rs.getInt("user_id"),
-                            rs.getInt("role_id"),
-                            rs.getString("user_name"),
-                            rs.getString("email"),
-                            rs.getString("phone_number"),
-                            rs.getBoolean("status")
-                    );
-
-                    staffs.add(staff);
-                }
+        String sql = "SELECT user_id, role_id, user_name, full_name, email, password, phone_number, status, created_at, gender_id "
+                   + "FROM [User] WHERE role_id IN (3,4)";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                StaffHieu staff = new StaffHieu(
+                        rs.getInt("user_id"),
+                        rs.getInt("role_id"),
+                        rs.getString("user_name"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone_number"),
+                        rs.getBoolean("status"),
+                        rs.getInt("gender_id"),
+                        rs.getString("created_at")
+                );
+                staffs.add(staff);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -244,34 +220,38 @@ public class StaffDAOHieu extends HieuPTM.DBContext.DBContext {
 
     public List<StaffHieu> getAllStaffPage(int index, int size) {
         List<StaffHieu> staffs = new ArrayList<>();
+        
+        // Kiểm tra tham số đầu vào
+        if (index < 1) index = 1;
+        if (size <= 0) size = 10;
+        
         int offset = (index - 1) * size;
         String sql = "SELECT \n"
-                + "    u.user_id,\n"
-                + "    u.role_id,\n"
-                + "    u.user_name,\n"
-                + "    u.email,\n"
-                + "    u.phone_number,\n"
-                + "    u.status,\n"
-                + "    u.gender_id\n"
-                + "FROM [User] u\n"
-                + "WHERE u.role_id IN (3, 4)\n"
-                + "ORDER BY u.user_id\n"
-                + "OFFSET ? ROWS\n"
-                + "FETCH NEXT ? ROWS ONLY;";
+                   + "    user_id, role_id, user_name, full_name, email, password, \n"
+                   + "    phone_number, status, created_at, gender_id\n"
+                   + "FROM [User] \n"
+                   + "WHERE role_id IN (3, 4)\n"
+                   + "ORDER BY user_id\n"
+                   + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+        
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, offset);
             ps.setInt(2, size);
+            
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     StaffHieu staff = new StaffHieu(
                             rs.getInt("user_id"),
                             rs.getInt("role_id"),
                             rs.getString("user_name"),
+                            rs.getString("full_name"),
                             rs.getString("email"),
+                            rs.getString("password"),
                             rs.getString("phone_number"),
-                            rs.getBoolean("status")
+                            rs.getBoolean("status"),
+                            rs.getInt("gender_id"),
+                            rs.getString("created_at")
                     );
-
                     staffs.add(staff);
                 }
             }

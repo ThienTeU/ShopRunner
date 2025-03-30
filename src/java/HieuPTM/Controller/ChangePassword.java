@@ -2,7 +2,6 @@ package HieuPTM.Controller;
 
 import HieuPTM.DBContext.DBContext;
 import HieuPTM.model.UserHieu;
-import NgocHieu.service.AuthenticationService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
@@ -21,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @WebServlet(name = "ChangePassword", urlPatterns = {"/ChangePassword"})
 public class ChangePassword extends HttpServlet {
+
     private static final long serialVersionUID = 1L;
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
@@ -49,8 +49,8 @@ public class ChangePassword extends HttpServlet {
         String confPassword = request.getParameter("confPassword");
 
         RequestDispatcher dispatcher;
-        if (oldPassword == null || newPassword == null || confPassword == null ||
-            oldPassword.isEmpty() || newPassword.isEmpty() || confPassword.isEmpty()) {
+        if (oldPassword == null || newPassword == null || confPassword == null
+                || oldPassword.isEmpty() || newPassword.isEmpty() || confPassword.isEmpty()) {
             request.setAttribute("status", "emptyField");
             dispatcher = request.getRequestDispatcher("/HieuPTM/ChangePassword.jsp");
             dispatcher.forward(request, response);
@@ -97,8 +97,6 @@ public class ChangePassword extends HttpServlet {
 
             PasswordEncoder passEncoder = new BCryptPasswordEncoder(10);
             String hashedNewPassword = passEncoder.encode(newPassword);
-            
-            //String hashedNewPassword = encoder.encode(newPassword);
 
             String sqlUpdate = "UPDATE [User] SET password = ? WHERE user_name = ?";
             try (PreparedStatement updatePst = con.prepareStatement(sqlUpdate)) {
@@ -108,7 +106,6 @@ public class ChangePassword extends HttpServlet {
                 request.setAttribute("status", rowUpdated > 0 ? "changeSuccess" : "changeFailed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             request.setAttribute("status", "serverError");
         }
 

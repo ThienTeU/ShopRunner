@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class UserHieu {
+
     private String userName, fullName, password, phone, email, address, created_at;
     private int genderID, roleID, userID;
     private Date birthDate;
@@ -20,7 +21,9 @@ public class UserHieu {
         this.status = status;
         this.userName = userName;
     }
-    public UserHieu() {}
+
+    public UserHieu() {
+    }
 
     public UserHieu(String userName, String fullName, String password, String phone, String email, int genderID, int roleID) {
         this.userName = userName;
@@ -43,10 +46,12 @@ public class UserHieu {
     public boolean isStatus() {
         return status;
     }
-    
-    
 
-    // Constructor thêm đầy đủ thông tin
+    public boolean isValidUser() {
+        return userName != null && !userName.isEmpty()
+                && password != null && !password.isEmpty();
+    }
+
     public UserHieu(String userName, String fullName, String password, String phone, String email, int genderID, int roleID, String address, Date birthDate) {
         this.userName = userName;
         this.fullName = fullName;
@@ -59,36 +64,78 @@ public class UserHieu {
         this.birthDate = birthDate;
     }
 
-    // Getters và Setters
+    public String getUserName() {
+        return userName;
+    }
 
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getFullName() {
+        return fullName;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public int getGenderID() { return genderID; }
-    public void setGenderID(int genderID) { this.genderID = genderID; }
+    public String getPhone() {
+        return phone;
+    }
 
-    public int getRoleID() { return roleID; }
-    public void setRoleID(int roleID) { this.roleID = roleID; }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public String getEmail() {
+        return email;
+    }
 
-    public Date getBirthDate() { return birthDate; }
-    public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    // Hàm format ngày sinh
+    public int getGenderID() {
+        return genderID;
+    }
+
+    public void setGenderID(int genderID) {
+        this.genderID = genderID;
+    }
+
+    public int getRoleID() {
+        return roleID;
+    }
+
+    public void setRoleID(int roleID) {
+        this.roleID = roleID;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public String formatBirthDate() {
         if (birthDate != null) {
             return new SimpleDateFormat("dd/MM/yyyy").format(birthDate);

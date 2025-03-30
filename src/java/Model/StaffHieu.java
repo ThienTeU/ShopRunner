@@ -15,6 +15,19 @@ public class StaffHieu {
 
     public StaffHieu() {
     }
+    
+    public StaffHieu(int userId, int roleId, String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId, String createdAt) {
+        this.userId = userId;
+        this.roleId = roleId;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.genderId = genderId;
+        this.createdAt = createdAt;
+    }
 
     //role_id, user_name, email, phone_number, status, gender_id
 
@@ -27,8 +40,6 @@ public class StaffHieu {
         this.genderId = genderId;
     }
     
-    
-
     public StaffHieu(String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId) {
         this.userName = userName;
         this.fullName = fullName;
@@ -48,19 +59,6 @@ public class StaffHieu {
         this.status = status;
         this.genderId = genderId;
         this.roleId = roleId;
-    }
-
-    public StaffHieu(int userId, int roleId, String userName, String fullName, String email, String password, String phoneNumber, boolean status, int genderId, String createdAt) {
-        this.userId = userId;
-        this.roleId = roleId;
-        this.userName = userName;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-        this.genderId = genderId;
-        this.createdAt = createdAt;
     }
 
     public StaffHieu(int userId, int roleId, String userName, String email, String phoneNumber, boolean status) {
