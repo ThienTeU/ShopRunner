@@ -61,7 +61,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
         int totalPosts = pldao.getTotalPosts();  // Cần viết phương thức getTotalPosts trong DAO
 
         // Tính tổng số trang (totalPages)
-        int totalPages = (int) Math.ceil((double) totalPosts / 3);  // Giả sử mỗi trang có 3 bài viết
+        int totalPages = (int) Math.ceil((double) totalPosts / 2);  // Giả sử mỗi trang có 3 bài viết
 
         // Xử lý phân trang và lấy danh sách bài viết
         if (num_raw != null) {
@@ -71,7 +71,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             postDTOs = pldao.getAllPost();
         }
         
-        postDTOs = pldao.pagingPostWithSearch(pageInt, 3);  // Truyền vào số trang và số bài trên mỗi trang
+        postDTOs = pldao.pagingPostWithSearch(pageInt, 2);  // Truyền vào số trang và số bài trên mỗi trang
 
         // Truyền dữ liệu cho JSP
         request.setAttribute("postCategoryDTOs", postCategoryDTOs);

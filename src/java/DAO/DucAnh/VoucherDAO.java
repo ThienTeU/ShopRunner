@@ -16,6 +16,36 @@ import java.util.List;
  */
 public class VoucherDAO extends DBcontext {
 
+    public String getVoucherCode() {
+        String voucher = null;
+        String sql = "SELECT TOP 1 VoucherCode FROM Voucher "
+                + "WHERE Quantity > 0 AND DateStart <= GETDATE() "
+                + "AND DateEnd >= GETDATE() AND Discount = 10 "
+                + "ORDER BY NEWID()";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                voucher = rs.getString("VoucherCode");
+                decreaseVoucherQuantity(voucher);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return voucher;
+    }
+
+    public void decreaseVoucherQuantity(String voucherCode) {
+        String sql = "UPDATE Voucher SET Quantity = Quantity - 1 WHERE VoucherCode = ? AND Quantity > 0";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, voucherCode);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Voucher> listVoucher() {
         String sql = "SELECT [VoucherID]\n"
                 + "      ,[Name]\n"
@@ -44,31 +74,30 @@ public class VoucherDAO extends DBcontext {
         }
         return lv;
     }
+
     public String getVoucherCodeById(int voucherId) {
-    // SQL query to get VoucherCode by VoucherID
-    String sql = "SELECT VoucherCode " +
-                 "FROM [dbo].[Voucher] " +
-                 "WHERE VoucherID = ?";
+        // SQL query to get VoucherCode by VoucherID
+        String sql = "SELECT VoucherCode "
+                + "FROM [dbo].[Voucher] "
+                + "WHERE VoucherID = ?";
 
-    try {
-        // Prepare the SQL statement
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, voucherId);
-        
-        // Execute the query and get the result
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getString("VoucherCode"); // Return the VoucherCode
+        try {
+            // Prepare the SQL statement
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, voucherId);
+
+            // Execute the query and get the result
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("VoucherCode"); // Return the VoucherCode
+            }
+        } catch (Exception e) {
+            // Handle exceptions properly
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        // Handle exceptions properly
-        e.printStackTrace();
-    }
-    
-    return null; // Return null if no VoucherCode found or any exception occurs
-}
 
-    
+        return null; // Return null if no VoucherCode found or any exception occurs
+    }
 
     public List<Voucher> getidVoucher(String id) {
         String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n"
@@ -93,7 +122,7 @@ public class VoucherDAO extends DBcontext {
         }
         return lv;
     }
-    
+
     public List<Voucher> getQuantityVoucher(String id) {
         String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n"
                 + "  FROM [dbo].[Voucher] where VoucherCode = ? and Quantity = 0 ";
@@ -117,86 +146,85 @@ public class VoucherDAO extends DBcontext {
         }
         return lv;
     }
+
     public int getVoucherIdByCode(String voucherCode) {
-    // SQL query to get VoucherID by VoucherCode
-    String sql = "SELECT VoucherID " +
-                 "FROM [dbo].[Voucher] " +
-                 "WHERE VoucherCode = ?";
+        // SQL query to get VoucherID by VoucherCode
+        String sql = "SELECT VoucherID "
+                + "FROM [dbo].[Voucher] "
+                + "WHERE VoucherCode = ?";
 
-    try {
-        // Prepare the SQL statement
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, voucherCode);
-        
-        // Execute the query and get the result
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt("VoucherID"); // Return the VoucherID
+        try {
+            // Prepare the SQL statement
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, voucherCode);
+
+            // Execute the query and get the result
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("VoucherID"); // Return the VoucherID
+            }
+        } catch (Exception e) {
+            // Handle exceptions properly
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        // Handle exceptions properly
-        e.printStackTrace();
-    }
-    
-    return -1; // Return -1 if no VoucherID found or any exception occurs
-}
-    
-public int getDiscountByVoucherCode(String voucherCode) {
-    // SQL query to get Discount by VoucherCode
-    String sql = "SELECT Discount " +
-                 "FROM [dbo].[Voucher] " +
-                 "WHERE VoucherCode = ?";
 
-    try {
-        // Prepare the SQL statement
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, voucherCode);
-        
-        // Execute the query and get the result
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt("Discount"); // Return the Discount value
+        return -1; // Return -1 if no VoucherID found or any exception occurs
+    }
+
+    public int getDiscountByVoucherCode(String voucherCode) {
+        // SQL query to get Discount by VoucherCode
+        String sql = "SELECT Discount "
+                + "FROM [dbo].[Voucher] "
+                + "WHERE VoucherCode = ?";
+
+        try {
+            // Prepare the SQL statement
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, voucherCode);
+
+            // Execute the query and get the result
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("Discount"); // Return the Discount value
+            }
+        } catch (Exception e) {
+            // Handle exceptions properly
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        // Handle exceptions properly
-        e.printStackTrace();
-    }
-    
-    return 1; // Return -1 if no Discount is found or any exception occurs
-}
 
-    
+        return 1; // Return -1 if no Discount is found or any exception occurs
+    }
+
     public boolean isVoucherValid(String voucherCode) {
-    // SQL query to check voucher validity
-    String sql = "SELECT COUNT(*) " +
-                 "FROM [dbo].[Voucher] " +
-                 "WHERE VoucherCode = ? " +
-                 "AND Quantity > 0 " +
-                 "AND GETDATE() BETWEEN DateStart AND DateEnd";
+        // SQL query to check voucher validity
+        String sql = "SELECT COUNT(*) "
+                + "FROM [dbo].[Voucher] "
+                + "WHERE VoucherCode = ? "
+                + "AND Quantity > 0 "
+                + "AND GETDATE() BETWEEN DateStart AND DateEnd";
 
-    try {
-        // Prepare the SQL statement
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, voucherCode);
-        
-        // Execute the query and check if any valid rows exist
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            int count = rs.getInt(1);
-            return count > 0; // Return true if the voucher is valid, otherwise false
+        try {
+            // Prepare the SQL statement
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, voucherCode);
+
+            // Execute the query and check if any valid rows exist
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0; // Return true if the voucher is valid, otherwise false
+            }
+        } catch (Exception e) {
+            // Handle exceptions properly
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        // Handle exceptions properly
-        e.printStackTrace();
-    }
-    
-    return false; // Return false if any exception occurs or voucher is not valid
-}
 
-    
-    public List<Voucher> getDateVoucher(String name,String id) {
-        String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n" +
-"                 FROM [dbo].[Voucher] where VoucherCode = ? and [DateEnd] >= ? ";
+        return false; // Return false if any exception occurs or voucher is not valid
+    }
+
+    public List<Voucher> getDateVoucher(String name, String id) {
+        String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n"
+                + "                 FROM [dbo].[Voucher] where VoucherCode = ? and [DateEnd] >= ? ";
         List<Voucher> lv = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -219,16 +247,16 @@ public int getDiscountByVoucherCode(String voucherCode) {
         }
         return lv;
     }
-    
-      public List<Voucher> getDateStartVoucher(String name,String id) {
-        String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n" +
-"                 FROM [dbo].[Voucher] where VoucherCode = ? and [DateStart] <= ?  ";
+
+    public List<Voucher> getDateStartVoucher(String name, String id) {
+        String sql = "SELECT [VoucherID],[Name],[VoucherCode],[DateStart],[DateEnd],[Quantity],[Discount]\n"
+                + "                 FROM [dbo].[Voucher] where VoucherCode = ? and [DateStart] <= ?  ";
         List<Voucher> lv = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, name);
             ps.setString(2, id);
-   
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Voucher v = new Voucher();
@@ -245,8 +273,7 @@ public int getDiscountByVoucherCode(String voucherCode) {
         }
         return lv;
     }
-    
-    
+
     public void addVoucher(String name, String code, String start, String end, int discount, int quantity) {
         String sql = "INSERT INTO [dbo].[Voucher]\n"
                 + "           ([Name]\n"
@@ -268,8 +295,10 @@ public int getDiscountByVoucherCode(String voucherCode) {
         } catch (Exception e) {
         }
     }
+    
+    
 
-     public void UpdateVoucher(String name, String code, String start, String end, int discount, int quantity) {
+    public void UpdateVoucher(String name, String code, String start, String end, int discount, int quantity) {
         String sql = "UPDATE [dbo].[Voucher]\n"
                 + "SET [Name] = ?,\n"
                 + "    [DateStart] = ?,\n"
@@ -280,7 +309,7 @@ public int getDiscountByVoucherCode(String voucherCode) {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, name);
-          
+
             ps.setString(2, start);
             ps.setString(3, end);
             ps.setInt(4, discount);
@@ -324,7 +353,7 @@ public int getDiscountByVoucherCode(String voucherCode) {
         return voucher;
     }
 
-     public void UpdateQuantityVoucher(String name, String quantity) {
+    public void UpdateQuantityVoucher(String name, String quantity) {
         String sql = "UPDATE [dbo].[Voucher] SET [Quantity] = ? WHERE [VoucherCode] = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -335,12 +364,36 @@ public int getDiscountByVoucherCode(String voucherCode) {
             System.out.println(e);
         }
     }
-    
-    
+
+public Voucher getRandomVoucherWith10PercentDiscount() {
+    String sql = "SELECT TOP 1 [VoucherID], [Name], [VoucherCode], [DateStart], [DateEnd], [Discount], [Quantity] "
+               + "FROM [dbo].[Voucher] WHERE Discount = 10 AND Quantity > 0 ORDER BY NEWID()";
+    try {
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Voucher v = new Voucher();
+            v.setVourcherID(rs.getInt(1));
+            v.setName(rs.getString(2));
+            v.setVoucherCode(rs.getString(3));
+            v.setStart(rs.getString(4));
+            v.setEnd(rs.getString(5));
+            v.setDiscount(rs.getInt(6));
+            v.setQuantity(rs.getInt(7));
+            return v;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null; // Trả về null nếu không có voucher hợp lệ
+}
+
+
+
     public static void main(String[] args) {
-            VoucherDAO voucherDAO = new VoucherDAO();
+        VoucherDAO voucherDAO = new VoucherDAO();
 //            voucherDAO.UpdateQuantityVoucher("BOGOCODE", "15");
-System.out.println(voucherDAO.getDiscountByVoucherCode("1"));
+        System.out.println(voucherDAO.getDiscountByVoucherCode("1"));
         System.out.println(voucherDAO.isVoucherValid("1"));
     }
 }

@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Admin Chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script>
         let adminWs;
         let userWs;
@@ -31,6 +32,7 @@
                 if (email.trim() !== "") {
                     let li = document.createElement("li");
                     let button = document.createElement("button");
+                    button.className = "btn btn-outline-primary w-100 my-1";
                     button.textContent = email;
                     button.onclick = function() { connectToUser(email); };
                     li.appendChild(button);
@@ -41,7 +43,7 @@
 
         function connectToUser(email) {
             if (userWs) {
-                userWs.close();
+                userWs.close();  // Đóng WebSocket cũ trước khi mở mới
             }
             currentUser = email;
             userWs = new WebSocket("ws://" + window.location.host + "/RunnerShop/chat/" + email);
@@ -58,7 +60,8 @@
 
         function displayAdminMessage(message) {
             let chatMessages = document.getElementById("admin-chat-messages");
-            let messageElement = document.createElement("p");
+            let messageElement = document.createElement("div");
+            messageElement.className = "alert alert-secondary";
             messageElement.textContent = message;
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -67,10 +70,10 @@
         function sendAdminMessage() {
             let messageInput = document.getElementById("admin-message");
             let message = messageInput.value.trim();
+
             if (message !== "" && adminWs && currentUser) {
-                let formattedMessage = "Admin: " + message;
-                adminWs.send(message);
-                saveAdminMessage(currentUser, formattedMessage);
+                adminWs.send(message);  // Gửi tin nhắn qua WebSocket
+                saveAdminMessage(currentUser, "Admin: " + message);
                 messageInput.value = "";
             }
         }
@@ -104,17 +107,26 @@
         };
     </script>
 </head>
-<body>
-    <h2>Admin Chat</h2>
+<body class="container mt-4">
+    <h2 class="text-center text-primary">Admin Chat</h2>
 
-    <h3>Danh sách khách hàng</h3>
-    <ul id="customer-list"></ul>
+    <div class="row">
+        <!-- Danh sách khách hàng -->
+        <div class="col-md-4">
+            <h4>Danh sách khách hàng</h4>
+            <ul id="customer-list" class="list-group"></ul>
+        </div>
 
-    <h3>Cuộc trò chuyện với khách hàng</h3>
-    <div id="admin-chat-messages" style="border:1px solid #ccc; width:400px; height:300px; overflow-y:scroll; padding:10px;"></div>
-
-    <input type="text" id="admin-message" placeholder="Nhập tin nhắn..." />
-    <button onclick="sendAdminMessage()">Gửi</button>
-    <button onclick="clearAdminChatHistory()">Xóa lịch sử</button>
+        <!-- Phần chat -->
+        <div class="col-md-8">
+            <h4>Cuộc trò chuyện</h4>
+            <div id="admin-chat-messages" class="border rounded p-3 mb-3" style="height: 300px; overflow-y: auto; background: #f8f9fa;"></div>
+            <div class="input-group">
+                <input type="text" id="admin-message" class="form-control" placeholder="Nhập tin nhắn..." />
+                <button class="btn btn-primary" onclick="sendAdminMessage()">Gửi</button>
+                <button class="btn btn-danger" onclick="clearAdminChatHistory()">Xóa lịch sử</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

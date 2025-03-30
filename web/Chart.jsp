@@ -62,11 +62,24 @@
             </form>
             </div>
 
-            <!-- Biểu đồ doanh thu -->
-            <div class="container pt-4 px-4">
-                <h3>Doanh thu</h3>
-                <canvas id="revenueChart"></canvas>
-            </div>
+<!-- Biểu đồ doanh thu -->
+<div class="container d-flex flex-column align-items-center">
+    <div class="row mb-5 w-100 justify-content-center">
+        <div class="col-md-8 text-center">
+            <h4><b>Doanh thu</b></h4>
+            <canvas id="revenueChart" style="max-width: 800px; max-height: 400px;"></canvas>
+        </div>
+    </div>
+
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-8 text-center">
+            <h4><b>Top sản phẩm bán chạy</b></h4>
+            <canvas id="topProductsChart" style="max-width: 800px; max-height: 400px;"></canvas>
+        </div>
+    </div>
+</div>
+
+
 
             <script>
                  const revenueLabels = [<c:forEach var="label" items="${revenueData.labels}">
@@ -78,6 +91,15 @@
                 ${value}<c:if test="${not empty value}">,</c:if>
             </c:forEach>
 ];
+            const productNames = [<c:forEach var="name" items="${topProducts.names}">
+            '${name}'<c:if test="${not empty name}">,</c:if>
+            </c:forEach>
+            ];
+
+            const productCounts = [<c:forEach var="count" items="${topProducts.counts}">
+                ${count}<c:if test="${not empty count}">,</c:if>
+            </c:forEach>
+            ];
 
 new Chart(document.getElementById('revenueChart'), {
                 type: 'line',
@@ -88,6 +110,18 @@ new Chart(document.getElementById('revenueChart'), {
                             data: revenueData,
                             borderColor: 'rgb(75, 192, 192)',
                             tension: 0.3
+                        }]
+                }
+            });
+            
+                        new Chart(document.getElementById('topProductsChart'), {
+                type: 'bar',
+                data: {
+                    labels: productNames,
+                    datasets: [{
+                            label: 'Số lượng bán',
+                            data: productCounts,
+                            backgroundColor: 'rgb(255, 99, 132)'
                         }]
                 }
             });

@@ -53,7 +53,7 @@ public class VoucherServlet extends HttpServlet {
             VoucherDAO dao = new VoucherDAO();
             Voucher v = dao.getDataByName(name);
             request.setAttribute("v", v);
-            request.getRequestDispatcher("VoucherDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("TableVoucher.jsp").forward(request, response);
         }
     }
 

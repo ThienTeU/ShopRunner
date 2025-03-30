@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Acer
  */
-@WebServlet(name="VoucherDetailServlet", urlPatterns={"/VoucherDetail"})
+@WebServlet(name="VoucherDetailServlet", urlPatterns={"/voucherdetail"})
 public class VoucherDetailServlet extends HttpServlet {
 
     /**
