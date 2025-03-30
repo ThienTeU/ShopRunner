@@ -168,7 +168,7 @@
                 </div><!-- end row -->
             </div><!-- end container -->
         </section>
-        <%@include file="component/footer.jsp" %>
+        <%@include file="model/footer.jsp" %>
     </div><!-- end wrapper -->
 
     <!-- Core JavaScript

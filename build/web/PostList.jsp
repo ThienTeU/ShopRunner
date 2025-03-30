@@ -93,6 +93,7 @@
         </div>
         <!--end top bar-->
         *<h2></h2>
+        *<h2></h2>
         <div id="wrapper" class="d-flex justify-content-center">
             <div class="col-lg-6 col-md-8 col-12">
                 <form action="PostListController" method="post" class="d-flex justify-content-center">
@@ -359,7 +360,7 @@
                 </script>
 
             </section>
-            <%@include file="component/footer.jsp" %>
+            <%@include file="model/footer.jsp" %>
         </div><!-- end wrapper -->
 
         <!-- Core JavaScript
