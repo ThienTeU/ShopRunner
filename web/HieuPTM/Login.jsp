@@ -1,26 +1,42 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Trang Đăng Nhập</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-        <style>
-            .vh-100 {
-                height: 100vh;
-            }
-            .divider::before,
-            .divider::after {
-                content: "";
-                flex: 1;
-                height: 1px;
-                background: #eee;
-            }
-        </style>
-    </head>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        .login-container {
+            max-width: 450px;
+            margin: auto;
+            padding: 40px;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        .divider p {
+            margin: 0 10px;
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
     <body>
         <!-- Header -->
         <%@ include file="/model/styles.jsp" %>
@@ -35,9 +51,14 @@
                         <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg" class="img-fluid" alt="Phone image">
                     </div>
                     <div class="col-md-6">
+                        
                         <form action="${pageContext.request.contextPath}/LoginControl" method="post">
                             <h3 class="mb-4 text-center text-primary">Đăng nhập</h3>
                             <p class="text-danger">${exist}</p>
+                            <!-- Hiển thị thông báo lỗi -->
+        <c:if test="${not empty mess}">
+            <p class="text-danger text-center">${mess}</p>
+        </c:if>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Tên đăng nhập ${mess != null ? '<i class="bi bi-exclamation-circle" style="color: red; font-size: 12px"></i>' : ''}</label>
                                 <input type="text" class="form-control" id="username" name="username" value="${username != null ? username : ""}" required/>
