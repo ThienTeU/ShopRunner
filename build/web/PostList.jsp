@@ -64,7 +64,8 @@
 
 </head>
 
-
+<link rel="stylesheet" href="css/chatbox.css">
+<%@include file="model/header.jsp" %>
 <body>
 
     <%@ page pageEncoding="UTF-8" %>
@@ -91,7 +92,7 @@
             </div>
         </div>
         <!--end top bar-->
-
+        *<h2></h2>
         <div id="wrapper" class="d-flex justify-content-center">
             <div class="col-lg-6 col-md-8 col-12">
                 <form action="PostListController" method="post" class="d-flex justify-content-center">
@@ -116,6 +117,49 @@
                         <a href="PostListController?num=${c.getCategoryID()}">${c.getName()}</a>
                     </c:forEach>
                 </div>
+                <!-- Thêm bài viết mẫu cho Voucher -->
+                <style>
+                    .blog-container {
+                        display: flex;
+                        justify-content: center; /* Căn giữa ngang */
+                        align-items: center; /* Căn giữa dọc (nếu có chiều cao) */
+                        min-height: 50vh; /* Đảm bảo phần tử có chiều cao phù hợp */
+                        text-align: center; /* Căn giữa nội dung */
+                    }
+                    .blog-box {
+                        max-width: 500px; /* Giới hạn chiều rộng */
+                        background: #fff; /* Nền trắng */
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+                    }
+                    .blog-img img {
+                        width: 100%;
+                        border-radius: 10px;
+                    }
+                    .blog-title {
+                        font-size: 20px;
+                        font-weight: bold;
+                        color: #007bff;
+                        display: block;
+                        margin-top: 10px;
+                    }
+                </style>
+
+                <div class="blog-container">
+                    <div class="blog-box">
+                        <div class="blog-img">
+                            <img src="images/Post/voucher.jpg" alt="Voucher Special">
+                        </div>
+                        <div class="blog-text">
+                            <span>Nhận ngay mã giảm giá</span>
+                            <a href="sendVoucher.jsp" class="blog-title">Mã giảm giá đặc biệt!</a>
+                            <p>Nhấn vào đây để nhận ngay mã giảm giá hấp dẫn nếu bạn là người dùng mới.</p>
+                        </div>
+                    </div>
+                </div>
+
+
             </form>
             <section id="blog">
                 <c:if test="${size < 1}">
@@ -154,6 +198,38 @@
 
 
                     </div>
+                    <style>
+                        .pagination {
+                            display: flex;
+                            justify-content: center; /* Căn giữa */
+                            align-items: center;
+                            margin-top: 20px;
+                            gap: 8px; /* Khoảng cách giữa các nút */
+                        }
+
+                        .pagination a {
+                            text-decoration: none;
+                            padding: 10px 15px;
+                            border-radius: 8px;
+                            border: 1px solid #007bff;
+                            color: #007bff;
+                            font-weight: bold;
+                            transition: all 0.3s ease;
+                        }
+
+                        .pagination a:hover {
+                            background-color: #007bff;
+                            color: white;
+                        }
+
+                        .pagination .active {
+                            background-color: #007bff;
+                            color: white;
+                            pointer-events: none;
+                            font-weight: bold;
+                        }
+                    </style>
+
                     <div class="pagination">
                         <c:if test="${currentPage > 1}">
                             <a href="PostListController?page=${currentPage - 1}">« Trước</a>
@@ -168,118 +244,119 @@
                         </c:if>
                     </div>
 
+
                 </c:if>
 
                 <!-- blog container -->
 
- <!-- CHAT ICON -->
-         <div id="chat-icon" onclick="toggleChat()">
-             💬 Chat với Admin
-         </div>
- 
-         <!-- CỬA SỔ CHAT -->
-         <div id="chat-window">
-             <div id="chat-header" onclick="toggleChat()">
-                 Chat Support <span onclick="closeChat(event)">✖</span>
-             </div>
- 
- 
-             <div id="chat-input">
-                 <input type="email" id="email" placeholder="Nhập email">
-                 <button onclick="connectWebSocket()">Bắt đầu chat</button>
- 
-                 <div id="chat-messages"></div>
- 
-                 <input type="text" id="message" placeholder="Nhập tin nhắn...">
-                 <button onclick="sendMessage()">Gửi</button>
-                 <button onclick="clearChatHistory()">Xóa lịch sử</button>
-             </div>
-         </div>
-         <script>
-             function toggleChat() {
-                 let chatWindow = document.getElementById("chat-window");
-                 chatWindow.style.display = (chatWindow.style.display === "none" || chatWindow.style.display === "") ? "block" : "none";
-             }
-             let ws;
-             let currentEmail;
- 
-             function connectWebSocket() {
-                 let emailInput = document.getElementById("email");
-                 let email = emailInput.value.trim();
- 
-                 if (!email) {
-                     alert("Vui lòng nhập email trước khi bắt đầu chat!");
-                     return;
-                 }
- 
-                 currentEmail = email;
- 
-                 if (ws) {
-                     ws.close();
-                 }
- 
-                 ws = new WebSocket("ws://" + window.location.host + "/RunnerShop/chat/" + email);
- 
-                 ws.onopen = function () {
-                     console.log("WebSocket connected for " + email);
-                     loadChatHistory(email);
-                 };
- 
-                 ws.onmessage = function (event) {
-                     displayMessage(event.data);
-                     saveMessage(email, event.data);
-                 };
- 
-                 ws.onclose = function () {
-                     console.log("WebSocket closed");
-                 };
-             }
- 
-             function displayMessage(message) {
-                 let chatMessages = document.getElementById("chat-messages");
-                 let messageElement = document.createElement("p");
-                 messageElement.textContent = message;
-                 chatMessages.appendChild(messageElement);
-                 chatMessages.scrollTop = chatMessages.scrollHeight;
-             }
- 
-             function sendMessage() {
-                 let messageInput = document.getElementById("message");
-                 let message = messageInput.value.trim();
-                 if (message !== "" && ws) {
-                     let formattedMessage = currentEmail + ": " + message;
-                     ws.send(message);
-                     displayMessage(formattedMessage);
-                     saveMessage(currentEmail, formattedMessage);
-                     messageInput.value = "";
-                 }
-             }
- 
-             function saveMessage(email, message) {
-                 let chatHistoryKey = "chat_history_" + email;
-                 let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
-                 chatHistory.push(message);
-                 localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
-             }
- 
-             function loadChatHistory(email) {
-                 let chatHistoryKey = "chat_history_" + email;
-                 let chatMessages = document.getElementById("chat-messages");
-                 chatMessages.innerHTML = "";
-                 let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
-                 chatHistory.forEach(message => {
-                     displayMessage(message);
-                 });
-             }
- 
-             function clearChatHistory() {
-                 if (!currentEmail)
-                     return;
-                 let chatHistoryKey = "chat_history_" + currentEmail;
-                 localStorage.removeItem(chatHistoryKey);
-                 document.getElementById("chat-messages").innerHTML = "";
-             }
-         </script>
+                <!-- CHAT ICON -->
+                <div id="chat-icon" onclick="toggleChat()">
+                    💬 Chat với Admin
+                </div>
+
+                <!-- CỬA SỔ CHAT -->
+                <div id="chat-window">
+                    <div id="chat-header" onclick="toggleChat()">
+                        Chat Support <span onclick="closeChat(event)">✖</span>
+                    </div>
+
+
+                    <div id="chat-input">
+                        <input type="email" id="email" placeholder="Nhập email">
+                        <button onclick="connectWebSocket()">Bắt đầu chat</button>
+
+                        <div id="chat-messages"></div>
+
+                        <input type="text" id="message" placeholder="Nhập tin nhắn...">
+                        <button onclick="sendMessage()">Gửi</button>
+                        <button onclick="clearChatHistory()">Xóa lịch sử</button>
+                    </div>
+                </div>
+                <script>
+                    function toggleChat() {
+                        let chatWindow = document.getElementById("chat-window");
+                        chatWindow.style.display = (chatWindow.style.display === "none" || chatWindow.style.display === "") ? "block" : "none";
+                    }
+                    let ws;
+                    let currentEmail;
+
+                    function connectWebSocket() {
+                        let emailInput = document.getElementById("email");
+                        let email = emailInput.value.trim();
+
+                        if (!email) {
+                            alert("Vui lòng nhập email trước khi bắt đầu chat!");
+                            return;
+                        }
+
+                        currentEmail = email;
+
+                        if (ws) {
+                            ws.close();
+                        }
+
+                        ws = new WebSocket("ws://" + window.location.host + "/RunnerShop/chat/" + email);
+
+                        ws.onopen = function () {
+                            console.log("WebSocket connected for " + email);
+                            loadChatHistory(email);
+                        };
+
+                        ws.onmessage = function (event) {
+                            displayMessage(event.data);
+                            saveMessage(email, event.data);
+                        };
+
+                        ws.onclose = function () {
+                            console.log("WebSocket closed");
+                        };
+                    }
+
+                    function displayMessage(message) {
+                        let chatMessages = document.getElementById("chat-messages");
+                        let messageElement = document.createElement("p");
+                        messageElement.textContent = message;
+                        chatMessages.appendChild(messageElement);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+
+                    function sendMessage() {
+                        let messageInput = document.getElementById("message");
+                        let message = messageInput.value.trim();
+                        if (message !== "" && ws) {
+                            let formattedMessage = currentEmail + ": " + message;
+                            ws.send(message);
+                            displayMessage(formattedMessage);
+                            saveMessage(currentEmail, formattedMessage);
+                            messageInput.value = "";
+                        }
+                    }
+
+                    function saveMessage(email, message) {
+                        let chatHistoryKey = "chat_history_" + email;
+                        let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+                        chatHistory.push(message);
+                        localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+                    }
+
+                    function loadChatHistory(email) {
+                        let chatHistoryKey = "chat_history_" + email;
+                        let chatMessages = document.getElementById("chat-messages");
+                        chatMessages.innerHTML = "";
+                        let chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+                        chatHistory.forEach(message => {
+                            displayMessage(message);
+                        });
+                    }
+
+                    function clearChatHistory() {
+                        if (!currentEmail)
+                            return;
+                        let chatHistoryKey = "chat_history_" + currentEmail;
+                        localStorage.removeItem(chatHistoryKey);
+                        document.getElementById("chat-messages").innerHTML = "";
+                    }
+                </script>
 
             </section>
             <%@include file="component/footer.jsp" %>
