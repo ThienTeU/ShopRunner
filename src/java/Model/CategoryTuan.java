@@ -13,26 +13,26 @@ import java.util.List;
  */
 public class CategoryTuan {
 
-    private int categoryId;
+    private int id;
     private String name;
-    private Integer parentId; // Có thể null nếu là danh mục gốc
+    private Integer parentId;
     private List<CategoryTuan> children = new ArrayList<>();
 
     public CategoryTuan() {
     }
 
-    public CategoryTuan(int categoryId, String name, Integer parentId) {
-        this.categoryId = categoryId;
+    public CategoryTuan(int id, String name, Integer parentId) {
+        this.id = id;
         this.name = name;
         this.parentId = parentId;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public int getId() {
+        return id;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -59,4 +59,17 @@ public class CategoryTuan {
         this.children = children;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("CategoryTuan{");
+        sb.append("id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append(", parentId=").append(parentId);
+        sb.append(", children=").append(children);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    
 }

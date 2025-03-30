@@ -13,7 +13,7 @@
     <body>
                 <%@ include file="/model/header.jsp" %>
 
-        <div class="container-fluid">
+                <div class="container-fluid" style="margin-top: 100px">
             <h1 class="my-4">Marketing Dashboard</h1>
 
             <!-- Bộ lọc và tìm kiếm -->

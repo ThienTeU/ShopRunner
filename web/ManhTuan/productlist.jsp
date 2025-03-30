@@ -8,27 +8,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="Model.CategoryTuan" %>
 <%@ page import="java.util.List" %>
-<%!
-    public void printTree(List<CategoryTuan> cats, JspWriter out) throws java.io.IOException {
-        out.write("<ul>");
-        for (CategoryTuan cat : cats) {
-            out.write("<li>");
-
-            // Thẻ <a> có href đến servlet
-            out.write("<a href='productcategory?categoryId=" + cat.getCategoryId() + "' class='category-link' data-id='" + cat.getCategoryId() + "'>" + cat.getName() + "</a>");
-            
-            // Kiểm tra nếu danh mục có danh mục con
-            if (cat.getChildren() != null && !cat.getChildren().isEmpty()) {
-                out.write("<ul class='sub-category' id='sub-" + cat.getCategoryId() + "'>");
-                printTree(cat.getChildren(), out); // Đệ quy để in danh mục con
-                out.write("</ul>");
-            }
-
-            out.write("</li>");
-        }
-        out.write("</ul>");
-    }
-%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,20 +17,7 @@
         <title>Product List</title>
         <link rel="stylesheet" href="ManhTuan/list.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelectorAll(".category-link").forEach(link => {
-                    link.addEventListener("click", function (e) {
-                        let subCategory = document.getElementById("sub-" + this.dataset.id);
-                        if (subCategory) {
-                            e.preventDefault();
-                            subCategory.style.display = (subCategory.style.display === "none") ? "block" : "none";
-                            window.location.href = this.href;
-                        }
-                    });
-                });
-            });
-        </script>
+        
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         
     </head>
@@ -165,14 +131,7 @@
                 </select>
                 <button type="submit">Tìm kiếm</button>
             </form>
-        <%
-        List<CategoryTuan> categories = (List<CategoryTuan>) request.getAttribute("categories");
-        if (categories != null) {
-            printTree(categories, out);
-        } else {
-            out.write("<p>No categories found.</p>");
-        }
-        %>
+        
 
         <div class="container">
             <c:forEach var="product" items="${products}">

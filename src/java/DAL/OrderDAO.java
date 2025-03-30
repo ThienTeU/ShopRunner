@@ -71,7 +71,6 @@ public class OrderDAO extends DBContext {
         try (PreparedStatement stmt = connection.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                // Tạo đối tượng OrderInfo từ dữ liệu database
                 OrderResponseInfo orderInfo = new OrderResponseInfo();
                 orderInfo.setOrderId(rs.getString("order_id"));
                 orderInfo.setLabel(rs.getString("label"));
@@ -85,7 +84,6 @@ public class OrderDAO extends DBContext {
                 orderInfo.setStatusId(rs.getInt("status_id"));
                 orderInfo.setPackageId(rs.getString("package_id"));
 
-                // Tạo đối tượng OrderResponse
                 OrderResponse orderResponse = new OrderResponse();
                 orderResponse.setSuccess(rs.getBoolean("success"));
                 orderResponse.setMessage(rs.getString("message"));

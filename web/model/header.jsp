@@ -161,7 +161,7 @@
                     <li><a href="/RunnerShop/home?uid=${param.uid}">Trang chủ</a></li>
                     <li><a href="/RunnerShop/About.jsp?uid=${param.uid}">Giới thiệu</a></li>
                     <li class="dropdown">
-                        <a href="#" class="nav-link">Sản phẩm</a>
+                        <a href="productlist" class="nav-link">Sản phẩm</a>
                         <div class="dropdown-menu">
                             <c:forEach var="category" items="${categories}">
                                 <c:if test="${category.parentId == null}">
