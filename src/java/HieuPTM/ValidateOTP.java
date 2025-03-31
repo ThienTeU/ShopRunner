@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @WebServlet(name = "ValidateOTP", urlPatterns = {"/ValidateOTP"})
 public class ValidateOTP extends HttpServlet {
+
     private boolean validatePassword(String password) {
         String passwordRegex = "^(?=.*\\d).{6,}$";
         return Pattern.compile(passwordRegex).matcher(password).matches();
@@ -22,8 +23,6 @@ public class ValidateOTP extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        
 
         String userOtp = request.getParameter("otp");
         HttpSession session = request.getSession(false);
@@ -49,16 +48,17 @@ public class ValidateOTP extends HttpServlet {
                 if (session.getAttribute("userRegister") != null) {
                     UserHieu user = (UserHieu) session.getAttribute("userRegister");
                     UserDAO dao = new UserDAO();
-                    String password = request.getParameter("password");
-                    PasswordEncoder passEncoder = new BCryptPasswordEncoder(10);
-        String passHashed = passEncoder.encode(password);
-        user.setPassword(passHashed);
-        if (!validatePassword(password)) {
-            request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự, gồm ít nhất 1 số.");
-            request.getRequestDispatcher("HieuPTM/Register.jsp").forward(request, response);
-            return;
-        }
+                    String password = user.getPassword();
+                    
 
+                    if (!validatePassword(password)) {
+                        request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự, gồm ít nhất 1 số.");
+                        request.getRequestDispatcher("HieuPTM/Register.jsp").forward(request, response);
+                        return;
+                    }
+                    PasswordEncoder passEncoder = new BCryptPasswordEncoder(10);
+                    String passHashed = passEncoder.encode(password);
+                    user.setPassword(passHashed);
                     dao.insert(user);
                     response.getWriter().print(user.getFullName() + "|" + user.getPassword());
 

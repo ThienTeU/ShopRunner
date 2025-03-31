@@ -74,7 +74,7 @@ public class EditProductServlet extends HttpServlet {
             response.getWriter().print(product_id + "|" + category_id + " | " + product_name + " | " + description + " | " + discount + "|" + thumbnail + "|" + created_at);
             dao.updateProduct(product);
             response.getWriter().print(thumbnail);
-            //response.sendRedirect("ProductDashboard");
+            response.sendRedirect("ProductDashboard");
         } catch (SQLException ex) {
             Logger.getLogger(AddProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

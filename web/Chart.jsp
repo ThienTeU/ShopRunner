@@ -43,13 +43,38 @@
             <!-- Navbar Start -->
             <%@include file="component/navbarAdmin.jsp" %>
             <!-- Navbar End -->
+<div class="container pt-4 px-4">
+    <div class="row">
+<div class="row">
+    <!-- Tổng số đơn hàng -->
+    <div class="col-md-6 col-lg-3">
+        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+            <i class="bx bx-package fa-3x text-primary"></i>
+            <div class="ms-3">
+                <p class="mb-2">Tổng số đơn hàng</p>
+                <h6 class="mb-0">${totalOrders}</h6>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tổng số người dùng -->
+    <div class="col-md-6 col-lg-3">
+        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+            <i class="bx bx-user fa-3x text-success"></i>
+            <div class="ms-3">
+                <p class="mb-2">Tổng số người dùng</p>
+                <h6 class="mb-0">${totalUsers}</h6>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- Bộ lọc -->
             <div class="container pt-4 px-4">
                 <h3>Bộ lọc dữ liệu</h3>
                 <form action="Charts" method="post" class="filter-section row mb-4">
                 <div class="col-md-3">
-                    <label for="start-date">Ngày bắt đầu:</label>
+<label for="start-date">Ngày bắt đầu:</label>
                     <input type="date" id="start-date" name="start-date" value="${start_date}" class="form-control">
                 </div>
                 <div class="col-md-3">
@@ -127,7 +152,3 @@ new Chart(document.getElementById('revenueChart'), {
             });
             </script>
         </div>
-        <!-- Content End -->
-    </div>
-</body>
-</html>

@@ -54,8 +54,10 @@
         session.removeAttribute("order_id");
         session.removeAttribute("order");
         session.removeAttribute("orderGhtk");
+        session.removeAttribute("cartQuantity");
     %>
     <body>
+        <%@ include file="/model/header.jsp" %>
         <div class="confirmation-container">
             <h2 class="fw-bold">CẢM ƠN BẠN</h2>
             <div class="status-box">

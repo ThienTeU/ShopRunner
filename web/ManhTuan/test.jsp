@@ -135,6 +135,7 @@
         </style>
     </head>
     <body>
+        <%@ include file="/model/header.jsp" %>
         <div class="container mt-4">
             <h2 class="text-center mb-4">Danh sách sản phẩm</h2>
             <div class="row">
@@ -348,5 +349,7 @@
                                             maxPrice.value = slider.noUiSlider.get()[1].replace(/\./g, '');
                                         });
         </script>
+        <%@ include file="/model/footer.jsp" %>
     </body>
+    
 </html>

@@ -85,7 +85,7 @@
                                     <tr>
                                         <td>${banner.banner_id}</td>
                                         <td>
-                                            <img src="${banner.image_url}" alt="Banner" class="banner-image"/>
+                                            <img style="width: 50%" src="${banner.image_url}" alt="Banner" class="banner-image"/>
                                         </td>
                                         <td>${banner.link_url}</td>
                                         <td>${banner.display_order}</td>

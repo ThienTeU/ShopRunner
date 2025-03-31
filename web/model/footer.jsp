@@ -3,56 +3,34 @@
 
 <!-- Footer -->
 <footer class="footer">
-    <!-- Newsletter Section -->
-<!--    <div class="newsletter-section" style="background-color: orange;">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 text-center">
-                    <h3 class="newsletter-title">Đăng ký nhận thông tin</h3>
-                    <p class="newsletter-description">
-                        Nhận thông tin về sản phẩm mới và ưu đãi đặc biệt!
-                    </p>
-                    <form class="newsletter-form" id="newsletterForm">
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Nhập email của bạn" required>
-                            <button class="btn btn-light" type="submit">
-                                <i class="fas fa-paper-plane me-2"></i>Đăng ký
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>-->
-
     <!-- Main Footer -->
-    <div class="footer-main" style="background-color: black">
+    <div class="footer-main" style="background-color: #333; color: white; padding: 40px 0;">
         <div class="container">
             <div class="row">
                 <!-- Company Info -->
-                <div class="col-lg-4 col-md-6 footer-column">
+                <div class="col-lg-3 col-md-6 footer-column">
                     <div class="footer-widget">
                         <h4 class="widget-title">Runner Shop</h4>
                         <div class="about-company">
                             <img src="${pageContext.request.contextPath}/images/LOGO.png" 
-                                 height="30px"
-                                 width="30px"
+                                 height="40px"
+                                 width="40px"
                                  alt="Runner Shop Logo" 
                                  class="footer-logo mb-3">
                             <p class="company-description">
                                 Chuyên cung cấp các sản phẩm thể thao chính hãng với chất lượng tốt nhất cho người tiêu dùng Việt Nam.
                             </p>
                             <div class="social-links">
-                                <a href="#" class="social-link facebook">
+                                <a href="#" class="social-link facebook" target="_blank">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="#" class="social-link instagram">
+                                <a href="#" class="social-link instagram" target="_blank">
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="#" class="social-link youtube">
+                                <a href="#" class="social-link youtube" target="_blank">
                                     <i class="fab fa-youtube"></i>
                                 </a>
-                                <a href="#" class="social-link tiktok">
+                                <a href="#" class="social-link tiktok" target="_blank">
                                     <i class="fab fa-tiktok"></i>
                                 </a>
                             </div>
@@ -61,7 +39,7 @@
                 </div>
 
                 <!-- Quick Links -->
-                <div class="col-lg-2 col-md-6 footer-column">
+                <div class="col-lg-3 col-md-6 footer-column">
                     <div class="footer-widget">
                         <h4 class="widget-title">Liên kết nhanh</h4>
                         <ul class="footer-links">
@@ -125,7 +103,7 @@
     </div>
 
     <!-- Bottom Footer -->
-    <div class="footer-bottom">
+    <div class="footer-bottom" style="background-color: #222; color: white; padding: 20px 0;">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -133,16 +111,89 @@
                         © 2024 Runner Shop. Tất cả quyền được bảo lưu.
                     </p>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 text-md-right">
                     <div class="payment-methods">
                         <span>Chấp nhận thanh toán:</span>
-                        <img src="${pageContext.request.contextPath}/resources/img/payment-visa.png" alt="Visa">
-                        <img src="${pageContext.request.contextPath}/resources/img/payment-mastercard.png" alt="Mastercard">
-                        <img src="${pageContext.request.contextPath}/resources/img/payment-momo.png" alt="Momo">
-                        <img src="${pageContext.request.contextPath}/resources/img/payment-vnpay.png" alt="VNPay">
+                        <img src="${pageContext.request.contextPath}/resources/img/payment-visa.png" alt="Visa" class="payment-icon">
+                        <img src="${pageContext.request.contextPath}/resources/img/payment-mastercard.png" alt="Mastercard" class="payment-icon">
+                        <img src="${pageContext.request.contextPath}/resources/img/payment-momo.png" alt="Momo" class="payment-icon">
+                        <img src="${pageContext.request.contextPath}/resources/img/payment-vnpay.png" alt="VNPay" class="payment-icon">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </footer>
+
+<!-- CSS -->
+<style>
+    .footer {
+        font-family: Arial, sans-serif;
+        margin-top: 20px;
+    }
+
+    .footer-widget {
+        margin-bottom: 30px;
+    }
+
+    .footer-widget h4 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #f1f1f1;
+        font-weight: bold;
+    }
+
+    .footer-links li {
+        list-style-type: none;
+        margin-bottom: 10px;
+    }
+
+    .footer-links li a {
+        color: #bbb;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-links li a:hover {
+        color: #f5a623;
+    }
+
+    .social-links a {
+        color: #bbb;
+        margin-right: 10px;
+        font-size: 18px;
+        transition: color 0.3s ease;
+    }
+
+    .social-links a:hover {
+        color: #f5a623;
+    }
+
+    .contact-info .contact-item {
+        margin-bottom: 15px;
+        color: #bbb;
+    }
+
+    .contact-info .contact-item i {
+        margin-right: 10px;
+        color: #f5a623;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .payment-methods img {
+        margin-right: 10px;
+        height: 30px;
+    }
+
+    .payment-icon {
+        max-width: 100px;
+    }
+
+    .copyright {
+        margin: 0;
+    }
+</style>

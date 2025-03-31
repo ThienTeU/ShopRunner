@@ -1,5 +1,6 @@
 package HieuPTM;
 
+import HieuPTM.DAO.UserDAO;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Date;
@@ -25,7 +26,12 @@ public class ForgotPassword extends HttpServlet {
 
         String email = request.getParameter("email");
         RequestDispatcher dispatcher;
-
+        UserDAO dao = new UserDAO();
+        if(!dao.checkEmailDuplicate(email)){
+            request.setAttribute("message", "Địa chỉ email không tồn tại!");
+            request.getRequestDispatcher("/HieuPTM/ForgotPassword.jsp").forward(request, response);
+            return;
+        }
         if (email != null && !email.trim().isEmpty()) {
 
             request.setAttribute("message", "Vui lòng nhập email hợp lệ!");

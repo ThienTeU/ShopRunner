@@ -44,7 +44,7 @@ public class ProfileController extends HttpServlet {
 
         OrderDAO orderDAO = new OrderDAO();
         int totalOrders = orderDAO.getTotalOrdersByCustomer(email);
-        List<Orders> orders = orderDAO.getOrdersByUserId(userId);
+        List<Orders> orders = orderDAO.getOrdersByUserId(email);
 
         FeedbacAnhkDAO feedbackDAO = new FeedbacAnhkDAO();
         int totalFeedbacks = feedbackDAO.getTotalFeedbackByEmail(email);

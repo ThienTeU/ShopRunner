@@ -67,10 +67,6 @@
                 <!-- Danh sách feedback -->
                 <div class="card p-4 w-100">
                     <h2 class="h4 mb-3">Danh sách Feedback</h2>
-                    <form action="export" method="get">
-                        <button type="submit" class="btn btn-success">Xuất Excel</button>
-                    </form>
-                    `
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="table-dark">

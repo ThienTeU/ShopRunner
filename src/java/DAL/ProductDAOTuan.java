@@ -1054,7 +1054,7 @@ public class ProductDAOTuan extends DBContext {
                 + "LEFT JOIN ProductQuantity pq ON pp.ProductPrice_id = pq.ProductPrice_id "
                 + "LEFT JOIN Color c ON pp.color_id = c.color_id "
                 + "LEFT JOIN Size s ON pq.size_id = s.size_id "
-                + "WHERE pp.price BETWEEN ? AND ?");
+                + "WHERE p.status = 0 AND pp.price BETWEEN ? AND ?");
 
         if (colors != null && !colors.isEmpty()) {
             sql.append(" AND c.color IN (");
@@ -1096,17 +1096,20 @@ public class ProductDAOTuan extends DBContext {
                 + "LEFT JOIN ProductQuantity pq ON pp.ProductPrice_id = pq.ProductPrice_id "
                 + "LEFT JOIN Color c ON pp.color_id = c.color_id "
                 + "LEFT JOIN Size s ON pq.size_id = s.size_id "
-                + "WHERE pp.price BETWEEN ? AND ?");
+                + "WHERE p.status = 0 AND pp.price BETWEEN ? AND ?");
+
         if (colors != null && !colors.isEmpty()) {
             sql.append(" AND c.color IN (");
             sql.append(colors.stream().map(c -> "'" + c + "'").collect(Collectors.joining(",")));
             sql.append(")");
         }
+
         if (sizes != null && !sizes.isEmpty()) {
             sql.append(" AND s.size IN (");
             sql.append(sizes.stream().map(s -> "'" + s + "'").collect(Collectors.joining(",")));
             sql.append(")");
         }
+
         sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, p.discount, p.status, p.thumbnail, p.created_at");
 
         sql.append(" ORDER BY p.created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
@@ -1114,8 +1117,8 @@ public class ProductDAOTuan extends DBContext {
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             ps.setInt(1, minPrice);
             ps.setInt(2, maxPrice);
-            ps.setInt(3, (page - 1) * pageSize); 
-            ps.setInt(4, pageSize); 
+            ps.setInt(3, (page - 1) * pageSize);
+            ps.setInt(4, pageSize);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -1241,7 +1244,8 @@ public class ProductDAOTuan extends DBContext {
                 + "FROM Product p\n"
                 + "LEFT JOIN Feedback f ON f.product_id = p.product_id\n"
                 + "LEFT JOIN ProductPrice pp ON pp.product_id = p.product_id\n"
-                + "LEFT JOIN ProductView pv ON pv.product_id = p.product_id ");
+                + "LEFT JOIN ProductView pv ON pv.product_id = p.product_id\n"
+                + "WHERE p.status = 0 ");
 
         List<String> conditions = new ArrayList<>();
         if (key != null && !key.trim().isEmpty()) {
@@ -1249,7 +1253,7 @@ public class ProductDAOTuan extends DBContext {
         }
 
         if (!conditions.isEmpty()) {
-            sql.append(" WHERE ").append(String.join(" AND ", conditions));
+            sql.append(" AND ").append(String.join(" AND ", conditions));
         }
         sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
                 + "         p.discount, p.status, p.thumbnail, p.created_at, pv.[view] ");
@@ -1310,7 +1314,8 @@ public class ProductDAOTuan extends DBContext {
                 + "FROM Product p\n"
                 + "LEFT JOIN Feedback f ON f.product_id = p.product_id\n"
                 + "LEFT JOIN ProductPrice pp ON pp.product_id = p.product_id\n"
-                + "LEFT JOIN ProductView pv ON pv.product_id = p.product_id ");
+                + "LEFT JOIN ProductView pv ON pv.product_id = p.product_id\n"
+                + "WHERE p.status = 0 ");
 
         List<String> conditions = new ArrayList<>();
         if (key != null && !key.trim().isEmpty()) {
@@ -1318,7 +1323,7 @@ public class ProductDAOTuan extends DBContext {
         }
 
         if (!conditions.isEmpty()) {
-            sql.append(" WHERE ").append(String.join(" AND ", conditions));
+            sql.append(" AND ").append(String.join(" AND ", conditions));
         }
         sql.append(" GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
                 + "         p.discount, p.status, p.thumbnail, p.created_at, pv.[view] ");
@@ -1448,6 +1453,7 @@ public class ProductDAOTuan extends DBContext {
                 + "FROM Product p\n"
                 + "LEFT JOIN Feedback f ON p.product_id = f.product_id \n"
                 + "WHERE p.category_id IN (SELECT category_id FROM RecursiveCategory)\n"
+                + "AND p.status = 0\n"
                 + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
                 + "         p.discount, p.status, p.thumbnail, p.created_at;";
 
@@ -1470,12 +1476,14 @@ public class ProductDAOTuan extends DBContext {
     public List<ProductTuan> getAllProductsByPages(int index, int size) {
         List<ProductTuan> products = new ArrayList<>();
         int offset = (index - 1) * size;
-        String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating FROM Product p "
-                + "LEFT JOIN Feedback f ON p.product_id = f.product_id "
-                + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, "
-                + "p.discount, p.status, p.thumbnail, p.created_at "
-                + "ORDER BY (SELECT NULL) "
-                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "SELECT p.*, ISNULL(AVG(f.rating), 0) AS rating \n"
+                + "FROM Product p\n"
+                + "LEFT JOIN Feedback f ON p.product_id = f.product_id \n"
+                + "WHERE p.status = 0\n"
+                + "GROUP BY p.product_id, p.category_id, p.product_name, p.description, \n"
+                + "         p.discount, p.status, p.thumbnail, p.created_at \n"
+                + "ORDER BY (SELECT NULL) \n"
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, offset);
@@ -1496,7 +1504,7 @@ public class ProductDAOTuan extends DBContext {
     }
 
     public int getTotalProducts() {
-        String sql = "SELECT COUNT(*) FROM Product";
+        String sql = "SELECT COUNT(*) FROM Product where status=0";
         try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 return rs.getInt(1);

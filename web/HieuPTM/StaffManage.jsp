@@ -83,7 +83,7 @@
                 <c:forEach var="staff" items="${staffs}">
                     <tr>
                         <td>${staff.userId}</td>
-                        <td><a href="staffdetail?id=${staff.userId}" class="text-decoration-none">${staff.userName}</a></td>
+                        <td>${staff.userName}</td>
                         <td>${staff.email}</td>
                         <td>${staff.phoneNumber}</td>
                         <td>
@@ -95,7 +95,6 @@
                         </td>
                         <td>${staff.status ? "Hoạt động" : "Bị khóa"}</td>
                         <td>
-                            <a href="staffedit?id=${staff.userId}" class="btn btn-warning btn-sm">Sửa</a>
                             <form action="StaffChangeStatus" method="post" class="d-inline">
                                 <input type="hidden" name="userId" value="${staff.userId}">
                                 <button type="submit" class="btn btn-danger btn-sm">

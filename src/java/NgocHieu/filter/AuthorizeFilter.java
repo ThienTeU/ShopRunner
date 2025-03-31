@@ -42,7 +42,7 @@ public class AuthorizeFilter implements Filter {
             "/SendOrderToEmailServlet",
             "/UpdateCart",
             "/GetShippingFeeServlet",
-            "CheckVoucherValid",
+            "/CheckVoucherValid",
             "/CheckOutVnpayServlet",
             "/vnpay_return.jsp",
             "/vnpayajax",
@@ -50,6 +50,7 @@ public class AuthorizeFilter implements Filter {
             "/vnpayrefund/*",
             "/LoginControl",
             "/testlogin",
+            "/NgocHieu/OrderSuccessJSP.jsp",
             //TuanDM
             "/productcategory",
             "/productcheckbox",
@@ -72,7 +73,12 @@ public class AuthorizeFilter implements Filter {
             "/ValidateOTP",
             "/LoginControl",
             "/ForgotPassword",
-            "/NewPassword"
+            "/NewPassword",
+            //AnhPT
+            "/success.jsp",
+            "/submitContactForm",
+            "/LogOut"
+            
     );
 
     private static final List<String> customerAllowedUrls = Arrays.asList(
@@ -81,6 +87,8 @@ public class AuthorizeFilter implements Filter {
             "/HieuPTM/ChangePassword.jsp",
             "/update-profile",
             "/Profile.jsp",
+            "/updateContactStatus",
+            "/ordersprofile",
             "/profile"
     );
 
@@ -166,7 +174,11 @@ public class AuthorizeFilter implements Filter {
             "/ordersearch",
             "/contactList",
             "/admin",
-            "/AdminManage/adminHome.jsp"
+            "/AdminManage/adminHome.jsp",
+            "/managerbanner",
+            "/deleteContact",
+            "/contactDetail",
+            "/contactList"
     );
 
     @Override

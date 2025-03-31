@@ -29,7 +29,9 @@
             </div>
             <div class="col-md-6">
                 <label for="phoneNumber" class="form-label">Số điện thoại</label>
-                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${customer.phoneNumber}"  required>
+                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
+                       value="${customer.phoneNumber}" pattern="^(0)[3-9][0-9]{8}$"
+                       title="Số điện thoại phải là số hợp lệ (bắt đầu bằng 03-09, có 10 chữ số)" required>
             </div>
             <div class="col-md-6">
                 <label for="status" class="form-label">Trạng thái</label>
@@ -49,7 +51,7 @@
 
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Thêm khách hàng</button>
-                <a href="customerlist" class="btn btn-secondary"></a>
+                <a href="${pageContext.request.contextPath}/customerlist" class="btn btn-secondary">Quay lại</a>
             </div>
         </form>
 

@@ -52,7 +52,7 @@
                 <div class="carousel-inner">
                     <c:forEach items="${cbanners}" var="cbanner" varStatus="i">
                         <div class="carousel-item ${i.index == 0 ? 'active' : ''}">
-                            <img src="${cbanner.image_url}" 
+                            <img src="${cbanner.image_url}"  style="object-fit: contain"
                                  class="d-block w-100" alt="Banner ${cbanner.banner_id}" />
                         </div>
                     </c:forEach>

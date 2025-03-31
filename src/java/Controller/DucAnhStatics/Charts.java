@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller.DucAnhStatics;
 
 import DAL.ProductDAOTuan;
+import DAL.OrderDAO; // Import thêm OrderDAO
+import HieuPTM.DAO.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,10 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author tuan
- */
 @WebServlet(name = "DashboardMarketing1", urlPatterns = {"/Charts"})
 public class Charts extends HttpServlet {
 
@@ -43,31 +36,31 @@ public class Charts extends HttpServlet {
         request.setAttribute("end_date", endDate);
 
         ProductDAOTuan dao = new ProductDAOTuan();
+        OrderDAO orderDAO = new OrderDAO(); // Khởi tạo OrderDAO
+         UserDAO userDAO = new UserDAO();
 
         request.setAttribute("orders", dao.getOrderByDate(startDate, endDate));
+        request.setAttribute("totalOrders", orderDAO.getTotalOrders()); // Lấy tổng số đơn hàng
+        request.setAttribute("totalUsers", userDAO.getTotalUsers()); // Thêm tổng số user
 
         Map<String, Integer> viewStats = dao.getProductViews(startDate, endDate);
         List<String> viewLabels = new ArrayList<>(viewStats.keySet());
         List<Integer> viewCounts = new ArrayList<>(viewStats.values());
         
-
         Map<String, Integer> reviewStats = dao.getProductReviews(startDate, endDate);
         List<String> reviewLabels = new ArrayList<>(reviewStats.keySet());
         List<Integer> reviewCounts = new ArrayList<>(reviewStats.values());
         
-
         Map<String, Integer> customerStats = dao.getCustomerAnalysis(startDate, endDate);
         List<String> customerTypes = new ArrayList<>(customerStats.keySet());
         List<Integer> customerCounts = new ArrayList<>(customerStats.values());
         
-
         Map<String, Integer> topProducts = dao.getTopProducts(startDate, endDate);
         List<String> productNames = new ArrayList<>(topProducts.keySet());
         List<Integer> productCounts = new ArrayList<>(topProducts.values());
         
-
         Map<String, Double> revenueData = dao.getRevenueByDate(startDate, endDate);
-        List<String> labels = new ArrayList<>(revenueData.keySet());
+List<String> labels = new ArrayList<>(revenueData.keySet());
         List<Double> values = new ArrayList<>(revenueData.values());
         
         request.setAttribute("viewStats", Map.of("labels", viewLabels, "counts", viewCounts));
@@ -77,7 +70,6 @@ public class Charts extends HttpServlet {
         request.setAttribute("revenueData", Map.of("labels", labels, "values", values));
 
         request.getRequestDispatcher("/Chart.jsp").forward(request, response);
-
     }
 
     @Override
@@ -96,5 +88,4 @@ public class Charts extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }
-
 }

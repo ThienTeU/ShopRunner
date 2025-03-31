@@ -28,9 +28,9 @@ public class OrderDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         OrderDAO dao = new OrderDAO();
-        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
-        order.setStatus("Pending");
-        System.out.println(dao.insertOrder(order));;
+//        Orders order = new Orders("hieu@gmail.com", 150000, -1, "NA", "0397761602");
+//        order.setStatus("Pending");
+        System.out.println(dao.getOrdersByUserId("nghieu241203@gmail.com"));;
 //        order.setPayment_method("vnpay");
 //        order.setStatus("paid");
 //        int order_id = dao.insertOrder(order);
@@ -38,10 +38,24 @@ public class OrderDAO extends DBContext {
 //        for (OrderResponse o : list) {
 //            System.out.println(o.getOrder().getLabel());
 //        }
-  //  dao.restoreProductQuantity(2116);
+        //  dao.restoreProductQuantity(2116);
 
     }
-    
+
+    public int getTotalOrders() {
+        String sql = "SELECT COUNT(*) AS total_orders FROM Orders";
+        int totalOrders = 0;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                totalOrders = rs.getInt("total_orders");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return totalOrders;
+    }
+
     public void restoreProductQuantity(int orderId) {
         String query = "UPDATE pq "
                 + "SET pq.quantity = pq.quantity + od.quantity "
@@ -237,7 +251,7 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-    
+
     public Integer insertOrder(Orders order) throws SQLException {
         String sql = "INSERT INTO Orders (email, total_price, order_date, status, VoucherID, phone, payment_method, shipping_address) "
                 + "VALUES (?, ?, DEFAULT, ?, ?, ?, ?, ?)";
@@ -319,21 +333,22 @@ public class OrderDAO extends DBContext {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    totalOrders = rs.getInt("total_orders"); 
+                    totalOrders = rs.getInt("total_orders");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return totalOrders; 
+        return totalOrders;
     }
-    public List<Orders> getOrdersByUserId(int userId) {
+
+    public List<Orders> getOrdersByUserId(String email) {
         List<Orders> ordersList = new ArrayList<>();
-        String sql = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, o.phone, o.payment_method, o.shipping_address "
-                   + "FROM Orders o "
-                   + "WHERE o.email = (SELECT email FROM [User] WHERE user_id = ?)";
+        String sql = "SELECT * "
+                + "FROM Orders "
+                + "WHERE email = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Orders order = new Orders();
@@ -341,7 +356,7 @@ public class OrderDAO extends DBContext {
                     order.setOrder_date(rs.getString("order_date"));
                     order.setTotal_price(rs.getInt("total_price"));
                     order.setStatus(rs.getString("status"));
-                    order.setVoucher_id(rs.getInt("voucher_id"));
+                    order.setVoucher_id(rs.getInt("VoucherID"));
                     order.setPhone(rs.getString("phone"));
                     order.setPayment_method(rs.getString("payment_method"));
                     order.setShipping_address(rs.getString("shipping_address"));
@@ -353,23 +368,22 @@ public class OrderDAO extends DBContext {
         }
         return ordersList;
     }
-    
-    
- public List<OrderDetailAnh> getProductsByOrderId(int orderId) throws SQLException {
+
+    public List<OrderDetailAnh> getProductsByOrderId(int orderId) throws SQLException {
         List<OrderDetailAnh> products = new ArrayList<>();
-        String query = "SELECT " +
-                "o.order_id, " +
-                "p.product_id, " +
-                "p.product_name, " +
-                "MIN(pi.image_url) AS image_url, " +
-                "od.quantity, " +
-                "od.unit_price " +
-                "FROM Orders o " +
-                "INNER JOIN OrderDetails od ON o.order_id = od.order_id " +
-                "INNER JOIN Product p ON od.Product_id = p.product_id " +
-                "LEFT JOIN ProductImage pi ON p.product_id = pi.product_id " +
-                "WHERE o.order_id = ? " +
-                "GROUP BY o.order_id, p.product_id, p.product_name, od.quantity, od.unit_price";
+        String query = "SELECT "
+                + "o.order_id, "
+                + "p.product_id, "
+                + "p.product_name, "
+                + "MIN(pi.image_url) AS image_url, "
+                + "od.quantity, "
+                + "od.unit_price "
+                + "FROM Orders o "
+                + "INNER JOIN OrderDetails od ON o.order_id = od.order_id "
+                + "INNER JOIN Product p ON od.Product_id = p.product_id "
+                + "LEFT JOIN ProductImage pi ON p.product_id = pi.product_id "
+                + "WHERE o.order_id = ? "
+                + "GROUP BY o.order_id, p.product_id, p.product_name, od.quantity, od.unit_price";
 
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, orderId);
@@ -389,36 +403,36 @@ public class OrderDAO extends DBContext {
 
         return products;
     }
-public List<Orders> getOrdersByUserIdAndStatus(int userId, String status) {
-    List<Orders> ordersList = new ArrayList<>();
-    String query = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, " +
-                   "o.phone, o.payment_method, o.shipping_address " +
-                   "FROM Orders o " +
-                   "WHERE o.email = (SELECT email FROM [User] WHERE user_id = ?) AND o.status = ?";
 
-    try (PreparedStatement ps = connection.prepareStatement(query)) { // Sử dụng đúng connection
-        ps.setInt(1, userId);
-        ps.setString(2, status);
+    public List<Orders> getOrdersByUserIdAndStatus(int userId, String status) {
+        List<Orders> ordersList = new ArrayList<>();
+        String query = "SELECT o.order_id, o.email, o.order_date, o.total_price, o.status, o.voucher_id, "
+                + "o.phone, o.payment_method, o.shipping_address "
+                + "FROM Orders o "
+                + "WHERE o.email = (SELECT email FROM [User] WHERE user_id = ?) AND o.status = ?";
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Orders order = new Orders();
-                order.setOrder_id(rs.getInt("order_id"));
-                order.setOrder_date(rs.getString("order_date"));
-                order.setTotal_price(rs.getInt("total_price"));
-                order.setStatus(rs.getString("status"));
-                order.setVoucher_id(rs.getInt("voucher_id"));
-                order.setPhone(rs.getString("phone"));
-                order.setPayment_method(rs.getString("payment_method"));
-                order.setShipping_address(rs.getString("shipping_address"));
-                ordersList.add(order);
+        try (PreparedStatement ps = connection.prepareStatement(query)) { // Sử dụng đúng connection
+            ps.setInt(1, userId);
+            ps.setString(2, status);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Orders order = new Orders();
+                    order.setOrder_id(rs.getInt("order_id"));
+                    order.setOrder_date(rs.getString("order_date"));
+                    order.setTotal_price(rs.getInt("total_price"));
+                    order.setStatus(rs.getString("status"));
+                    order.setVoucher_id(rs.getInt("voucher_id"));
+                    order.setPhone(rs.getString("phone"));
+                    order.setPayment_method(rs.getString("payment_method"));
+                    order.setShipping_address(rs.getString("shipping_address"));
+                    ordersList.add(order);
+                }
             }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn đơn hàng theo userId và status: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.err.println("Lỗi khi truy vấn đơn hàng theo userId và status: " + e.getMessage());
+        return ordersList;
     }
-    return ordersList;
-}
-
 
 }

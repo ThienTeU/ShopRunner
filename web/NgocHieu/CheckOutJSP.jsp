@@ -114,14 +114,16 @@
                         </div>
                         <div style="color: black; text-decoration: underline !important; cursor: pointer" onclick="showVoucher()">
                             Sử dụng mã giảm giá
-                            <div id="voucherInput" style="margin-top: 10px; display: none"><input id="voucherField" class="form-control" type="text" name="voucher"></div>
-
                         </div>
-                        <div>
-                            <span id="voucherMessage" style="text-decoration: none"></span>
+                        <div id="voucherInput" style="margin-top: 10px; display: none;">
+                            <input id="voucherField" class="form-control" type="text" name="voucher" style="width: 100%; padding: 8px; font-size: 14px;">
+                            <span id="voucherMessage" style="text-decoration: none; font-size: 14px; color: red;"></span>
                             <br>
-                            <button onclick="checkVoucher(event)">Kiểm tra</button>
+                            <button onclick="checkVoucher(event)" style="padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Kiểm tra</button>
                         </div>
+
+
+
                         <hr><!-- comment -->
                         <div class="mb-4">
                             <strong class="h4 section-title">PHƯƠNG THỨC THANH TOÁN</strong>
@@ -263,11 +265,11 @@
 
                         // Kiểm tra discount và tính toán lại total
                         let discount = response.discount;
-                        total = total - Math.floor(discount * total)/100;  // Áp dụng giảm giá và làm tròn xuống số nguyên
+                        total = total - Math.floor(discount * total) / 100;  // Áp dụng giảm giá và làm tròn xuống số nguyên
 
                         // Cập nhật lại giá trị total trong giao diện
                         document.getElementById("totalP").innerText = total.toLocaleString("vi-VN") + "₫";
-                        let totalPrice = total + shippingFee*1000;
+                        let totalPrice = total + shippingFee * 1000;
                         document.getElementById("totalPrice").innerText = totalPrice.toLocaleString("vi-VN") + "₫";
                     } else {
                         voucherMessage.innerHTML = "Voucher không hợp lệ!";
@@ -287,7 +289,7 @@
 
         function showVoucher() {
             var voucher = document.getElementById("voucherInput");
-            voucher.style.display = "flex";
+            voucher.style.display = "inline-block";
         }
         function selectPaymentMethod(method) {
             document.getElementById("paymentMethod").value = method;
@@ -464,6 +466,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script src="NgocHieu/apiprovince.js"></script>
-
+    <%@ include file="/model/footer.jsp" %>
 </body>
 </html>

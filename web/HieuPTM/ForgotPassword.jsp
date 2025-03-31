@@ -42,6 +42,7 @@
                     <label for="email" class="form-label">Email:</label>
                     <input type="email" class="form-control" id="email" name="email" required>
                 </div>
+                <span style="color: red; font-weight: 600">${message}</span>
                 <button type="submit" class="btn btn-custom w-100">Gửi mã OTP</button>
             </form>
         </div>

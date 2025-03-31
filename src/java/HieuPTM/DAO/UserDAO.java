@@ -28,26 +28,44 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-public List<StaffHieu> getAllStaffPage(int index, int size) {
+
+    public int getTotalUsers() {
+        int total = 0;
+        String sql = "SELECT COUNT(*) FROM [User]";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    public List<StaffHieu> getAllStaffPage(int index, int size) {
         List<StaffHieu> staffs = new ArrayList<>();
-        
+
         // Kiểm tra tham số đầu vào
-        if (index < 1) index = 1;
-        if (size <= 0) size = 10;
-        
+        if (index < 1) {
+            index = 1;
+        }
+        if (size <= 0) {
+            size = 10;
+        }
+
         int offset = (index - 1) * size;
         String sql = "SELECT \n"
-                   + "    user_id, role_id, user_name, full_name, email, password, \n"
-                   + "    phone_number, status, created_at, gender_id\n"
-                   + "FROM [User] \n"
-                   + "WHERE role_id IN (3, 4)\n"
-                   + "ORDER BY user_id\n"
-                   + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
-        
+                + "    user_id, role_id, user_name, full_name, email, password, \n"
+                + "    phone_number, status, created_at, gender_id\n"
+                + "FROM [User] \n"
+                + "WHERE role_id IN (3, 4)\n"
+                + "ORDER BY user_id\n"
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, offset);
             ps.setInt(2, size);
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     StaffHieu staff = new StaffHieu(
@@ -70,14 +88,14 @@ public List<StaffHieu> getAllStaffPage(int index, int size) {
         }
         return staffs;
     }
-public List<StaffHieu> getAllStaff() {
+
+    public List<StaffHieu> getAllStaff() {
         List<StaffHieu> staffs = new ArrayList<>();
         String sql = "SELECT user_id, role_id, user_name, full_name, email, password, phone_number, status, created_at, gender_id "
-                   + "FROM [User] WHERE role_id IN (3,4)";
-        
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            
+                + "FROM [User] WHERE role_id IN (3,4)";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 StaffHieu staff = new StaffHieu(
                         rs.getInt("user_id"),
@@ -98,6 +116,7 @@ public List<StaffHieu> getAllStaff() {
         }
         return staffs;
     }
+
     public UserHieu getUserByUsername(String username) {
         UserHieu user = null;
         String query = "SELECT * FROM Users WHERE userName = ?";
@@ -120,8 +139,6 @@ public List<StaffHieu> getAllStaff() {
         }
         return user;
     }
-
-    
 
     public ArrayList<UserHieu> getAllUsers() {
         ArrayList<UserHieu> list = new ArrayList<>();

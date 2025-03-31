@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
- 
+
 import java.sql.SQLException;
 
 @WebServlet(name = "NewPassword", urlPatterns = {"/NewPassword"})
@@ -36,8 +35,10 @@ public class NewPassword extends HttpServlet {
             try {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 Connection con = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=RunnerShop", "sa", "123");
+                PasswordEncoder passEncoder = new BCryptPasswordEncoder(10);
+                String passHashed = passEncoder.encode(newPassword);
                 PreparedStatement pst = con.prepareStatement("UPDATE [User] SET password = ? WHERE email = ?");
-                pst.setString(1, newPassword);
+                pst.setString(1, passHashed);
                 pst.setString(2, (String) session.getAttribute("email"));
 
                 int rowUpdated = pst.executeUpdate();
@@ -55,8 +56,6 @@ public class NewPassword extends HttpServlet {
         }
     }
 }
-
-
 
 //@WebServlet(name="NewPassword", urlPatterns={"/NewPassword"})
 //public class NewPassword extends HttpServlet {

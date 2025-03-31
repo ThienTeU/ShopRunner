@@ -50,35 +50,10 @@
                             </c:if>
                         </div>
                     </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Thống Kê</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <c:if test="${sessionScope.role == 'Admin'}">
-                                <a href="${pageContext.request.contextPath}/StaffManage" class="dropdown-item">Quản Lý Nhân Viên</a>
-                            </c:if>
-
-                            <c:if test="${sessionScope.role == 'Marketing' || sessionScope.role == 'Admin'}">
-                                <a href="${pageContext.request.contextPath}/dashboard" class="dropdown-item">Marketing Dashboard</a>
-                                <a href="${pageContext.request.contextPath}/managerbanner" class="dropdown-item">Quản Lý Banner</a>
-                                <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Quản Lý Bài Đăng</a>
-                                <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Quản Lý Mã Giảm Giá</a>
-                            </c:if>
-                            
-                            <c:if test="${sessionScope.role == 'Saler' || sessionScope.role == 'Admin'}">
-                                <a href="${pageContext.request.contextPath}/contactList" class="dropdown-item">Quản Lý Liên Hệ</a>
-                                <a href="${pageContext.request.contextPath}/orderlist" class="dropdown-item">Quản Lý Đơn hàng</a>
-                                <a href="${pageContext.request.contextPath}/ProductDashboard" class="dropdown-item">Quản Lý Sản Phẩm</a>
-                                <a href="${pageContext.request.contextPath}/customerlist" class="dropdown-item">Quản Lý Khách Hàng</a>
-                                <a href="${pageContext.request.contextPath}/feedbacklist" class="dropdown-item">Quản Lý Đánh Giá</a>
-                                <a href="${pageContext.request.contextPath}/postDashboard" class="dropdown-item">Quản Lý Bài Đăng</a>
-                                <a href="${pageContext.request.contextPath}/tableVoucher" class="dropdown-item">Quản Lý Mã Giảm Giá</a>
-                            </c:if>
-                        </div>
-                    </div>
                     <!--                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
                                         <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
                                         <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>-->
-                    <a href="Charts" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
+                    <a href="${pageContext.request.contextPath}/Charts" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
                     <!--                    <div class="nav-item dropdown">
                                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
                                             <div class="dropdown-menu bg-transparent border-0">
